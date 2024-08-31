@@ -74,8 +74,8 @@ export default function Cours() {
         <div className="relative z-20 max-w-4xl">
           <h1 className="text-8xl md:text-6xl font-bold mb-4 shadow-text">90 Jours pour devenir <br /> un virtuose de la Trompette</h1>
           <p className="text-xl md:text-2xl mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Je m'adresse à vous🫵</p>
-          <a href="#booking" className="text-3xl px-4 py-4 inline-block bg-gradient-to-br from-[rgb(249,115,22)] from-35% to-[#F16] text-black font-semibold rounded-full text-center transition duration-300 ease-in-out hover:bg-opacity-100">
-            🎺 Réservez Votre Cours avec JC maintenant 🎺
+          <a href="#booking" className="inline-block text-3xl bg-slate-200 text-orange-500  py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300 hover:font-medium">
+            Apprennez la trompette dès maintenant
           </a>
           <p className='mt-4 text-xl md:text-xl mb-8 shadow-text'>(Votre premier cours est gratuit)</p>
         </div>
@@ -309,6 +309,36 @@ C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
           </div>
         </div>
       </section>
+
+      <section id="why-method" className="bg-gray-100 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Pourquoi choisir <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+            ma méthode ?
+            </span>
+          </h2>
+          <div className="flex flex-wrap items-center">
+            <div className="w-full md:w-1/2 mb-8 md:mb-0">
+              <h3 className="text-2xl font-semibold mb-4">
+              En voulant tout faire seul, on se retrouve souvent à ne pas progresser. </h3>
+              <p className="text-lg mt-6">J'ai vécu cela au début. C’était frustrant de ne pas trouver un professeur pour m’aiguiller. Têtu, j'ai décidé de tout faire tout seul. Je connais bien ce chemin semé d'embûches !
+                <br /><br />
+                J’ai fait TOUTES les erreurs possibles et imaginables. <br />
+J’ai perdu DES ANNÉES à corriger et rectifier le tir.
+<br /><br />
+                C’est pourquoi j'ai créé une méthode pour vous équiper des outils nécessaires afin que vous puissiez avancer et d'une boussole pour vous y retrouver. La méthode JC, c’est la solution qui réinvente l’apprentissage de la trompette.
+              </p>
+            </div>
+            <div className="w-full md:w-1/2 md:pl-8">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
+                alt="cours de trompette"
+                className="rounded-lg shadow-lg w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
       <section id="method" className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">La méthode JC : Votre Passeport pour l'
@@ -344,35 +374,6 @@ C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
           <h3  className="mt-5 text-1xl md:text-2xl font-bold text-center">
             (Et ce n’est que 0.01% de ce que je vais vous apprendre)
             </h3>
-        </div>
-      </section>
-      <section id="why-method" className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Pourquoi choisir <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-            ma méthode ?
-            </span>
-          </h2>
-          <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-1/2 mb-8 md:mb-0">
-              <h3 className="text-2xl font-semibold mb-4">
-              En voulant tout faire seul, on se retrouve souvent à ne pas progresser. </h3>
-              <p className="text-lg mt-6">J'ai vécu cela au début. C’était frustrant de ne pas trouver un professeur pour m’aiguiller. Têtu, j'ai décidé de tout faire tout seul. Je connais bien ce chemin semé d'embûches !
-                <br /><br />
-                J’ai fait TOUTES les erreurs possibles et imaginables. <br />
-J’ai perdu DES ANNÉES à corriger et rectifier le tir.
-<br /><br />
-                C’est pourquoi j'ai créé une méthode pour vous équiper des outils nécessaires afin que vous puissiez avancer et d'une boussole pour vous y retrouver. La méthode JC, c’est la solution qui réinvente l’apprentissage de la trompette.
-              </p>
-            </div>
-            <div className="w-full md:w-1/2 md:pl-8">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-                alt="cours de trompette"
-                className="rounded-lg shadow-lg w-full h-auto"
-              />
-            </div>
-          </div>
         </div>
       </section>
       <section id="impact" className="bg-gray-100 py-20">
@@ -454,12 +455,12 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
         <AnimatedListDemo />
       </div>
     </div>
-      <section id="guarantee" className="bg-gradient-to-br from-[#F97316] from-35% to-[#F16] text-black py-20">
+      <section id="guarantee" className="bg=[#F97316]  text-black py-20">
 
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-8">Ma Garantie "Satisfaction ou Remboursé"</h2>
           <p className="text-xl mb-8">Si vous ne jouez pas votre premier morceau complet en 90 jours, je vous rembourse intégralement, sans discuter.</p>
-          <a href="#booking" className="inline-block bg-white text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-gray-100">
+          <a href="#booking" className="inline-block bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
             Réservez Votre Cours Gratuit
           </a>
         </div>
