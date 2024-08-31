@@ -81,7 +81,7 @@ export default function Cours() {
         </Carousel>
         <div className="absolute inset-0 bg-black bg-opacity-50 z-10" />
         <div className="relative z-20 max-w-4xl">
-          <h1 className="text-8xl md:text-6xl font-bold mb-4 shadow-text">90 Jours pour devenir <br /> un virtuose de la Trompette</h1>
+          <h1 className="text-2xl md:text-6xl sm:text-xl text-font-bold mb-4 shadow-text">90 Jours pour devenir <br /> un virtuose de la Trompette</h1>
           <p className="text-xl md:text-2xl mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Je m'adresse à vous🫵</p>
           <a href="#booking" className="inline-block text-3xl bg-slate-200 text-orange-500  py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300 hover:font-medium">
             Apprennez la trompette dès maintenant
