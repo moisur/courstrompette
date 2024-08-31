@@ -180,6 +180,34 @@ Mais sans le savoir, j’ai développé une vision panoramique de l’apprentiss
           </div>
         </div>
       </section>
+
+      
+      <section id="who-am-i" className="bg-gray-100 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          Vous vous demandez comment enfin trouver <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+          ZE professeur ? !  </span>
+          </h2>
+          <div className="flex flex-wrap items-center">
+            <div className="w-full md:w-1/3 mb-8 md:mb-0">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
+                alt="cours de trompette"
+                className="rounded-lg shadow-lg w-full h-auto"
+              />
+            </div>
+            <div className="w-full md:w-2/3 md:pl-8">
+              <h3 className="text-2xl font-semibold mb-4"> C'est normal. </h3>
+              <p className="text-lg mt-6">
+              Et c'est pour faire face à cette  difficulté de trouver des  vrais bons professeurs, que j'ai décidé de créer ma propre méthode. <br /> <br /> Mon objectif est simple : vous aider à apprécier la trompette sans prise de tête et vous permettre de jouer des morceaux en seulement 90 jours.
+
+                
+                Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />Vous n'avez plus à vous perdre dans les détails techniques ; je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
@@ -214,32 +242,6 @@ C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
         </div>
       </section>
 
-      <section id="who-am-i" className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Vous vous demandez comment enfin trouver <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-          ZE professeur ? !  </span>
-          </h2>
-          <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-                alt="cours de trompette"
-                className="rounded-lg shadow-lg w-full h-auto"
-              />
-            </div>
-            <div className="w-full md:w-2/3 md:pl-8">
-              <h3 className="text-2xl font-semibold mb-4"> C'est normal. </h3>
-              <p className="text-lg mt-6">
-              Et c'est pour faire face à cette  difficulté de trouver des  vrais bons professeurs, que j'ai décidé de créer ma propre méthode. <br /> <br /> Mon objectif est simple : vous aider à apprécier la trompette sans prise de tête et vous permettre de jouer des morceaux en seulement 90 jours.
-
-                
-                Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />Vous n'avez plus à vous perdre dans les détails techniques ; je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
 
       <section id="mission" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
