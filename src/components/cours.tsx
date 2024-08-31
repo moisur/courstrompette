@@ -8,6 +8,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent } from "@/components/ui/card"
 import { Music, Globe, Users, GraduationCap, Mic, HeadphonesIcon, BookOpenIcon, ZapIcon } from 'lucide-react'
 import { AnimatedListDemo } from './Animated-list-jc'
+import Image from 'next/image';
+import questionImage from '../../public/questions.webp'
+import profImage from '@/../public/prof-trompette.jpg'
+import profMat from '@/../public/prof.webp'
+import jc from '@/../public/jc.png'
+import jc1 from "@/../public/jc1.png"
+import pkoi from '@/../public/pkoi.webp'
+import ze from '@/../public/ZE.webp'
+import content from "@/../public/content.webp"
 
 export default function Cours() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -114,10 +123,13 @@ export default function Cours() {
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
+            <Image
+                src={jc1} // Utilisation de l'image importée
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
@@ -159,22 +171,25 @@ export default function Cours() {
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
+            <Image
+                src={questionImage} // Utilisation de l'image importée
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
-              <h3 className="text-2xl font-semibold mb-4">Le problème ? Ils jouent bien mais ne savent pas comment l’expliquer. <br />(Ce qui est problématique pour enseigner...) </h3>
+              <h3 className="text-2xl font-semibold mb-4">Leur problème commun ? <br /> <br /> Ils jouent tous plus ou moins bien bien mais ne savent PAS comment l’expliquer. <br />(Ce qui est problématique pour enseigner...) </h3>
               <p className="text-lg mt-6">
  
 Inspiré par le grand Miles Davis, Maurice André et Wynton Marsalis, je me suis débrouillé par moi-même pour apprendre la trompette. 
-<br /> <br />(D’ailleurs Miles lui-même était une bite au début) <br /><br />
+<br /> <br />(D’ailleurs Miles lui-même était une brèle au début) <br /><br />
 J’ai fait TOUTES les erreurs possibles et imaginables. <br />
 J’ai perdu DES ANNÉES à corriger et rectifier le tir. <br /><br />
  
-Mais sans le savoir, j’ai développé une vision panoramique de l’apprentissage de la trompette.
+Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage de la trompette.
 </p>
             </div>
           </div>
@@ -190,10 +205,13 @@ Mais sans le savoir, j’ai développé une vision panoramique de l’apprentiss
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-                alt="cours de trompette"
+            <Image
+                src={ze} // Utilisation de l'image importée
+                alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
@@ -216,10 +234,13 @@ Mais sans le savoir, j’ai développé une vision panoramique de l’apprentiss
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-                alt="cours de trompette"
+            <Image
+                src={profMat} // Utilisation de l'image importée
+                alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
@@ -300,12 +321,14 @@ C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
               </ul>
             </div>
             <div className="w-full md:w-1/2 md:pl-8">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-                alt="cours de trompette"
+            <Image
+                src={jc} // Utilisation de l'image importée
+                alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
-              />
-            </div>
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
+              />            </div>
           </div>
         </div>
       </section>
@@ -330,10 +353,13 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
               </p>
             </div>
             <div className="w-full md:w-1/2 md:pl-8">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-                alt="cours de trompette"
+            <Image
+                src={pkoi} // Utilisation de l'image importée
+                alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
           </div>
@@ -400,11 +426,14 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
         </p>
       </div>
       <div className="w-full md:w-1/2 md:pl-8 text-center md:text-left">
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1900197_10154139815590397_4902156546784256721_o-y1F1m0IsUuSpN3GgRfystehu4COJOp.jpg"
-          alt="Témoignages et résultats"
-          className="rounded-lg shadow-lg w-full h-auto"
-        />
+             <Image
+                src={content} // Utilisation de l'image importée
+                alt="cours de trompette paris"
+                className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
+              />
       </div>
     </div>
   </div>
@@ -441,6 +470,43 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
         </div>
       </section>
 
+      <section id="method" className="bg-gray-100 py-20">
+  <div className="container mx-auto px-4">
+    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+      C’est la puissance de <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">la méthode que je vous offre</span>.
+    </h2>
+    <div className="flex flex-wrap items-center">
+      <div className="w-full md:w-1/2 mb-8 md:mb-0">
+        <img
+          src="https://img.icons8.com/ios-filled/50/000000/lightning-bolt.png"
+          alt="Icône puissance"
+          className="mb-4 mx-auto"
+        />
+        <h3 className="text-2xl font-semibold mb-4">
+          La méthode JC ?
+        </h3>
+        <p className="text-lg mt-6">
+          <strong> 20 années d’expertise concentrées en une méthode.</strong>
+          <br /><br />
+          Puissante, elle vous fera progresser 3 fois plus vite qu'avec les méthodes traditionnelles. Pourquoi ?
+          <br /><br />
+          Parce que j’ai toujours adoré enseigner ce que je savais. J’ai ça dans le sang. Ma méthode est basée sur l’écoute et l’observation.
+          <br /><br />
+          Je vois votre cerveau en marche. Je sens vos peurs. Je réponds aux questions que vous n'osez pas demander ou que vous n’arrivez pas à formuler.
+          <br /><br />
+          Je suis passé par là ! Je connais tout ça par cœur. Éloignons-nous de l’angoisse. Concentrons-nous sur l’essentiel. Plus que du mindset, c’est énergétique. Ma méthode est un équilibre subtil entre ZEN et énergie.
+        </p>
+      </div>
+      <div className="w-full md:w-1/2 md:pl-8 text-center md:text-left">
+        <img
+          src="https://img.icons8.com/ios-filled/50/000000/brain.png"
+          alt="Icône cerveau"
+          className="mb-4 mx-auto"
+        />
+      </div>
+    </div>
+  </div>
+</section>
 
       <div className="flex flex-col md:flex-row w-full p-6">
       <div className="flex w-full md:w-1/2 items-center justify-center p-4 bg-gray-100 rounded-lg">
