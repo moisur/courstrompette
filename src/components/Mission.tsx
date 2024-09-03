@@ -2,7 +2,7 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
-  faPlus, faMusic, faArrowTrendUp, faEar, faCheck, 
+  faPlus, faMusic, faArrowTrendUp, faHeadphones , faCheck, 
   faBolt, faHand, faBookOpen, faMagicWandSparkles
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -11,7 +11,7 @@ export default function Mission() {
     { icon: faPlus, label: 'Rythme' },
     { icon: faMusic, label: 'Pose du son' },
     { icon: faArrowTrendUp, label: 'Maîtrise des graves & des aigus' },
-    { icon: faEar, label: 'Écoute' },
+    { icon: faHeadphones, label: 'Écoute' },
     { icon: faCheck, label: 'Jouer une note juste' },
     { icon: faBolt, label: 'Vitesse' },
     { icon: faHand, label: 'Doigtés' },
