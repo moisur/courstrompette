@@ -6,17 +6,17 @@ import { X } from 'lucide-react'
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
-import { Music, Globe, Users, GraduationCap, Mic, HeadphonesIcon, BookOpenIcon, ZapIcon } from 'lucide-react'
+import { Music, Globe, Users, Mic, HeadphonesIcon, BookOpenIcon, ZapIcon } from 'lucide-react'
 import { AnimatedListDemo } from './Animated-list-jc'
+import Formulaire from './Formulaire'
+import Footer from './Footer'
 import Image from 'next/image';
-import questionImage from '../../public/questions.webp'
-import profImage from '@/../public/prof-trompette.jpg'
-import profMat from '@/../public/prof.webp'
-import jc from '@/../public/jc.png'
-import jc1 from "@/../public/jc1.png"
-import pkoi from '@/../public/pkoi.webp'
+import questionImage from '../../public/1.jpg'
+import profMat from '@/../public/2.jpg'
+import jc from '@/../public/jc.jpg'
+import jc1 from "@/../public/jc.jpg"
+import pkoi from '@/../public/3.jpeg'
 import ze from '@/../public/ZE.webp'
-import content from "@/../public/content.webp"
 
 export default function Cours() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -28,19 +28,20 @@ export default function Cours() {
       setShowPopup(true)
     }, 20000)
 
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      e.preventDefault()
-      setShowExitPopup(true)
-      e.returnValue = ''
-    }
+    const handleMouseLeave = (event: MouseEvent) => {
+      // Trigger popup only when the mouse leaves the top of the window
+      if (event.clientY <= 0) {
+        setShowExitPopup(true);
+      }
+    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
-      clearTimeout(timer)
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [])
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
 
   return (
     <div className="font-sans text-gray-800">
@@ -82,9 +83,9 @@ export default function Cours() {
         <div className="absolute inset-0 bg-black bg-opacity-50 z-10" />
         <div className="relative z-20 max-w-4xl">
           <h1 className="text-2xl md:text-6xl sm:text-xl text-font-bold mb-4 shadow-text">90 Jours pour devenir <br /> un virtuose de la Trompette</h1>
-          <p className="text-xl md:text-2xl mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Je m'adresse à vous🫵</p>
-          <a href="#booking" className="inline-block text-3xl bg-slate-200 text-orange-500  py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300 hover:font-medium">
-            Apprennez la trompette dès maintenant
+          <p className="text-xl md:text-2xl mt-8 mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Je m'adresse à vous🫵</p>
+          <a href="#booking" className="inline-block text-2xl mt-6 bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
+          Apprennez la trompette dès maintenant
           </a>
           <p className='mt-4 text-xl md:text-xl mb-8 shadow-text'>(Votre premier cours est gratuit)</p>
         </div>
@@ -248,14 +249,14 @@ Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage
               <p className="text-lg mt-6"> 
                 
               En aidant le petit frère d’un pote, j’ai compris que je kiffais donner des cours de musique. <br />
-Avant ça, j’ai été prof de maths pendant +10 ans. <br /> <br />
-Le problème aujourd’hui ? <br /><br />
- Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
-Les bons professeurs sont quasi inexistants. <br /><br />
+              Avant ça, j’ai été prof de maths pendant +10 ans. <br /> <br />
+              Le problème aujourd’hui ? <br /><br />
+              Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
+              Les bons professeurs sont quasi inexistants. <br /><br />
 
-(Dans ma vie j’ai eu la chance d’écouter 3 trompettistes d’exception) <br /><br />
-C’est difficile de trouver un prof qui ne t’apprend pas à jouer à l’envers. <br />
-C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
+              (Dans ma vie j’ai eu la chance d’écouter 3 trompettistes d’exception) <br /><br />
+              C’est difficile de trouver un prof qui ne t’apprend pas à jouer à l’envers. <br />
+              C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
 
               </p>
             </div>
@@ -402,47 +403,11 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
             </h3>
         </div>
       </section>
-      <section id="impact" className="bg-gray-100 py-20">
-  <div className="container mx-auto px-4">
-    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-      Une fois que vous aurez joué vos 
-      <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-
-      premiers morceaux... </span>
-    </h2>
-    <div className="flex flex-wrap items-center">
-      <div className="w-full md:w-1/2 mb-8 md:mb-0 text-center">
-        <img
-          src="https://img.icons8.com/ios-filled/50/000000/confidence.png"
-          alt="Icône confiance"
-          className="mb-4 mx-auto"
-        />
-                      <h3 className="text-2xl font-semibold mb-4">
-                      Que vous aurez impressionné vos amis et vos proches...
-</h3>
-        <p className="text-lg mt-6">
-          <br /><br />
-          Vous aurez la confiance en vous pour passer au niveau supérieur ! Et je sais de quoi je parle.
-        </p>
-      </div>
-      <div className="w-full md:w-1/2 md:pl-8 text-center md:text-left">
-             <Image
-                src={content} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
-      </div>
-    </div>
-  </div>
-</section>
 
 
       <section id="testimonials" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Mes  
+          <h2 className="text-3xl mb-16 md:text-4xl font-bold text-center">Mes  
             <span className="pl-2 pr-2   bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
             élèves
             </span>peuvent vous le confirmer : 
@@ -469,6 +434,17 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
           </div>
         </div>
       </section>
+
+      <section id="guarantee" className="bg=[#F97316]  text-black py-20">
+
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8">Ma Garantie "Satisfaction ou Remboursé"</h2>
+          <p className="text-xl mb-8">Si vous ne jouez pas votre premier morceau complet en 90 jours, je vous rembourse intégralement, sans discuter.</p>
+          <a href="#booking" className="inline-block bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
+            Réservez Votre Cours Gratuit
+          </a>
+        </div>
+        </section>
 
       <section id="method" className="bg-gray-100 py-20">
   <div className="container mx-auto px-4">
@@ -521,16 +497,8 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
         <AnimatedListDemo />
       </div>
     </div>
-      <section id="guarantee" className="bg=[#F97316]  text-black py-20">
 
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8">Ma Garantie "Satisfaction ou Remboursé"</h2>
-          <p className="text-xl mb-8">Si vous ne jouez pas votre premier morceau complet en 90 jours, je vous rembourse intégralement, sans discuter.</p>
-          <a href="#booking" className="inline-block bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
-            Réservez Votre Cours Gratuit
-          </a>
-        </div>
-      </section>
+      <Formulaire />
 
       <section id="faq" className="py-20">
         <div className="container mx-auto px-4">
@@ -563,64 +531,26 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
         </div>
       </section>
 
-      <section id="booking" className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">Réservez Votre Cours Gratuit</h2>
-          <form className="max-w-lg mx-auto">
-            <div className="mb-4">
-              <label htmlFor="name" className="block mb-2">Nom complet</label>
-              <input type="text" id="name" className="w-full px-3 py-2 border rounded" required />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="email" className="block mb-2">Adresse e-mail</label>
-              <input type="email" id="email" className="w-full px-3 py-2 border rounded" required />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="phone" className="block mb-2">Numéro de téléphone</label>
-              <input type="tel" id="phone" className="w-full px-3 py-2 border rounded" required />
-            </div>
-            <button type="submit" className="w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300">Réserver Mon Cours Gratuit</button>
-          </form>
-        </div>
-      </section>
 
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-between items-center">
-            <div className="w-full md:w-1/3 mb-4 md:mb-0">
-              <h3 className="text-xl font-semibold mb-2">JC Trompette</h3>
-              <p>Révélez votre génie musical en 90 jours garantis</p>
-            </div>
-            <div className="w-full md:w-1/3 mb-4 md:mb-0">
-              <h4 className="text-lg font-semibold mb-2">Contact</h4>
-              <p>Email: contact@jctrompette.com</p>
-              <p>Téléphone: 06 XX XX XX XX</p>
-            </div>
-            <div className="w-full md:w-1/3">
-              <h4 className="text-lg font-semibold mb-2">Suivez-nous</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-orange-500">Facebook</a>
-                <a href="#" className="hover:text-orange-500">Instagram</a>
-                <a href="#" className="hover:text-orange-500">YouTube</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 text-center">
-            <p>&copy; 2024 JC Trompette. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
-
-      {showPopup && (
+      <Footer />
+      <div
+        className="elfsight-app-bb687b25-4aa4-4b59-bb2b-16fd7b98a74d"
+        data-elfsight-app-lazy
+      ></div>
+ {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg max-w-md">
             <button onClick={() => setShowPopup(false)} className="float-right text-gray-600 hover:text-gray-800">
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold mb-4">Ne manquez pas cette opportunité !</h2>
+            <h2 className="text-2xl font-bold mb-4">☝️ Ne manquez pas cette opportunité !</h2>
             <p className="mb-4">Réservez votre cours gratuit maintenant et commencez votre voyage musical dès aujourd'hui.</p>
-            <a href="#booking" className="block w-full bg-orange-500 text-white text-center font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300">
-              Réserver mon cours gratuit
+            <a
+              href="#booking"
+              className="block w-full bg-orange-500 text-white text-center font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
+              onClick={() => setShowPopup(false)}
+            >
+              Réserver mon cours gratuit !
             </a>
           </div>
         </div>
@@ -632,9 +562,16 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
             <button onClick={() => setShowExitPopup(false)} className="float-right text-gray-600 hover:text-gray-800">
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold mb-4">Attendez !</h2>
-            <p className="mb-4">Êtes-vous sûr de vouloir partir ? Vous êtes à deux pas de révéler votre talent musical !</p>
-            <a href="#booking" className="block w-full bg-orange-500 text-white text-center font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300">
+            <h2 className="text-2xl font-bold mb-4">☝️ Attendez !</h2>
+            <p className="mb-4">
+              Êtes-vous sûr de vouloir partir ? <br />
+              Si vous réservez maintenant, votre premier cours est GRATUIT !
+            </p>
+            <a
+              href="#booking"
+              className="block w-full bg-orange-500 text-white text-center font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
+              onClick={() => setShowExitPopup(false)}
+            >
               Rester et réserver mon cours
             </a>
           </div>
@@ -643,9 +580,9 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
 
       <style jsx>{`
         .shadow-text {
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
       `}</style>
     </div>
-  )
+  );
 }
