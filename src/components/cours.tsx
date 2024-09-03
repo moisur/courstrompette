@@ -8,11 +8,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent } from "@/components/ui/card"
 import { Music, Globe, Users, Mic, HeadphonesIcon, BookOpenIcon, ZapIcon } from 'lucide-react'
 import { AnimatedListDemo } from './Animated-list-jc'
+import Mission from './Mission'
+import Method from './Method'
 import Formulaire from './Formulaire'
 import Footer from './Footer'
+import Puissance from './Puissance'
 import Image from 'next/image';
 import questionImage from '../../public/1.jpg'
 import profMat from '@/../public/2.jpg'
+
 import jc from '@/../public/jc.jpg'
 import jc1 from "@/../public/jc.jpg"
 import pkoi from '@/../public/3.jpeg'
@@ -162,7 +166,7 @@ export default function Cours() {
           </div>
         </div>
       </section>
-
+      <Method />
 
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
@@ -268,75 +272,7 @@ export default function Cours() {
       </section>
 
 
-      <section id="mission" className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Ma mission ?
-            <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-              Vous accompagner à kiffer la trompette
-            </span>
-          </h2>
-          <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-1/2 mb-8 md:mb-0">
-              <h3 className="text-2xl font-semibold mb-4">
-                Le goal ultime ?
-              </h3>
-              <p className="text-lg mt-6">
-                <strong> Jouer des morceaux en 90 jours.</strong>
-                <br /><br /> Voici les aspects clés que nous aborderons ensemble :
-              </p>
-              <ul className="list-disc list-inside mt-4 text-lg space-y-2">
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/clock--v1.png" alt="Icône rythme" className="mr-3"/>
-                  Rythme
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/speaker.png" alt="Icône son" className="mr-3"/>
-                  Pose du son
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/tuning.png" alt="Icône réglage" className="mr-3"/>
-                  Maîtrise des graves & des aigus
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/ear.png" alt="Icône écoute" className="mr-3"/>
-                  Écoute
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/notes.png" alt="Icône note" className="mr-3"/>
-                  Jouer une note juste
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/speed.png" alt="Icône vitesse" className="mr-3"/>
-                  Vitesse
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/fingers.png" alt="Icône doigté" className="mr-3"/>
-                  Doigtés
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/reading.png" alt="Icône partition" className="mr-3"/>
-                  Lecture de partition
-                </li>
-                <li className="flex items-center">
-                  <img src="https://img.icons8.com/ios-filled/24/000000/improvisation.png" alt="Icône improvisation" className="mr-3"/>
-                  Improvisation
-                </li>
-              </ul>
-            </div>
-            <div className="w-full md:w-1/2 md:pl-8">
-            <Image
-                src={jc} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />            </div>
-          </div>
-        </div>
-      </section>
-
+      <Mission />
       <section id="why-method" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
@@ -454,44 +390,7 @@ export default function Cours() {
         </div>
         </section>
 
-      <section id="method" className="bg-gray-100 py-20">
-  <div className="container mx-auto px-4">
-    <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-      C’est la puissance de <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">la méthode que je vous offre</span>.
-    </h2>
-    <div className="flex flex-wrap items-center">
-      <div className="w-full md:w-1/2 mb-8 md:mb-0">
-        <img
-          src="https://img.icons8.com/ios-filled/50/000000/lightning-bolt.png"
-          alt="Icône puissance"
-          className="mb-4 mx-auto"
-        />
-        <h3 className="text-2xl font-semibold mb-4">
-          La méthode JC ?
-        </h3>
-        <p className="text-lg mt-6">
-          <strong> 20 années d’expertise concentrées en une méthode.</strong>
-          <br /><br />
-          Puissante, elle vous fera progresser 3 fois plus vite qu'avec les méthodes traditionnelles. Pourquoi ?
-          <br /><br />
-          Parce que j’ai toujours adoré enseigner ce que je savais. J’ai ça dans le sang. Ma méthode est basée sur l’écoute et l’observation.
-          <br /><br />
-          Je vois votre cerveau en marche. Je sens vos peurs. Je réponds aux questions que vous n'osez pas demander ou que vous n’arrivez pas à formuler.
-          <br /><br />
-          Je suis passé par là ! Je connais tout ça par cœur. Éloignons-nous de l’angoisse. Concentrons-nous sur l’essentiel. Plus que du mindset, c’est énergétique. Ma méthode est un équilibre subtil entre ZEN et énergie.
-        </p>
-      </div>
-      <div className="w-full md:w-1/2 md:pl-8 text-center md:text-left">
-        <img
-          src="https://img.icons8.com/ios-filled/50/000000/brain.png"
-          alt="Icône cerveau"
-          className="mb-4 mx-auto"
-        />
-      </div>
-    </div>
-  </div>
-</section>
-
+      <Puissance />
       <div className="flex flex-col md:flex-row w-full p-6">
       <div className="flex w-full md:w-1/2 items-center justify-center p-4 bg-gray-100 rounded-lg">
       <div className="max-w-sm items-center justify-center text-center">
