@@ -117,23 +117,14 @@ export default function Cours() {
 
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">  Qui   est le         
-            <span className="pl-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Qui est le
+            <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
               fameux JC ?
-            </span>       
+            </span>
           </h2>
           <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-1/3 mb-8 md:mb-0">
-            <Image
-                src={jc1} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
-            </div>
-            <div className="w-full md:w-2/3 md:pl-8">
+            <div className="w-full md:w-2/3 md:pr-8">
               <h3 className="text-2xl font-semibold mb-4">Je m'appelle Jean-Christophe Yervant j'ai 38 ans et depuis 2006 je suis passionné de trompette !</h3>
               <Card>
                 <CardContent className="p-6">
@@ -158,9 +149,20 @@ export default function Cours() {
                 </CardContent>
               </Card>
             </div>
+            <div className="w-full md:w-1/3 mb-8 md:mb-0">
+              <Image
+                src={jc1} // Utilisation de l'image importée
+                alt="cours de trompette paris"
+                className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
+              />
+            </div>
           </div>
         </div>
       </section>
+
 
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
@@ -182,31 +184,43 @@ export default function Cours() {
               />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
-              <h3 className="text-2xl font-semibold mb-4">Leur problème commun ? <br /> <br /> Ils jouent tous plus ou moins bien bien mais ne savent PAS comment l’expliquer. <br />(Ce qui est problématique pour enseigner...) </h3>
+              <p className="text-lg mt-6">Le problème récurrent ? <br /> <br /> Ils jouent tous plus ou moins bien bien mais ne savent pas du tout comment ils le font. <br />(Ce qui est problématique pour enseigner...) </p>
               <p className="text-lg mt-6">
- 
-Inspiré par le grand Miles Davis, Maurice André et Wynton Marsalis, je me suis débrouillé par moi-même pour apprendre la trompette. 
-<br /> <br />(D’ailleurs Miles lui-même était une brèle au début) <br /><br />
-J’ai fait TOUTES les erreurs possibles et imaginables. <br />
-J’ai perdu DES ANNÉES à corriger et rectifier le tir. <br /><br />
- 
-Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage de la trompette.
-</p>
+              Inspiré par le grand Miles Davis, Maurice André et Wynton Marsalis, je me suis débrouillé par moi-même pour apprendre la trompette. 
+              <br /> <br />(D’ailleurs Miles lui-même était une brèle au début hahaha) <br /><br />
+              La conclusion ? <br /><br />
+              Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
+              Les bons professeurs sont quasi inexistants. <br /><br />
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      
+
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Vous vous demandez comment enfin trouver <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-          ZE professeur ? !  </span>
+            Vous vous demandez comment enfin trouver 
+            <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+              ZE professeur ? !
+            </span>
           </h2>
           <div className="flex flex-wrap items-center">
+            <div className="w-full md:w-2/3 md:pr-8">
+              <h3 className="text-2xl font-semibold mb-4">C'est normal.</h3>
+              <p className="text-lg mt-6">
+                Et c'est pour faire face à cette difficulté de trouver des vrais bons professeurs, que j'ai décidé de créer ma propre méthode. <br /> <br />
+                Mon objectif est simple : vous aider à apprécier la trompette sans prise de tête et vous permettre de jouer des morceaux en seulement 90 jours. <br /> <br />
+                J’ai fait TOUTES les erreurs possibles et imaginables. <br />
+                J’ai perdu DES ANNÉES à corriger et rectifier le tir. <br /><br />
+                Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage de la trompette. <br />
+                Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />
+                Vous n'avez plus à vous perdre dans les détails techniques, je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.
+              </p>
+            </div>
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-            <Image
+              <Image
                 src={ze} // Utilisation de l'image importée
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
@@ -215,17 +229,10 @@ Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage
                 layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
-            <div className="w-full md:w-2/3 md:pl-8">
-              <h3 className="text-2xl font-semibold mb-4"> C'est normal. </h3>
-              <p className="text-lg mt-6">
-              Et c'est pour faire face à cette  difficulté de trouver des  vrais bons professeurs, que j'ai décidé de créer ma propre méthode. <br /> <br /> Mon objectif est simple : vous aider à apprécier la trompette sans prise de tête et vous permettre de jouer des morceaux en seulement 90 jours.
-
-                
-                Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />Vous n'avez plus à vous perdre dans les détails techniques ; je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.</p>
-            </div>
           </div>
         </div>
       </section>
+
       
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
@@ -236,11 +243,11 @@ Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
             <Image
-                src={profMat} // Utilisation de l'image importée
+                src={profMat}
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
+                width={500} 
+                height={300} 
                 layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
@@ -250,11 +257,7 @@ Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage
                 
               En aidant le petit frère d’un pote, j’ai compris que je kiffais donner des cours de musique. <br />
               Avant ça, j’ai été prof de maths pendant +10 ans. <br /> <br />
-              Le problème aujourd’hui ? <br /><br />
-              Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
-              Les bons professeurs sont quasi inexistants. <br /><br />
-
-              (Dans ma vie j’ai eu la chance d’écouter 3 trompettistes d’exception) <br /><br />
+             
               C’est difficile de trouver un prof qui ne t’apprend pas à jouer à l’envers. <br />
               C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
 
@@ -337,24 +340,14 @@ Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage
       <section id="why-method" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Pourquoi choisir <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-            ma méthode ?
+            Pourquoi choisir 
+            <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+              ma méthode ?
             </span>
           </h2>
           <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-1/2 mb-8 md:mb-0">
-              <h3 className="text-2xl font-semibold mb-4">
-              En voulant tout faire seul, on se retrouve souvent à ne pas progresser. </h3>
-              <p className="text-lg mt-6">J'ai vécu cela au début. C’était frustrant de ne pas trouver un professeur pour m’aiguiller. Têtu, j'ai décidé de tout faire tout seul. Je connais bien ce chemin semé d'embûches !
-                <br /><br />
-                J’ai fait TOUTES les erreurs possibles et imaginables. <br />
-J’ai perdu DES ANNÉES à corriger et rectifier le tir.
-<br /><br />
-                C’est pourquoi j'ai créé une méthode pour vous équiper des outils nécessaires afin que vous puissiez avancer et d'une boussole pour vous y retrouver. La méthode JC, c’est la solution qui réinvente l’apprentissage de la trompette.
-              </p>
-            </div>
-            <div className="w-full md:w-1/2 md:pl-8">
-            <Image
+            <div className="w-full md:w-1/2 md:pr-8">
+              <Image
                 src={pkoi} // Utilisation de l'image importée
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
@@ -363,9 +356,24 @@ J’ai perdu DES ANNÉES à corriger et rectifier le tir.
                 layout="responsive" // Ajuster la taille de l'image à son conteneur
               />
             </div>
+            <div className="w-full md:w-1/2 mb-8 md:mb-0">
+              <h3 className="text-2xl font-semibold mb-4">
+                En voulant tout faire seul, on se retrouve souvent à ne pas progresser.
+              </h3>
+              <p className="text-lg mt-6">
+                J'ai vécu cela au début. C’était frustrant de ne pas trouver un professeur pour m’aiguiller. Têtu, j'ai décidé de tout faire tout seul. Je connais bien ce chemin semé d'embûches !<br /><br />
+                Mais franchement qu'est ce que j'aurais aimé trouver un JC moi aussi ...<br />
+                Quelqu'un de patient, professionnel, passionné et qui en plus a des tips incroyables !<br /> <br />
+                C’est pourquoi j'ai créé une méthode pour vous équiper des outils nécessaires afin que vous puissiez avancer et d'une boussole pour vous y retrouver.<br /> <br />
+                La méthode JC réinvente l’apprentissage de la trompette.
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
+
+
       <section id="method" className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">La méthode JC : Votre Passeport pour l'
