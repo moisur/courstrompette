@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Cours de trompette PARIS",
-  description: "Les meilleurs cours de trompette à PARIS",
+  description: "Apprennez la trompette à PARIS avec la méthode Z2G",
 };
 
 export default function RootLayout({

@@ -86,10 +86,10 @@ export default function Cours() {
         </Carousel>
         <div className="absolute inset-0 bg-black bg-opacity-50 z-10" />
         <div className="relative z-20 max-w-4xl">
-          <h1 className="text-2xl md:text-6xl sm:text-xl font-extrabold mb-4 shadow-text">Jouez votre premier morceau<br /> en 10 séances</h1>
+          <h1 className="text-2xl md:text-6xl sm:text-xl font-extrabold mb-4 shadow-text">Jouez votre premier morceau <br /> en 10 séances</h1>
           <p className="text-xl md:text-2xl mt-8 mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Apprenenez la trompette facilement grâce à la méthode Z2G</p>
           <a href="#booking" className="inline-block text-2xl mt-6 bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
-           Jouez votre premier morceau !
+           Jouez votre premier morceau 🎺
           </a>
           <p className='mt-4 text-xl md:text-xl mb-8 shadow-text'>(Votre premier cours est gratuit)</p>
         </div>
@@ -249,8 +249,8 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          La méthode Z2G<span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-          est redoutable</span>
+          L'histoire de la<span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+          méthode Z2G</span>
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
@@ -271,7 +271,9 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               Plus je lui donnais mes secrets, plus il apprenait rapidement <br /> <br />
               Incroyable de voir qu'en quelque séances il réussissait à faire ce que j'ai mis des années à réussir. <br /> Tout ça grâce à la méthode Z2G <br /> <br />
               C’est difficile de trouver un prof qui ne t’apprend pas à jouer à l’envers. <br />
-              C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
+              Et systématiquement quand je partageait ma méthode avec mes proches. <br />
+              Ils apprennaient à une vitesse déconcertante. <br /> <br />
+              J’ai donc décidé de partager la méthode Z2G au plus grand nombre. <br /><br />
 
               </p>
             </div>
