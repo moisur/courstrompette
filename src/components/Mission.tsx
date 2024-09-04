@@ -24,14 +24,14 @@ export default function Mission() {
       <div className="container mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
           Ma mission est claire 👇
-          <span className="block mt-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-            Vous accompagner à kiffer la trompette
+          <span className="block mt-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+            Vous accompagner à jouer de la trompette
           </span>
         </h2>
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-3xl font-semibold mb-6 text-center">Le goal ultime ?</h3>
+          <h3 className="text-3xl font-semibold mb-6 text-center">Le promesse ultime ?</h3>
           <p className="text-2xl font-bold text-center mb-12 text-orange-500">
-            Jouer des morceaux en <em>90 jours</em>.
+            Jouer des morceaux en <em>10 séances</em>.
           </p>
           <p className="text-xl mb-8 text-center">
             Voici les aspects clés que nous aborderons ensemble :

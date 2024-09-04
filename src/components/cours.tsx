@@ -86,10 +86,10 @@ export default function Cours() {
         </Carousel>
         <div className="absolute inset-0 bg-black bg-opacity-50 z-10" />
         <div className="relative z-20 max-w-4xl">
-          <h1 className="text-2xl md:text-6xl sm:text-xl text-font-bold mb-4 shadow-text">90 Jours pour devenir <br /> un virtuose de la Trompette</h1>
-          <p className="text-xl md:text-2xl mt-8 mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Je m'adresse à vous🫵</p>
+          <h1 className="text-2xl md:text-6xl sm:text-xl font-extrabold mb-4 shadow-text">Jouez votre premier morceau<br /> en 10 séances</h1>
+          <p className="text-xl md:text-2xl mt-8 mb-8 shadow-text">Débutants, Passionnés, Amateurs ?<br /> Apprenenez la trompette facilement grâce à la méthode Z2G</p>
           <a href="#booking" className="inline-block text-2xl mt-6 bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
-          Apprennez la trompette dès maintenant
+           Jouez votre premier morceau !
           </a>
           <p className='mt-4 text-xl md:text-xl mb-8 shadow-text'>(Votre premier cours est gratuit)</p>
         </div>
@@ -97,7 +97,7 @@ export default function Cours() {
 
       <section id="about" className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Ma méthode Révolutionne l'Apprentissage de la  
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">La méthode Z2G Révolutionne l'Apprentissage de la  
             <span className="pl-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
               Trompette
             </span>
@@ -111,13 +111,90 @@ export default function Cours() {
               />
             </div>
             <div className="w-full md:w-1/2 md:pl-8">
-              <p className="text-lg mb-4">Imaginez-vous jouant votre morceau préféré en 90 jours même si vous n'avez jamais touché une trompette de votre vie. <br /><br /> Ça paraît fou ? Pourtant c'est possible, mes élèves l'ont fait.</p>
-              <p className="text-lg">À chaque étape de votre apprentissage, je vous accompagne. Préparez-vous à vivre une expérience musicale extraordinaire !</p>
-              <p className="text-lg mt-2">Ok, ok ok ... ça a l'air cool tout ça, mais c'est qui JC ?</p>
+              <p className="text-lg mb-4">Imaginez-vous jouant votre premier morceau en 10 séances même si vous n'avez jamais touché une trompette de votre vie. <br /><br /> Ça paraît fou ? Pourtant c'est possible, mes élèves l'ont fait.</p>
+              <p className="text-lg">À chaque étape de votre apprentissage, je suis là pour vous guider. Vous empécher de faire mauvaise route (et de perdre beaucoup de temps) !</p>
+              <p className="text-lg mt-2"> Vous vous dites sûrement que 10 séances c'est court, et vous vous demandez, mais c'est qui ce fameux JC ?</p>
             </div>
           </div>
         </div>
       </section>
+
+
+      <Method />
+      <section id="who-am-i" className="bg-gray-100 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+Vous en avez marre de jouer vos gammes sans jamais avoir             <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+              de vrais résultats  ? !
+            </span>
+          </h2>
+          <div className="flex flex-wrap items-center">
+            <div className="w-full md:w-2/3 md:pr-8">
+              <p className="text-lg mt-6">
+                <h3 className="text-2xl font-semibold mb-4">Pratique Stagnante</h3>
+                <p className="text-lg mb-4" >
+                    Malgré des heures de pratique, vous constatez peu ou pas de progrès dans votre jeu de trompette.
+                </p>
+ 
+                <h3 className="text-2xl font-semibold mb-4">Confusion Technique</h3>
+                <p className="text-lg">
+                    Les embouchures, les gammes et les doigtés semblent être en langage codé, difficile à décrypter.
+                </p>
+                <h3 className="text-2xl font-semibold mb-4">C'est normal.</h3>
+                Tout le monde passe par là quand il n'a pas un bon professeur !
+                Mon objectif est simple : vous aider à apprécier la trompette sans prise de tête et vous permettre de jouer votre premier morceau en à peine 10 séances. <br /> <br />
+
+                Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />
+                Vous n'avez plus à vous perdre dans les détails techniques, je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.
+              </p>
+            </div>
+            <div className="w-full md:w-1/3 mb-8 md:mb-0">
+              <Image
+                src={ze} // Utilisation de l'image importée
+                alt="cours de trompette paris"
+                className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="who-am-i" className="bg-gray-100 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12"> Je n'ai jamais trouvé un seul 
+      
+            <span className="pl-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+            professeur
+            </span> pour m'expliquer comment jouer correctement. 
+          </h2>
+          <div className="flex flex-wrap items-center">
+            <div className="w-full md:w-1/3 mb-8 md:mb-0">
+            <Image
+                src={questionImage} // Utilisation de l'image importée
+                alt="cours de trompette paris"
+                className="rounded-lg shadow-lg w-full h-auto"
+                width={500} // Définir la largeur de l'image
+                height={300} // Définir la hauteur de l'image
+                layout="responsive" // Ajuster la taille de l'image à son conteneur
+              />
+            </div>
+            <div className="w-full md:w-2/3 md:pl-8">
+              <p className="text-lg mt-6">Pourquoi ? <br /> <br /> La plupart des professeurs jouent tous plus ou moins bien mais n'ont aucune idée de comment ils le font. <br />(Ce qui est problématique pour enseigner...) </p>
+              <p className="text-lg mt-6">
+                
+              Inspiré par le grand Miles Davis, Maurice André et Wynton Marsalis, j'ai du me débrouiller par moi-même pour apprendre la trompette. 
+              <br /> <br />(D’ailleurs Miles lui-même était une brèle au début hahaha) <br /><br />
+              La conclusion ? <br /><br />
+              Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
+              Les bons professeurs !! <br /><br />
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
@@ -156,76 +233,6 @@ export default function Cours() {
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
               <Image
                 src={jc1} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-      <Method />
-
-      <section id="who-am-i" className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12"> Je n'ai jamais trouvé un seul professeur 
-      
-            <span className="pl-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-            professeur
-            </span>       qui me convenait. 
-          </h2>
-          <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-1/3 mb-8 md:mb-0">
-            <Image
-                src={questionImage} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
-            </div>
-            <div className="w-full md:w-2/3 md:pl-8">
-              <p className="text-lg mt-6">Le problème récurrent ? <br /> <br /> Ils jouent tous plus ou moins bien bien mais ne savent pas du tout comment ils le font. <br />(Ce qui est problématique pour enseigner...) </p>
-              <p className="text-lg mt-6">
-              Inspiré par le grand Miles Davis, Maurice André et Wynton Marsalis, je me suis débrouillé par moi-même pour apprendre la trompette. 
-              <br /> <br />(D’ailleurs Miles lui-même était une brèle au début hahaha) <br /><br />
-              La conclusion ? <br /><br />
-              Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
-              Les bons professeurs sont quasi inexistants. <br /><br />
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-      <section id="who-am-i" className="bg-gray-100 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Vous vous demandez comment enfin trouver 
-            <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-              ZE professeur ? !
-            </span>
-          </h2>
-          <div className="flex flex-wrap items-center">
-            <div className="w-full md:w-2/3 md:pr-8">
-              <h3 className="text-2xl font-semibold mb-4">C'est normal.</h3>
-              <p className="text-lg mt-6">
-                Et c'est pour faire face à cette difficulté de trouver des vrais bons professeurs, que j'ai décidé de créer ma propre méthode. <br /> <br />
-                Mon objectif est simple : vous aider à apprécier la trompette sans prise de tête et vous permettre de jouer des morceaux en seulement 90 jours. <br /> <br />
-                J’ai fait TOUTES les erreurs possibles et imaginables. <br />
-                J’ai perdu DES ANNÉES à corriger et rectifier le tir. <br /><br />
-                Mais sans le savoir, j’ai développé une vision à 360° de l’apprentissage de la trompette. <br />
-                Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />
-                Vous n'avez plus à vous perdre dans les détails techniques, je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.
-              </p>
-            </div>
-            <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <Image
-                src={ze} // Utilisation de l'image importée
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
                 width={500} // Définir la largeur de l'image
@@ -278,7 +285,7 @@ export default function Cours() {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
             Pourquoi choisir 
             <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-              ma méthode ?
+              la méthode Z2G ?
             </span>
           </h2>
           <div className="flex flex-wrap items-center">
@@ -312,7 +319,7 @@ export default function Cours() {
 
       <section id="method" className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">La méthode JC : Votre Passeport pour l'
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">La méthode Z2G : Votre Passeport pour l'
             <span className="pl-2 pr-2   bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
              Excellence 
             </span>            
@@ -322,14 +329,14 @@ export default function Cours() {
               <CardContent className="p-6">
                 <HeadphonesIcon className="w-12 h-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Écoute et Observation</h3>
-                <p>Je vois votre cerveau en marche. Je sens vos peurs. Je réponds aux questions que vous n'osez pas demander ou que n'arrivez pas à formuler.</p>
+                <p>La méthode Z2G vous empéche de faire des erreurs, dès que quelquechose cloche je le vois immédiatement. Et je vous permets de corriger le tir à la seconde prêt.</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6">
                 <ZapIcon className="w-12 h-12 text-orange-500 mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Équilibre ZEN et Énergie</h3>
-                <p>Ma méthode est un équilibre subtil entre ZEN et énergie. Plus que du mindset, c'est énergétique.</p>
+                <p>La méthode Z2G est un équilibre subtil entre détente et explosion. Vous saurez enfin comment utiliser votre corps pour produire un son parfait.</p>
               </CardContent>
             </Card>
             <Card>
