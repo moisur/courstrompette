@@ -163,11 +163,11 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
       </section>
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12"> Je n'ai jamais trouvé un seul 
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12"> Trouver un bon  
       
             <span className="pl-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-            professeur
-            </span> pour m'expliquer comment jouer correctement. 
+            professeur de trompette
+            </span>  est difficile. 
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
@@ -181,14 +181,15 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
-              <p className="text-lg mt-6">Pourquoi ? <br /> <br /> La plupart des professeurs jouent tous plus ou moins bien mais n'ont aucune idée de comment ils le font. <br />(Ce qui est problématique pour enseigner...) </p>
+              <p className="text-lg mt-6">Pourquoi ? <br /> <br /> La plupart des professeurs jouent tous plus ou moins bien mais n'ont aucune idée de comment ils le font. <br /> En d'autres termes ils n'ont aucune méthode. <br /><br />(Ce qui est problématique pour enseigner...) </p>
               <p className="text-lg mt-6">
                 
-              Inspiré par le grand Miles Davis, Maurice André et Wynton Marsalis, j'ai du me débrouiller par moi-même pour apprendre la trompette. 
-              <br /> <br />(D’ailleurs Miles lui-même était une brèle au début hahaha) <br /><br />
-              La conclusion ? <br /><br />
+              Quand j'ai commencé il n'y en avait aucun ... j'ai du me débrouiller par moi-même pour apprendre la trompette. 
+              <br /><br />
               Les bons trompettiste sont rares. Mais il y'a plus rare encore ... <br />
               Les bons professeurs !! <br /><br />
+              Et c'est exactement ce qui m'a poussé à créer la méthode Zone de Génie !
+
               </p>
             </div>
           </div>
@@ -266,9 +267,9 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               <h3 className="text-2xl font-semibold mb-4">J'ai découvert ma passion pour l'enseignement de la trompette <br />en aidant le meilleur ami de mon  petit frère.        </h3>
               <p className="text-lg mt-6"> 
                 
-              En aidant le petit frère d’un pote, j’ai compris que je kiffais donner des cours de musique. <br />
-              Avant ça, j’ai été prof de maths pendant +10 ans. <br /> <br />
-             
+              En l'aidant , j’ai compris que j'avais un don pour enseigner la trompette. <br />
+              Plus je lui donnais mes secrets, plus il apprenait rapidement <br /> <br />
+              Incroyable de voir qu'en quelque séances il réussissait à faire ce que j'ai mis des années à réussir. <br /> Tout ça grâce à la méthode Z2G <br /> <br />
               C’est difficile de trouver un prof qui ne t’apprend pas à jouer à l’envers. <br />
               C’est pourquoi j’ai décidé de créer ma propre méthode. <br /><br />
 
@@ -308,7 +309,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
                 Mais franchement qu'est ce que j'aurais aimé trouver un JC moi aussi ...<br />
                 Quelqu'un de patient, professionnel, passionné et qui en plus a des tips incroyables !<br /> <br />
                 C’est pourquoi j'ai créé une méthode pour vous équiper des outils nécessaires afin que vous puissiez avancer et d'une boussole pour vous y retrouver.<br /> <br />
-                La méthode JC réinvente l’apprentissage de la trompette.
+                La méthode Zone de génie réinvente l’apprentissage de la trompette.
               </p>
             </div>
           </div>
@@ -366,7 +367,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card>
               <CardContent className="p-6">
-                <p className="italic mb-4">"Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode JC a changé ma vie !"</p>
+                <p className="italic mb-4">"Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode Z2G a changé ma vie !"</p>
                 <p className="font-semibold">Sophie L., 28 ans - De débutante à pro en 6 mois</p>
               </CardContent>
             </Card>
@@ -379,7 +380,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
             <Card>
               <CardContent className="p-6">
                 <p className="italic mb-4">"JC ne m'a pas seulement appris à jouer, il m'a appris à ressentir la musique. Chaque leçon est une révélation. Je vis mon rêve éveillé !"</p>
-                <p className="font-semibold">Léa D., 22 ans - Joue de la trompette avec plaisir grâce à La Méthode JC</p>
+                <p className="font-semibold">Léa D., 22 ans - Joue de la trompette avec plaisir grâce à La Méthode Z2G</p>
               </CardContent>
             </Card>
           </div>

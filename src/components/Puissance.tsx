@@ -32,7 +32,7 @@ export default function Puissance() {
             <div className="bg-white rounded-xl shadow-xl p-8">
               <div className="flex items-center mb-6">
                 <Zap className="w-10 h-10 text-orange-500 mr-4" />
-                <h3 className="text-3xl font-semibold">La méthode JC ?</h3>
+                <h3 className="text-3xl font-semibold">La méthode Zone de Génie ?</h3>
               </div>
               <p className="text-xl text-orange-500 font-bold">
                   20 années d'expertise concentrées en une méthode.
