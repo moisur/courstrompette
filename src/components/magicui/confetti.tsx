@@ -43,18 +43,14 @@ const Confetti = forwardRef<ConfettiRef, Props>((props, ref) => {
   const instanceRef = useRef<ConfettiInstance | null>(null); // confetti instance
 
   const canvasRef = useCallback(
-    // https://react.dev/reference/react-dom/components/common#ref-callback
-    // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
     (node: HTMLCanvasElement) => {
       if (node !== null) {
-        // <canvas> is mounted => create the confetti instance
         if (instanceRef.current) return; // if not already created
         instanceRef.current = confetti.create(node, {
           ...globalOptions,
           resize: true,
         });
       } else {
-        // <canvas> is unmounted => reset and destroy instanceRef
         if (instanceRef.current) {
           instanceRef.current.reset();
           instanceRef.current = null;
@@ -64,7 +60,6 @@ const Confetti = forwardRef<ConfettiRef, Props>((props, ref) => {
     [globalOptions],
   );
 
-  // `fire` is a function that calls the instance() with `opts` merged with `options`
   const fire = useCallback(
     (opts = {}) => instanceRef.current?.({ ...options, ...opts }),
     [options],
@@ -93,6 +88,8 @@ const Confetti = forwardRef<ConfettiRef, Props>((props, ref) => {
   );
 });
 
+Confetti.displayName = 'Confetti'; // Add this line
+
 interface ConfettiButtonProps extends ButtonProps {
   options?: ConfettiOptions &
     ConfettiGlobalOptions & { canvas?: HTMLCanvasElement };
@@ -119,6 +116,8 @@ function ConfettiButton({ options, children, ...props }: ConfettiButtonProps) {
     </Button>
   );
 }
+
+ConfettiButton.displayName = 'ConfettiButton'; // Add this line
 
 export { Confetti, ConfettiButton };
 

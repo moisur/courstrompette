@@ -481,13 +481,13 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               Êtes-vous sûr de vouloir partir ? <br />
               Si vous réservez maintenant, votre premier cours est GRATUIT !
             </p>
-            <ConfettiButton
+            <a
               href="#booking"
               className="block w-full bg-orange-500 text-white text-center font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
               onClick={() => setShowExitPopup(false)}
             >
               Rester et réserver mon cours
-            </ConfettiButton>
+            </a>
           </div>
         </div>
       )}
