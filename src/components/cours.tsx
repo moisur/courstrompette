@@ -131,12 +131,12 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-2/3 md:pr-8">
               <p className="text-lg mt-6">
-                <h3 className="text-2xl font-semibold mb-4">Pratique Stagnante</h3>
+                <p className="text-2xl font-semibold mb-4">Pratique Stagnante</p>
                 <p className="text-lg mb-4" >
                     Malgré des heures de pratique, vous constatez peu ou pas de progrès dans votre jeu de trompette.
                 </p>
  
-                <h3 className="text-2xl font-semibold mb-4">Confusion Technique</h3>
+                <p className="text-2xl font-semibold mb-4">Confusion Technique</p>
                 <p className="text-lg">
                     Les embouchures, les gammes et les doigtés semblent être en langage codé, difficile à décrypter.
                 </p>
@@ -249,8 +249,8 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
       <section id="who-am-i" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          Après avoir enseigné les mathématiques       <span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-          pendant plus de 15 ans...   </span>
+          La méthode Z2G<span className="pl-2 bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+          est redoutable</span>
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
@@ -373,7 +373,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
             </Card>
             <Card>
               <CardContent className="p-6">
-                <p className="italic mb-4">"À 40 ans, je pensais que c'était trop tard. JC m'a prouvé le contraire. En 90 jours, je jouais déjà mes premiers morceaux ! ! !"</p>
+                <p className="italic mb-4">"À 40 ans, je pensais que c'était trop tard. JC m'a prouvé le contraire. En 10 séances, je jouais déjà mes premiers morceaux ! ! !"</p>
                 <p className="font-semibold">Thomas M., 41 ans - A surmonté ses doutes et brille sur scène</p>
               </CardContent>
             </Card>
@@ -391,7 +391,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
 
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-8">Ma Garantie "Satisfaction ou Remboursé"</h2>
-          <p className="text-xl mb-8">Si vous ne jouez pas votre premier morceau complet en 90 jours, je vous rembourse intégralement, sans discuter.</p>
+          <p className="text-xl mb-8">Si vous ne jouez pas votre premier morceau complet en 10 séances, je vous rembourse intégralement, sans discuter.</p>
           <a href="#booking" className="inline-block bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300">
             Réservez Votre Cours Gratuit
           </a>
