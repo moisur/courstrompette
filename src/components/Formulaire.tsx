@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { useForm, ValidationError } from '@formspree/react';
+import { ConfettiButton } from "@/components/magicui/confetti";
 
 const Formulaire: React.FC = () => {
   const [state, handleSubmit] = useForm("xdkngnbl");
@@ -76,13 +77,13 @@ const Formulaire: React.FC = () => {
             />
             <ValidationError prefix="Message" field="message" errors={state.errors} />
           </div>
-          <button
+          <ConfettiButton
             type="submit"
             className="w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
             disabled={state.submitting}
           >
             Réserver Mon Cours Gratuit
-          </button>
+          </ConfettiButton>
         </form>
       </div>
     </section>

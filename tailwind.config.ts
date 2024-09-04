@@ -1,16 +1,16 @@
 import type { Config } from "tailwindcss"
 
-const config: Config = {
+const config = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-  ],
+	],
   prefix: "",
   theme: {
-    container: {  
+    container: {
       center: true,
       padding: "2rem",
       screens: {
@@ -67,19 +67,14 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "background-position-spin": {
-          "0%": { backgroundPosition: "top center" },
-          "100%": { backgroundPosition: "bottom center" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "background-position-spin": "background-position-spin 5s linear infinite", // Change the animation definition here
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+} satisfies Config
 
 export default config

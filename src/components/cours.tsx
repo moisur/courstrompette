@@ -16,8 +16,7 @@ import Puissance from './Puissance'
 import Image from 'next/image';
 import questionImage from '../../public/1.jpg'
 import profMat from '@/../public/2.jpg'
-
-import jc from '@/../public/jc.jpg'
+import { ConfettiButton } from "@/components/magicui/confetti";
 import jc1 from "@/../public/jc.jpg"
 import pkoi from '@/../public/3.jpeg'
 import ze from '@/../public/ZE.webp'
@@ -130,7 +129,6 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-2/3 md:pr-8">
-              <p className="text-lg mt-6">
                 <p className="text-2xl font-semibold mb-4">Pratique Stagnante</p>
                 <p className="text-lg mb-4" >
                     Malgré des heures de pratique, vous constatez peu ou pas de progrès dans votre jeu de trompette.
@@ -146,7 +144,6 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
 
                 Mon approche couvre tout, du rythme à l'improvisation, en passant par la maîtrise des graves et des aigus, l'écoute, la lecture de partition et bien plus encore. <br /><br />
                 Vous n'avez plus à vous perdre dans les détails techniques, je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.
-              </p>
             </div>
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
               <Image
@@ -484,13 +481,13 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               Êtes-vous sûr de vouloir partir ? <br />
               Si vous réservez maintenant, votre premier cours est GRATUIT !
             </p>
-            <a
+            <ConfettiButton
               href="#booking"
               className="block w-full bg-orange-500 text-white text-center font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
               onClick={() => setShowExitPopup(false)}
             >
               Rester et réserver mon cours
-            </a>
+            </ConfettiButton>
           </div>
         </div>
       )}
