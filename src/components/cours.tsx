@@ -15,16 +15,18 @@ import Footer from './Footer'
 import Puissance from './Puissance'
 import Image from 'next/image';
 import questionImage from '../../public/1.jpg'
+import TrumpetPricingPage from './TrumpetPricingPage'
 import profMat from '@/../public/2.jpg'
 import { ConfettiButton } from "@/components/magicui/confetti";
 import jc1 from "@/../public/jc.jpg"
 import pkoi from '@/../public/3.jpeg'
 import ze from '@/../public/ZE.webp'
-
+import Link from 'next/link';
+import Header from './Header'
 export default function Cours() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showPopup, setShowPopup] = useState(false)
   const [showExitPopup, setShowExitPopup] = useState(false)
+  const [hasShownExitPopup, setHasShownExitPopup] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -32,43 +34,24 @@ export default function Cours() {
     }, 20000)
 
     const handleMouseLeave = (event: MouseEvent) => {
-      // Trigger popup only when the mouse leaves the top of the window
-      if (event.clientY <= 0) {
-        setShowExitPopup(true);
+      if (event.clientY <= 0 && !hasShownExitPopup) {
+        setShowExitPopup(true)
+        setHasShownExitPopup(true)
       }
-    };
+    }
 
-    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseleave', handleMouseLeave)
 
     return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
+      clearTimeout(timer)
+      document.removeEventListener('mouseleave', handleMouseLeave)
+    }
+  }, [hasShownExitPopup])
 
 
   return (
     <div className="font-sans text-gray-800">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white bg-opacity-95 shadow-md">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="#" className="pl-2 font-bold text-2xl bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-
-            
-            JC Trompette</a>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <ul className={`md:flex ${isMenuOpen ? 'block' : 'hidden'} absolute md:relative top-full left-0 right-0 bg-white md:bg-transparent`}>
-            <li><a href="#about" className="block px-4 py-2 hover:text-orange-500">À propos</a></li>
-            <li><a href="#method" className="block px-4 py-2 hover:text-orange-500">La méthode JC</a></li>
-            <li><a href="#testimonials" className="block px-4 py-2 hover:text-orange-500">Témoignages</a></li>
-            <li><a href="#faq" className="block px-4 py-2 hover:text-orange-500">FAQ</a></li>
-            <li><a href="#contact" className="block px-4 py-2 hover:text-orange-500">Contact</a></li>
-          </ul>
-        </div>
-      </nav>
-
+      <Header />
       <header className="relative min-h-screen flex items-center justify-center text-white text-center px-4 pt-16">
         <Carousel className="w-full h-full absolute top-0 left-0" opts={{ loop: true }}>
           <CarouselContent>
@@ -411,7 +394,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
         <AnimatedListDemo />
       </div>
     </div>
-
+    <TrumpetPricingPage />
       <Formulaire />
 
       <section id="faq" className="py-20">
@@ -444,7 +427,6 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           </Accordion>
         </div>
       </section>
-
 
       <Footer />
       <div
