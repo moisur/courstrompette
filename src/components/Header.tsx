@@ -82,7 +82,7 @@ export default function Header() {
                       {category.name}
                     </Link>
                     {activeCategory === category.slug && (
-                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-md py-2 ml-2">
+                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-md py-2 ">
                         {category.posts.map((post) => (
                           <li key={post.slug}>
                             <Link href={`/blog/${post.slug}`} className="block px-4 py-2 hover:bg-gray-100">

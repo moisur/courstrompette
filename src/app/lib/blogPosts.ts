@@ -9,10 +9,20 @@ export const blogCategories: BlogCategory[] = [
         slug: 'choisir-trompette',
         title: 'Choisir sa trompette : Guide complet',
         date: '2023-05-28',
+      },      
+      {
+        slug: 'notes-aigues',
+        title: 'Atteindre les notes aigues',
+        date: '2023-01-28',
       },
       {
         slug: 'entretien-trompette',
         title: 'Entretenir sa Trompette : Conseils pour un Instrument Brillant',
+        date: '2023-05-30',
+      },      
+      {
+        slug: 'lexique-trompette',
+        title: 'Lexique Trompette : Quel est notre champ Lexical ?',
         date: '2023-05-30',
       },
       {
@@ -28,6 +38,11 @@ export const blogCategories: BlogCategory[] = [
       {
         slug: 'trompette-premiers-pas',
         title: 'Premiers Pas à la Trompette : Apprenez à Jouer !',
+        date: '2023-06-14',
+      },
+      {
+        slug: 'piege-debutant',
+        title: 'Les pièges : Quels piège éviter quand on est débutant ?',
         date: '2023-06-14',
       },
     ]

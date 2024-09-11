@@ -8,6 +8,7 @@ import PiegeDebutant from '@/components/blog/Piegedebutant'
 import PostureTrompette from '@/components/blog/Posturetrompette'
 import RespirationArticulation from '@/components/blog/RespirationArticulation'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
+import NotesAiguesTrompette from '@/components/blog/Notesaigues'
 
 const articleComponents = {
   'choisir-trompette': ChoisirTrompette,
@@ -18,6 +19,7 @@ const articleComponents = {
   'posture-trompette': PostureTrompette,
   'respiration-articulation': RespirationArticulation,
   'trompette-premiers-pas': TrompettePremiersPas,
+  'notes-aigues' : NotesAiguesTrompette,
 }
 
 export default function ArticlePage({ params }: { params: { slug: string } }) {
