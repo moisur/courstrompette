@@ -12,7 +12,7 @@ export default function PremiersPasTrompette() {
       <h1 className="text-3xl font-bold mb-6">Premiers Pas à la Trompette : Apprenez à Jouer ! 🎺</h1>
 
       <Image
-        src="/trompette.jpg"
+        src="/debutant.jpg"
         alt="Un trompettiste débutant jouant une note"
         width={500}
         height={300}

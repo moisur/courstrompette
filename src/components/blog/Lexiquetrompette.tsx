@@ -36,14 +36,19 @@ export default function LexiqueTrompette() {
           </CardHeader>
           <CardContent>
             <p>Pièce en métal placée contre les lèvres pour produire le son. Il existe différentes tailles et formes d'embouchures, adaptées aux lèvres et au niveau du trompettiste.</p>
-            <Image
-              src="https://m.media-amazon.com/images/I/61zOmTG92EL._AC_SY879_.jpg?height=200&width=200"
-              alt="Une embouchure de trompette"
-              width={200}
-              height={100}
-              layout="responsive"
-              className="rounded-lg mt-4"
-            />
+            <div className="relative w-10 p-[50%]   rounded-lg">
+              <Image
+                src="/embouchure.jpg"
+                alt="Une embouchure de trompette"
+                fill
+                style={{ 
+                  objectFit: 'cover',
+                  objectPosition: 'top '
+                }}
+                className="rounded-lg"
+              />
+            </div>
+
           </CardContent>
         </Card>
 
