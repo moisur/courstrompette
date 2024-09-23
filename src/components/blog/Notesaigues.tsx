@@ -14,7 +14,7 @@ export default function NotesAiguës() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/images/trompettiste.jpg"
+            src="/aigu.jpg"
             alt="Trompettiste jouant des notes aiguës"
             width={500}
             height={300}
@@ -37,7 +37,7 @@ export default function NotesAiguës() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/images/trompettiste-tension.jpg" 
+            src="/aigu2.webp" 
             alt="Trompettiste avec une expression tendue"
             width={500}
             height={300}
@@ -65,18 +65,7 @@ export default function NotesAiguës() {
         Le HFA se trouve entre tes dents supérieures et ta lèvre inférieure. Il est naturellement petit et ne nécessite pas de tension pour fonctionner. En ajustant légèrement la position de ta lèvre inférieure, tu peux contrôler la taille du HFA et ainsi changer la fréquence de vibration.
       </p>
 
-      <Card className="mb-6">
-        <CardContent className="p-0">
-          <Image
-            src="/images/trompettiste-hfa.jpg" 
-            alt="Trompettiste montrant la position du HFA"
-            width={500}
-            height={300}
-            layout="responsive"
-            className="rounded-t-lg"
-          />
-        </CardContent>
-      </Card>
+
 
       <h2 className="text-2xl font-bold mb-4">Jouer avec plus de facilité :</h2>
 

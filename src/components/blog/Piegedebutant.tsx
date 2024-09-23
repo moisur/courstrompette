@@ -11,7 +11,7 @@ export default function PiegesDebutant() {
       <h1 className="text-3xl font-bold mb-6">Déjouer les Pièges du Débutant à la Trompette 🎺</h1>
 
       <Image
-        src="https://img.freepik.com/free-photo/veteran-musician-playing-trumpet_150588-94.jpg?t=st=1727108492~exp=1727112092~hmac=d50cbd341daedece1cf4cf368431ad6ae28b42d0d67bfb297e0633a53cb1aea0&w=900"
+        src="/debutant.jpg"
         alt="Un trompettiste débutant rencontrant des difficultés"
         width={500}
         height={300}

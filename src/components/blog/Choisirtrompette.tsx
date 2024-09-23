@@ -116,7 +116,7 @@ export default function ChoisirTrompette() {
               pistons est généralement le meilleur choix.
             </p>
             <Image
-              src="/types-trompette.jpg"
+              src="https://m.media-amazon.com/images/I/61g4HpsAIKL.__AC_SY300_SX300_QL70_ML2_.jpg"
               alt="Différents types de trompettes"
               width={500}
               height={300}
@@ -153,7 +153,7 @@ export default function ChoisirTrompette() {
               </li>
             </ul>
             <Image
-              src="/marques-trompette.jpg"
+              src="https://m.media-amazon.com/images/I/61oytvMrPlL._AC_SX425_.jpg"
               alt="Marques de trompettes recommandées"
               width={500}
               height={300}

@@ -14,7 +14,7 @@ export default function MilesDavis() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/miles-davis.jpg"
+            src="/miles.jpg"
             alt="Miles Davis, un des plus grands trompettistes de jazz"
             width={500}
             height={300}
@@ -45,7 +45,7 @@ export default function MilesDavis() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/miles-davis-bebop.jpg"
+            src="/miles.jpg"
             alt="Miles Davis jouant du bebop"
             width={500}
             height={300}
@@ -66,18 +66,6 @@ export default function MilesDavis() {
         le jazz fusion dans les années 1960 et 1970.
       </p>
 
-      <Card className="mb-6">
-        <CardContent className="p-0">
-          <Image
-            src="/miles-davis-cool-jazz.jpg"
-            alt="Miles Davis jouant du cool jazz"
-            width={500}
-            height={300}
-            layout="responsive"
-            className="rounded-t-lg"
-          />
-        </CardContent>
-      </Card>
 
       <h2 className="text-2xl font-bold mb-4">Une influence indéniable</h2>
 

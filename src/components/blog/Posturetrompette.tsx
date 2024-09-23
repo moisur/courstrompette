@@ -13,7 +13,7 @@ export default function PostureTrompette() {
       <h1 className="text-3xl font-bold mb-6">Posture et Tenue de la Trompette : Jouer avec Confort et Précision 🎺</h1>
 
       <Image
-        src="/posture-trompette.jpg"
+        src="/posture.jpg"
         alt="Un trompettiste avec une posture correcte"
         width={500}
         height={300}

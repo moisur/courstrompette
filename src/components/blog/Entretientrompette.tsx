@@ -13,7 +13,7 @@ export default function EntretienTrompette() {
       <h1 className="text-3xl font-bold mb-6">Entretenir sa Trompette : Conseils pour un Instrument Brillant 🎺</h1>
 
       <Image
-        src="/entretien-trompette.jpg"
+        src="https://m.media-amazon.com/images/I/71m+vRS7I7L._AC_SL1500_.jpg"
         alt="Un trompettiste nettoyant sa trompette"
         width={500}
         height={300}

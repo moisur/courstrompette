@@ -11,7 +11,7 @@ export default function LexiqueTrompette() {
       <h1 className="text-3xl font-bold mb-6">Lexique du Trompettiste Débutant : Décryptage des Termes Essentiels 🎺</h1>
 
       <Image
-        src="/trompette-lexique.jpg"
+        src="/lexique.jpg"
         alt="Une trompette avec ses différentes parties"
         width={500}
         height={300}
@@ -37,7 +37,7 @@ export default function LexiqueTrompette() {
           <CardContent>
             <p>Pièce en métal placée contre les lèvres pour produire le son. Il existe différentes tailles et formes d'embouchures, adaptées aux lèvres et au niveau du trompettiste.</p>
             <Image
-              src="/embouchure-trompette.jpg"
+              src="https://m.media-amazon.com/images/I/61zOmTG92EL._AC_SY879_.jpg?height=200&width=200"
               alt="Une embouchure de trompette"
               width={200}
               height={100}
@@ -54,7 +54,7 @@ export default function LexiqueTrompette() {
           <CardContent>
             <p>Les trois valves de la trompette permettent de modifier la longueur du tube et donc la hauteur des notes. En pressant une ou plusieurs valves, vous changez la hauteur du son.</p>
             <Image
-              src="/valves-trompette.jpg"
+              src="/valves.jpg"
               alt="Les valves d'une trompette"
               width={200}
               height={100}
@@ -71,7 +71,7 @@ export default function LexiqueTrompette() {
           <CardContent>
             <p>Le tube principal de la trompette, qui est parcouru par l'air. Il existe différentes longueurs de corps de trompette, ce qui influence la hauteur du son.</p>
             <Image
-              src="/corps-trompette.jpg"
+              src="/corps.jpg"
               alt="Le corps d'une trompette"
               width={200}
               height={100}
@@ -88,7 +88,7 @@ export default function LexiqueTrompette() {
           <CardContent>
             <p>L'extrémité évasée de la trompette, qui amplifie le son. La forme du pavillon influence le timbre du son.</p>
             <Image
-              src="/pavillon-trompette.jpg"
+              src="/pavillon.jpg"
               alt="Le pavillon d'une trompette"
               width={200}
               height={100}
