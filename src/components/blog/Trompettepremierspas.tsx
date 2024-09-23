@@ -5,7 +5,7 @@
 
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-
+import AccessoiresTrompette from './AccessoireRecommandes';
 export default function PremiersPasTrompette() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -126,6 +126,7 @@ export default function PremiersPasTrompette() {
       <p>
         <strong>N'oubliez pas:</strong> La pratique est la clé du succès !  
       </p>
+      <AccessoiresTrompette />
     </article>
   );
 }

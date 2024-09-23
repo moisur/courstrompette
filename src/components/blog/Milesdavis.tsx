@@ -4,6 +4,7 @@
 
 import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card"
+import AccessoiresTrompette from './AccessoireRecommandes';
 
 export default function MilesDavis() {
   return (
@@ -137,6 +138,8 @@ export default function MilesDavis() {
         musiques. Vous découvrirez un univers musical riche et
         fascinant!</strong>
       </p>
+      <AccessoiresTrompette />
     </article>
+    
   );
 }

@@ -5,6 +5,7 @@
 
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import AccessoiresTrompette from './AccessoireRecommandes';
 
 export default function EntretienTrompette() {
   return (
@@ -107,6 +108,8 @@ export default function EntretienTrompette() {
         des questions spécifiques ou si vous rencontrez des
         problèmes avec l'entretien de votre instrument.</strong>
       </p>
+      <AccessoiresTrompette />
+
     </article>
   );
 }

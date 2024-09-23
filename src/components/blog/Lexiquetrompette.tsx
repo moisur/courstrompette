@@ -4,7 +4,7 @@
 
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
+import AccessoiresTrompette from './AccessoireRecommandes';
 export default function LexiqueTrompette() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -128,6 +128,8 @@ export default function LexiqueTrompette() {
         vous découvrirez de nouveaux termes et de nouvelles
         techniques.</strong>
       </p>
+      <AccessoiresTrompette />
     </article>
+    
   );
 }

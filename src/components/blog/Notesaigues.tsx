@@ -5,7 +5,7 @@
 import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'; // Importer Link
-
+import AccessoiresTrompette from './AccessoireRecommandes';
 export default function NotesAiguës() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -93,6 +93,8 @@ export default function NotesAiguës() {
       <Link href="/trompette-guide-debutant" className="button">
         Découvrez le guide complet pour les débutants
       </Link>
+      <AccessoiresTrompette />
+
     </article>
   );
 }

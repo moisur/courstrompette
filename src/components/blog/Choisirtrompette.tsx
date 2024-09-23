@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
+import Link from 'next/link'
+import AccessoiresTrompette from './AccessoireRecommandes';
 
 export default function ChoisirTrompette() {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function ChoisirTrompette() {
       <Card className="mb-8">
         <CardContent className="p-0">
           <Image
-            src="/trompette-debutant.jpg"
+            src="https://m.media-amazon.com/images/I/51N37m6MAIL._AC_SL1200_.jpg"
             alt="Une trompette idéale pour les débutants"
             width={800}
             height={480}
@@ -171,7 +173,11 @@ export default function ChoisirTrompette() {
             <ul className="list-disc pl-6 mb-4">
               <li className="mb-2">
                 <strong>Une embouchure:</strong> Choisissez une embouchure
-                adaptée à la taille de vos lèvres et à votre niveau.
+                adaptée à la taille de vos lèvres et à votre niveau. Par exemple, une{' '}
+                <Link href="https://amzn.to/3TGm4kR" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  embouchure de trompette 1 1/2 C
+                </Link>{' '}
+                est un bon choix pour de nombreux débutants.
               </li>
               <li className="mb-2">
                 <strong>Une huile pour valves:</strong> Pour lubrifier les
@@ -197,7 +203,6 @@ export default function ChoisirTrompette() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-
       <h2 className="text-2xl font-bold mt-8 mb-4">Conclusion:</h2>
       <p className="mb-4">
         Choisir sa première trompette peut sembler un défi, mais avec ce guide
@@ -205,12 +210,16 @@ export default function ChoisirTrompette() {
         questions à un professionnel et à prendre le temps d'essayer plusieurs
         modèles pour trouver l'instrument idéal pour votre voyage musical.
       </p>
-      <p>
+      <p className="mb-8">
         <strong>N'oubliez pas:</strong> Un bon instrument et un bon
         professeur sont les clés d'une expérience d'apprentissage
         enrichissante et motivante. Bienvenue dans le monde de la
         trompette !
       </p>
-    </article>
+
+      <AccessoiresTrompette />
+
+
+   </article>
   );
 }

@@ -4,6 +4,7 @@
 
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import AccessoiresTrompette from './AccessoireRecommandes';
 
 export default function RespirationArticulation() {
   return (
@@ -119,6 +120,7 @@ export default function RespirationArticulation() {
         enrichissante et motivante. Bienvenue dans le monde de la
         trompette !
       </p>
+      <AccessoiresTrompette />
     </article>
   );
 }

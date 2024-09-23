@@ -6,7 +6,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-
+import AccessoiresTrompette from './AccessoireRecommandes';
 export default function PostureTrompette() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -118,6 +118,7 @@ export default function PostureTrompette() {
         peut vous aider à corriger vos erreurs et à améliorer votre
         technique.</strong>
       </p>
+      <AccessoiresTrompette /> 
     </article>
   );
 }
