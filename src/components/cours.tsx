@@ -23,6 +23,7 @@ import pkoi from '@/../public/3.jpeg'
 import ze from '@/../public/ZE.webp'
 import Link from 'next/link';
 import Header from './Header'
+import AccessoiresTrompette from './blog/AccessoireRecommandes'
 export default function Cours() {
   const [showPopup, setShowPopup] = useState(false)
   const [showExitPopup, setShowExitPopup] = useState(false)
@@ -395,7 +396,8 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
       </div>
     </div>
     <TrumpetPricingPage />
-      <Formulaire />
+    <AccessoiresTrompette />
+    <Formulaire />
 
       <section id="faq" className="py-20">
         <div className="container mx-auto px-4">
