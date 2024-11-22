@@ -3,9 +3,8 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Play, Pause, Save, Volume2, VolumeX } from 'lucide-react';
-import { Vex, Flow } from 'vexflow';
+import * as Vex from 'vexflow';
 
 // Type definitions
 interface Piston {
@@ -31,6 +30,12 @@ interface Favorite {
   startOctave: number;
   tempo: number;
 }
+
+interface Stave {
+  name: string;
+  notes: string[];
+}
+
 
 // Constants
 const PISTONS: Piston = {
@@ -94,23 +99,6 @@ const EXERCISE_PATTERNS: ExercisePattern = {
       result.push(quinte, tonale, quinte, octave);
     }
     return result;
-  },
-  'Exercice 1': (scale) => [scale[0], scale[1], scale[2], scale[4], scale[1], scale[0]],
-  'Exercice 2': (scale) => [scale[2], scale[1], scale[0], scale[5], scale[0], scale[1], scale[2]],
-  'Exercice 3': (scale) => {
-    const flatThird = scale[2].replace(/[0-9]/, (octave) => (parseInt(octave) - 1).toString());
-    return [scale[0], scale[4], scale[3], flatThird, scale[2]];
-  },
-  'Exercice 4': (scale) => [scale[2], scale[4], scale[1], scale[4], scale[0]],
-  'Exercice 5': (scale) => [
-    scale[1], scale[0], scale[1], scale[0],
-    scale[5], scale[4], scale[5], scale[4],
-    scale[2], scale[1], scale[2], scale[1]
-  ],
-  'Blues Pattern': (scale) => [scale[4], scale[2], scale[0], scale[1], scale[0]],
-  'Bebop Pattern': (scale) => {
-    const flatSeventh = scale[5].replace(/[0-9]/, (octave) => (parseInt(octave) - 1).toString());
-    return [scale[0], scale[6], flatSeventh, scale[1], scale[5], scale[4]];
   }
 };
 
@@ -119,16 +107,6 @@ const INSTRUMENTS: { [key: string]: number } = {
   'Saxophone Alto (Mib)': -9,
   'Instrument en Do': 0,
 };
-
-const DIFFICULT_EXERCISES = [
-  'Exercice 1',
-  'Exercice 2',
-  'Exercice 3',
-  'Exercice 4',
-  'Exercice 5',
-  'Blues Pattern',
-  'Bebop Pattern'
-];
 
 // Sub-components
 const NotationView: React.FC<{ notes: string[]; activeNoteIndex: number }> = ({ notes, activeNoteIndex }) => {
@@ -140,39 +118,72 @@ const NotationView: React.FC<{ notes: string[]; activeNoteIndex: number }> = ({ 
     containerRef.current.innerHTML = '';
 
     const VF = Vex.Flow;
+    
+    // Calculate dimensions
+    const measuresCount = Math.ceil(notes.length / 4);
+    const width = Math.max(600, measuresCount * 250); // 250px per measure
+    const height = 150;
+
     const renderer = new VF.Renderer(containerRef.current, VF.Renderer.Backends.SVG);
-
-    renderer.resize(600, 150);
+    renderer.resize(width, height);
     const context = renderer.getContext();
-    context.setFont('Arial', 10, '');
+    context.setFont('Arial', 10, 400).setBackgroundFillStyle('#eed');
 
-    const stave = new VF.Stave(10, 40, 580);
-    stave.addClef('treble').setContext(context).draw();
+    const staves: Vex.Flow.Stave[] = [];
 
-    const vexNotes = notes.map((note, idx) => {
-      const noteName = note.replace(/[0-9]/, '').replace('#', '#');
-      const octave = note.match(/[0-9]/)?.[0] || '4';
-      const vexNote = new Flow.StaveNote({ clef: "treble", keys: [`${noteName}/${octave}`], duration: "q" });
+    const voices: Vex.Flow.Voice[] = [];
 
-      if (idx === activeNoteIndex) {
-        vexNote.setStyle({ fillStyle: "#2196f3", strokeStyle: "#2196f3" });
+    for (let i = 0; i < measuresCount; i++) {
+      const stave = new VF.Stave(i * 250, 0, 250);
+      if (i === 0) {
+        stave.addClef('treble').addTimeSignature('4/4');
+      }
+      stave.setContext(context).draw();
+      staves.push(stave);
+
+      const measureNotes = notes.slice(i * 4, (i + 1) * 4);
+      const vexNotes = measureNotes.map((note, idx) => {
+        const globalIdx = i * 4 + idx;
+        const noteName = note.replace(/[0-9]/, '').replace('#', '#');
+        const octave = note.match(/[0-9]/)?.[0] || '4';
+        const vexNote = new VF.StaveNote({ clef: "treble", keys: [`${noteName}/${octave}`], duration: "q" });
+
+        if (globalIdx === activeNoteIndex) {
+          vexNote.setStyle({ fillStyle: "#2196f3", strokeStyle: "#2196f3" });
+        }
+
+        if (noteName.includes('#')) {
+          vexNote.addModifier(new VF.Accidental("#"));
+        }
+        return vexNote;
+      });
+
+      // Pad with rests if necessary
+      while (vexNotes.length < 4) {
+        vexNotes.push(new VF.StaveNote({ clef: "treble", keys: ["b/4"], duration: "qr" }));
       }
 
-      if (noteName.includes('#')) {
-        vexNote.addModifier(new Flow.Accidental("#"));
-      }
-      return vexNote;
+      const voice = new VF.Voice({ num_beats: 4, beat_value: 4 });
+      voice.addTickables(vexNotes);
+      voices.push(voice);
+    }
+
+    const formatter = new VF.Formatter();
+    voices.forEach((voice, i) => {
+      formatter.joinVoices([voice]);
+      formatter.formatToStave([voice], staves[i]);
     });
 
-    const voice = new Flow.Voice({ num_beats: notes.length, beat_value: 4 });
-    voice.addTickables(vexNotes);
-    new Flow.Formatter().joinVoices([voice]).format([voice], 550);
-    voice.draw(context, stave);
+    voices.forEach((voice, i) => {
+      voice.draw(context, staves[i]);
+    });
 
   }, [notes, activeNoteIndex]);
 
   return <div ref={containerRef} className="w-full overflow-x-auto" />;
 };
+
+
 
 const Metronome: React.FC<{
   tempo: number;
@@ -256,7 +267,7 @@ const ToneGenerator: React.FC<{ note: string; isPlaying: boolean; volume: number
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
 
-  const noteToFrequency = (note: string): number => {
+  const noteToFrequency = useCallback((note: string): number => {
     const A4 = 440;
     const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const octave = parseInt(note.match(/\d+/)?.[0] || '4', 10);
@@ -264,7 +275,7 @@ const ToneGenerator: React.FC<{ note: string; isPlaying: boolean; volume: number
     const semitonesFromA4 = noteNames.indexOf(noteName) - noteNames.indexOf('A') + (octave - 4) * 12;
     const transposedSemitones = semitonesFromA4 + (INSTRUMENTS[selectedInstrument] || 0);
     return A4 * Math.pow(2, transposedSemitones / 12);
-  };
+  }, [selectedInstrument]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -294,7 +305,7 @@ const ToneGenerator: React.FC<{ note: string; isPlaying: boolean; volume: number
         oscillatorRef.current.disconnect();
       }
     };
-  }, [isPlaying, note, volume, selectedInstrument]);
+  }, [isPlaying, note, volume, selectedInstrument, noteToFrequency]);
 
   return null;
 };
@@ -310,14 +321,20 @@ const ScalePractice: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.1);
   const [isMuted, setIsMuted] = useState(false);
-  const [favorites, setFavorites] = useState<Favorite[]>(() => JSON.parse(localStorage.getItem('scalesFavorites') || '[]')
-  );
+  const [favorites, setFavorites] = useState<Favorite[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('scalesFavorites');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+
   const [selectedInstrument, setSelectedInstrument] = useState('Trompette (Sib)');
-  const [activeTab, setActiveTab] = useState('all');
 
   const generateScale = useMemo(() => {
     const rootIndex = CHROMATIC_NOTES.indexOf(rootNote);
     
+    // Generate a chromatic scale starting from the root note, spanning two octaves
     const chromaticScale = Array.from({ length: 24 }, (_, i) => {
       const noteIndex = (rootIndex + i) % 12;
       const octaveShift = Math.floor((rootIndex + i) / 12);
@@ -325,10 +342,15 @@ const ScalePractice: React.FC = () => {
       return `${note}${startOctave + octaveShift}`;
     });
 
-    const pattern = SCALE_PATTERNS[scaleType];
-    const scale = pattern.map(interval => chromaticScale[interval]);
+    if (exerciseType === 'Quinte-Tonale-Quinte-Octave') {
+      return EXERCISE_PATTERNS[exerciseType](chromaticScale);
+    }
 
-    return EXERCISE_PATTERNS[exerciseType](scale);
+    // For other exercise types, use the original scale generation logic
+    const pattern = SCALE_PATTERNS[scaleType];
+    return EXERCISE_PATTERNS[exerciseType](
+      pattern.map(interval => chromaticScale[interval])
+    );
   }, [rootNote, scaleType, startOctave, exerciseType]);
 
   const handleNext = useCallback(() => {
@@ -353,7 +375,9 @@ const ScalePractice: React.FC = () => {
     };
     const newFavorites = [...favorites, newFavorite];
     setFavorites(newFavorites);
-    localStorage.setItem('scalesFavorites', JSON.stringify(newFavorites));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('scalesFavorites', JSON.stringify(newFavorites));
+    }
   };
 
   const loadFavorite = (favorite: Favorite) => {
@@ -365,206 +389,191 @@ const ScalePractice: React.FC = () => {
     setActiveNoteIndex(0);
   };
 
-  const renderExerciseContent = () => (
-    <div className="space-y-6">
-      <div className="flex gap-4 flex-wrap">
-        <div>
-          <label className="block text-sm font-medium mb-2">Tonalité</label>
-          <select 
-            value={rootNote}
-            onChange={(e) => {
-              setRootNote(e.target.value);
-              setActiveNoteIndex(0);
-            }}
-            className="px-3 py-2 border rounded"
-          >
-            {CHROMATIC_NOTES.map(note => (
-              <option key={note} value={note}>
-                {NOTE_NAMES[note]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Type de gamme</label>
-          <select 
-            value={scaleType}
-            onChange={(e) => {
-              setScaleType(e.target.value);
-              setActiveNoteIndex(0);
-            }}
-            className="px-3 py-2 border rounded"
-          >
-            {Object.keys(SCALE_PATTERNS).map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Type d&apos;exercice</label>
-          <select 
-            value={exerciseType}
-            onChange={(e) => {
-              setExerciseType(e.target.value);
-              setActiveNoteIndex(0);
-            }}
-            className="px-3 py-2 border rounded"
-          >
-            {(activeTab === 'all' ? Object.keys(EXERCISE_PATTERNS) : DIFFICULT_EXERCISES).map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Octave de départ</label>
-          <select 
-            value={startOctave}
-            onChange={(e) => {
-              setStartOctave(Number(e.target.value));
-              setActiveNoteIndex(0);
-            }}
-            className="px-3 py-2 border rounded"
-          >
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
-            <option value={6}>6</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="instrument-select" className="block text-sm font-medium mb-2">Instrument</label>
-          <select 
-            id="instrument-select"
-            value={selectedInstrument}
-            onChange={(e) => setSelectedInstrument(e.target.value)}
-            className="px-3 py-2 border rounded"
-          >
-            {Object.keys(INSTRUMENTS).map(instrument => (
-              <option key={instrument} value={instrument}>{instrument}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="border rounded-lg p-4 bg-gray-50">
-        <NotationView 
-          notes={generateScale} 
-          activeNoteIndex={activeNoteIndex} 
-        />
-      </div>
-
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <Metronome 
-          tempo={tempo} 
-          setTempo={setTempo}
-          isPlaying={isPlaying}
-          setIsPlaying={setIsPlaying}
-        />
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={() => setIsMuted(!isMuted)}
-            className="p-2 rounded bg-gray-200 hover:bg-gray-300"
-            title={isMuted ? "Activer le son" : "Couper le son"}
-          >
-            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </Button>
-          <div className="flex flex-col gap-1">
-            <input
-              type="range"
-              min="0"
-              max="0.5"
-              step="0.01"
-              value={volume}
-              onChange={(e) => setVolume(Number(e.target.value))}
-              className="w-24"
-              title="Volume"
-            />
-            <span className="text-xs text-gray-500 text-center">
-              Volume: {Math.round(volume * 200)}%
-            </span>
-          </div>
-          <Button
-            onClick={saveFavorite}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-2"
-            title="Sauvegarder dans les favoris"
-          >
-            <Save size={20} />
-            Sauvegarder
-          </Button>
-        </div>
-      </div>
-
-      {favorites.length > 0 && (
-        <div className="border rounded p-4 bg-gray-50">
-          <h3 className="font-medium mb-2">Favoris</h3>
-          <div className="flex gap-2 flex-wrap">
-            {favorites.map((fav, idx) => (
-              <Button
-                key={idx}
-                onClick={() => loadFavorite(fav)}
-                className="px-3 py-1 bg-white text-color-primary border rounded hover:bg-gray-100 text-sm"
-              >
-                {NOTE_NAMES[fav.rootNote]} {fav.scaleType} - {fav.exerciseType}
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
-      
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {generateScale.map((note, idx) => (
-          <Note key={idx} note={note} isActive={idx === activeNoteIndex} />
-        ))}
-      </div>
-
-      <ToneGenerator 
-        note={generateScale[activeNoteIndex]} 
-        isPlaying={isPlaying && !isMuted} 
-        volume={volume}
-        selectedInstrument={selectedInstrument}
-      />
-      
-      <div className="flex gap-4">
-        <Button
-          onClick={() => {
-            setActiveNoteIndex(0);
-            setIsPlaying(false);
-          }}
-          className="flex-1 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Réinitialiser
-        </Button>
-        <Button
-          onClick={handleNext}
-          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Note Suivante
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
     <Card className="w-full max-w-4xl mx-auto px-4 py-20">
       <CardHeader>
         <CardTitle>Générateur de Gammes - Trompette</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="all" onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="all">Tous les exercices</TabsTrigger>
-            <TabsTrigger value="difficult">Exercices difficiles</TabsTrigger>
-          </TabsList>
-          <TabsContent value="all">
-            {renderExerciseContent()}
-          </TabsContent>
-          <TabsContent value="difficult">
-            {renderExerciseContent()}
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-6">
+          <div className="flex gap-4 flex-wrap">
+            <div>
+              <label className="block text-sm font-medium mb-2">Tonalité</label>
+              <select 
+                value={rootNote}
+                onChange={(e) => {
+                  setRootNote(e.target.value);
+                  setActiveNoteIndex(0);
+                }}
+                className="px-3 py-2 border rounded"
+              >
+                {CHROMATIC_NOTES.map(note => (
+                  <option key={note} value={note}>
+                    {NOTE_NAMES[note]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Type de gamme</label>
+              <select 
+                value={scaleType}
+                onChange={(e) => {
+                  setScaleType(e.target.value);
+                  setActiveNoteIndex(0);
+                }}
+                className="px-3 py-2 border rounded"
+              >
+                {Object.keys(SCALE_PATTERNS).map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Type d&apos;exercice</label>
+              <select 
+                value={exerciseType}
+                onChange={(e) => {
+                  setExerciseType(e.target.value);
+                  setActiveNoteIndex(0);
+                }}
+                className="px-3 py-2 border rounded"
+              >
+                {Object.keys(EXERCISE_PATTERNS).map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Octave de départ</label>
+              <select 
+                value={startOctave}
+                onChange={(e) => {
+                  setStartOctave(Number(e.target.value));
+                  setActiveNoteIndex(0);
+                }}
+                className="px-3 py-2 border rounded"
+              >
+                <option value={3}>3</option>
+                <option value={4}>4</option>
+                <option value={5}>5</option>
+                <option value={6}>6</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="instrument-select" className="block text-sm font-medium mb-2">Instrument</label>
+              <select 
+                id="instrument-select"
+                value={selectedInstrument}
+                onChange={(e) => setSelectedInstrument(e.target.value)}
+                className="px-3 py-2 border rounded"
+              >
+                {Object.keys(INSTRUMENTS).map(instrument => (
+                  <option key={instrument} value={instrument}>{instrument}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="border rounded-lg p-4 bg-gray-50">
+            <NotationView 
+              notes={generateScale} 
+              activeNoteIndex={activeNoteIndex} 
+            />
+          </div>
+
+          <div className="flex justify-between items-center flex-wrap gap-4">
+            <Metronome 
+              tempo={tempo} 
+              setTempo={setTempo}
+              isPlaying={isPlaying}
+              setIsPlaying={setIsPlaying}
+            />
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={() => setIsMuted(!isMuted)}
+                className="p-2 rounded bg-gray-200 hover:bg-gray-300"
+                title={isMuted ? "Activer le son" : "Couper le son"}
+              >
+                {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </Button>
+              <div className="flex flex-col gap-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="0.5"
+                  step="0.01"
+                  value={volume}
+                  onChange={(e) => setVolume(Number(e.target.value))}
+                  className="w-24"
+                  title="Volume"
+                />
+                <span className="text-xs text-gray-500 text-center">
+                  Volume: {Math.round(volume * 200)}%
+                </span>
+              </div>
+              <Button
+                onClick={saveFavorite}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-2"
+                title="Sauvegarder dans les favoris"
+              >
+                <Save size={20} />
+                Sauvegarder
+              </Button>
+            </div>
+          </div>
+
+          {favorites.length > 0 && (
+            <div className="border rounded p-4 bg-gray-50">
+              <h3 className="font-medium mb-2">Favoris</h3>
+              <div className="flex gap-2 flex-wrap">
+                {favorites.map((fav, idx) => (
+                  <Button
+                    key={idx}
+                    onClick={() => loadFavorite(fav)}
+                    className="px-3 py-1 bg-white text-color-primary border rounded hover:bg-gray-100 text-sm"
+                  >
+                    {NOTE_NAMES[fav.rootNote]} {fav.scaleType} - {fav.exerciseType}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {generateScale.map((note, idx) => (
+              <Note key={idx} note={note} isActive={idx === activeNoteIndex} />
+            ))}
+          </div>
+
+          <ToneGenerator 
+            note={generateScale[activeNoteIndex]} 
+            isPlaying={isPlaying && !isMuted} 
+            volume={volume}
+            selectedInstrument={selectedInstrument}
+          />
+          
+          <div className="flex gap-4">
+            <Button
+              onClick={() => {
+                setActiveNoteIndex(0);
+                setIsPlaying(false);
+              }}
+              className="flex-1 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+              Réinitialiser
+            </Button>
+            <Button
+              onClick={handleNext}
+              className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Note Suivante
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
