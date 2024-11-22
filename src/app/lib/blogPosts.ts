@@ -6,13 +6,23 @@ export const blogCategories: BlogCategory[] = [
     slug: "guide-apprentissage",
     posts: [
       {
+        slug: 'cours-trompette-debutant-paris',
+        title: 'Cours de trompette pour débutants à Paris',
+        date: '2024-11-22',
+      },   
+      {
+        slug: 'apprendre-trompette-paris',
+        title: 'Apprendre la trompette à Paris',
+        date: '2024-11-14',
+      },    
+      {
         slug: 'choisir-trompette',
         title: 'Choisir sa trompette : Guide complet',
         date: '2023-05-28',
       },         
       {
         slug: 'apprendre-trompette',
-        title: 'Apprendre la trompette à Paris',
+        title: 'Apprendre la trompette : Le Guide Complet pour Débutants et Confirmés',
         date: '2023-05-28',
       },      
       {

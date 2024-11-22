@@ -10,7 +10,9 @@ import PostureTrompette from '@/components/blog/Posturetrompette'
 import RespirationArticulation from '@/components/blog/RespirationArticulation'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
 import NotesAiguesTrompette from '@/components/blog/Notesaigues'
-import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompette'
+import ApprendreTrompette from '@/components/blog/ApprendreTrompette'
+import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
+import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
 
 const articleComponents: { [key: string]: React.ComponentType } = {
   'choisir-trompette': ChoisirTrompette,
@@ -22,7 +24,9 @@ const articleComponents: { [key: string]: React.ComponentType } = {
   'respiration-articulation': RespirationArticulation,
   'trompette-premiers-pas': TrompettePremiersPas,
   'notes-aigues': NotesAiguesTrompette,
-  'apprendre-trompette': ApprendreTrompetteParis,
+  'apprendre-trompette': ApprendreTrompette,
+  'apprendre-trompette-paris': ApprendreTrompetteParis,
+  'cours-trompette-debutant-paris': CoursDeTrompetteDebutantParis,
 }
 
 export default function ArticlePage({ params }: { params: { category: string, slug: string } }) {

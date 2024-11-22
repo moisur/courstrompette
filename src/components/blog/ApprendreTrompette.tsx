@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AccessoiresTrompette from './AccessoireRecommandes';
 
-export default function ApprendreTrompetteParis() {
+export default function ApprendreTrompette() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Apprendre la Trompette à Paris : Le Guide Complet pour Débutants et Confirmés</h1>

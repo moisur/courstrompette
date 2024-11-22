@@ -18,6 +18,8 @@ export default function CategoryPage({ params }: { params: { category: string } 
         return '/trompette.webp'
       case 'apprendre-trompette':
         return '/debutant.jpg'
+      case 'apprendre-trompette-paris':
+        return '/jc.jpg'
       case 'notes-aigues':
         return '/aigu.jpg'
       case 'entretien-trompette':
@@ -34,6 +36,8 @@ export default function CategoryPage({ params }: { params: { category: string } 
         return '/prof.webp'
       case 'miles-davis':
         return '/miles.jpg'
+      case 'cours-trompette-debutant-paris':
+        return '/aigu.jpg'
       default:
         return '/placeholder.svg'
     }
