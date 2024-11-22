@@ -277,7 +277,7 @@ export default function TrumpetTrainer() {
   }
 
   return (
-    <div className="w-full max-w-4xl bg-white rounded-lg shadow-xl p-6">
+    <div className="w-full max-w-4xl bg-white rounded-lg shadow-xl p-6 ">
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">Pre-registered Pieces</h2>
         <div className="flex flex-wrap gap-2">

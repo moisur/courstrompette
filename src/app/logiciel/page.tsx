@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Play, Pause, Save, Volume2, VolumeX } from 'lucide-react';
-import Vex from 'vexflow';
+import { Vex, Flow } from 'vexflow';
 
 // Type definitions
 interface Piston {
@@ -139,45 +139,40 @@ const NotationView: React.FC<{ notes: string[]; activeNoteIndex: number }> = ({ 
 
     containerRef.current.innerHTML = '';
 
-    const vf = new Vex.Flow.Factory({
-      renderer: { elementId: containerRef.current, width: 600, height: 150 }
-    });
+    const VF = Vex.Flow;
+    const renderer = new VF.Renderer(containerRef.current, VF.Renderer.Backends.SVG);
 
-    const score = vf.EasyScore();
-    const system = vf.System();
+    renderer.resize(600, 150);
+    const context = renderer.getContext();
+    context.setFont('Arial', 10, '');
+
+    const stave = new VF.Stave(10, 40, 580);
+    stave.addClef('treble').setContext(context).draw();
 
     const vexNotes = notes.map((note, idx) => {
       const noteName = note.replace(/[0-9]/, '').replace('#', '#');
       const octave = note.match(/[0-9]/)?.[0] || '4';
-      const vexNote = `${noteName}${octave}/q`;
-
-      const staveNote = score.notes(vexNote, { clef: 'treble' })[0];
+      const vexNote = new Flow.StaveNote({ clef: "treble", keys: [`${noteName}/${octave}`], duration: "q" });
 
       if (idx === activeNoteIndex) {
-        staveNote.setStyle({ fillStyle: "#2196f3", strokeStyle: "#2196f3" });
+        vexNote.setStyle({ fillStyle: "#2196f3", strokeStyle: "#2196f3" });
       }
 
       if (noteName.includes('#')) {
-        staveNote.addAccidental(0, vf.Accidental({ type: '#' }));
+        vexNote.addModifier(new Flow.Accidental("#"));
       }
-      return staveNote;
+      return vexNote;
     });
 
-    system
-      .addStave({
-        voices: [score.voice(vexNotes, { time: '4/4' })]
-      })
-      .addClef('treble')
-      .addTimeSignature('4/4');
-
-    vf.draw();
+    const voice = new Flow.Voice({ num_beats: notes.length, beat_value: 4 });
+    voice.addTickables(vexNotes);
+    new Flow.Formatter().joinVoices([voice]).format([voice], 550);
+    voice.draw(context, stave);
 
   }, [notes, activeNoteIndex]);
 
   return <div ref={containerRef} className="w-full overflow-x-auto" />;
 };
-
-
 
 const Metronome: React.FC<{
   tempo: number;
@@ -256,14 +251,12 @@ const Note: React.FC<{ note: string; isActive: boolean }> = ({ note, isActive })
   );
 };
 
-// ... (previous imports and code remain unchanged)
-
 const ToneGenerator: React.FC<{ note: string; isPlaying: boolean; volume: number; selectedInstrument: string }> = ({ note, isPlaying, volume, selectedInstrument }) => {
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
 
-  const noteToFrequency = useCallback((note: string): number => {
+  const noteToFrequency = (note: string): number => {
     const A4 = 440;
     const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const octave = parseInt(note.match(/\d+/)?.[0] || '4', 10);
@@ -271,7 +264,7 @@ const ToneGenerator: React.FC<{ note: string; isPlaying: boolean; volume: number
     const semitonesFromA4 = noteNames.indexOf(noteName) - noteNames.indexOf('A') + (octave - 4) * 12;
     const transposedSemitones = semitonesFromA4 + (INSTRUMENTS[selectedInstrument] || 0);
     return A4 * Math.pow(2, transposedSemitones / 12);
-  }, [selectedInstrument]);
+  };
 
   useEffect(() => {
     if (isPlaying) {
@@ -301,13 +294,10 @@ const ToneGenerator: React.FC<{ note: string; isPlaying: boolean; volume: number
         oscillatorRef.current.disconnect();
       }
     };
-  }, [isPlaying, note, volume, selectedInstrument, noteToFrequency]);
+  }, [isPlaying, note, volume, selectedInstrument]);
 
   return null;
 };
-
-
-
 
 // Main component
 const ScalePractice: React.FC = () => {
@@ -320,18 +310,11 @@ const ScalePractice: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.1);
   const [isMuted, setIsMuted] = useState(false);
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [favorites, setFavorites] = useState<Favorite[]>(() => JSON.parse(localStorage.getItem('scalesFavorites') || '[]')
+  );
   const [selectedInstrument, setSelectedInstrument] = useState('Trompette (Sib)');
   const [activeTab, setActiveTab] = useState('all');
 
-  useEffect(() => {
-    // Load favorites from localStorage on client-side only
-    const storedFavorites = localStorage.getItem('scalesFavorites');
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites));
-    }
-  }, []);
-  
   const generateScale = useMemo(() => {
     const rootIndex = CHROMATIC_NOTES.indexOf(rootNote);
     
@@ -360,7 +343,7 @@ const ScalePractice: React.FC = () => {
     return () => clearInterval(timer);
   }, [isPlaying, tempo, handleNext]);
 
-  const saveFavorite = useCallback(() => {
+  const saveFavorite = () => {
     const newFavorite: Favorite = {
       rootNote,
       scaleType,
@@ -371,17 +354,16 @@ const ScalePractice: React.FC = () => {
     const newFavorites = [...favorites, newFavorite];
     setFavorites(newFavorites);
     localStorage.setItem('scalesFavorites', JSON.stringify(newFavorites));
-  }, [favorites, rootNote, scaleType, exerciseType, startOctave, tempo]);
+  };
 
-  const loadFavorite = useCallback((favorite: Favorite) => {
+  const loadFavorite = (favorite: Favorite) => {
     setRootNote(favorite.rootNote);
     setScaleType(favorite.scaleType);
     setExerciseType(favorite.exerciseType);
     setStartOctave(favorite.startOctave);
     setTempo(favorite.tempo);
     setActiveNoteIndex(0);
-  }, []);
-
+  };
 
   const renderExerciseContent = () => (
     <div className="space-y-6">

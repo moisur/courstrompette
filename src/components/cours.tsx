@@ -215,14 +215,7 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               </Card>
             </div>
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-            <Image
-              src={jc1}
-              alt="cours de trompette paris"
-              className="rounded-lg shadow-lg w-full h-auto"
-              width={500}
-              height={300}
-              sizes="(max-width: 768px) 100vw, 500px"
-            /><Image
+          <Image
             src={jc1}
             alt="cours de trompette paris"
             className="rounded-lg shadow-lg w-full h-auto"
