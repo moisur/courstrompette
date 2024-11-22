@@ -6,6 +6,8 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "target": "es2015",
+    "downlevelIteration": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,

@@ -14,13 +14,19 @@ const nextConfig = {
   },
 
   images: {
-    remotePatterns: [
+         remotePatterns: [
       {
         protocol: 'https',
         hostname: 'm.media-amazon.com',
         port: '',
         pathname: '/**', // Autorise tous les chemins sous m.media-amazon.com
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**', // Autorise tous les chemins sous m.media-amazon.com
+      }
     ],
   },
 };

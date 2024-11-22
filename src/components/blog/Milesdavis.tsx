@@ -45,7 +45,7 @@ export default function MilesDavis() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/miles.jpg"
+            src="/miles2.jpg"
             alt="Miles Davis jouant du bebop"
             width={500}
             height={300}
@@ -81,7 +81,7 @@ export default function MilesDavis() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/miles-davis-influence.jpg"
+            src="/miles3.jpg"
             alt="L'influence de Miles Davis sur la musique moderne"
             width={500}
             height={300}
@@ -105,7 +105,7 @@ export default function MilesDavis() {
       <Card className="mb-6">
         <CardContent className="p-0">
           <Image
-            src="/miles-davis-albums.jpg"
+            src="/miles4.png"
             alt="Albums emblématiques de Miles Davis"
             width={500}
             height={300}

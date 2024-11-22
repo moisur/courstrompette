@@ -9,6 +9,11 @@ export const blogCategories: BlogCategory[] = [
         slug: 'choisir-trompette',
         title: 'Choisir sa trompette : Guide complet',
         date: '2023-05-28',
+      },         
+      {
+        slug: 'apprendre-trompette',
+        title: 'Apprendre la trompette à Paris',
+        date: '2023-05-28',
       },      
       {
         slug: 'notes-aigues',

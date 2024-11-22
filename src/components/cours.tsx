@@ -22,7 +22,6 @@ import jc1 from "@/../public/jc.jpg"
 import pkoi from '@/../public/3.jpeg'
 import ze from '@/../public/ZE.webp'
 import Link from 'next/link';
-import Header from './Header'
 import AccessoiresTrompette from './blog/AccessoireRecommandes'
 export default function Cours() {
   const [showPopup, setShowPopup] = useState(false)
@@ -52,7 +51,6 @@ export default function Cours() {
 
   return (
     <div className="font-sans text-gray-800">
-      <Header />
       <header className="relative min-h-screen flex items-center justify-center text-white text-center px-4 pt-16">
         <Carousel className="w-full h-full absolute top-0 left-0" opts={{ loop: true }}>
           <CarouselContent>
@@ -87,10 +85,14 @@ export default function Cours() {
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/2 mb-8 md:mb-0">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1511192336575-5a79af67a629?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
                 alt="Trompette en gros plan"
                 className="rounded-lg shadow-lg w-full h-auto"
+                width={600}
+                height={400}
+                sizes="(max-width: 768px) 100vw, 600px"
+                priority
               />
             </div>
             <div className="w-full md:w-1/2 md:pl-8">
@@ -130,14 +132,14 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
                 Vous n'avez plus à vous perdre dans les détails techniques, je vous fournis les outils et la boussole nécessaires pour avancer avec assurance.
             </div>
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <Image
-                src={ze} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
+            <Image
+              src={ze}
+              alt="cours de trompette paris"
+              className="rounded-lg shadow-lg w-full h-auto"
+              width={500}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 500px"
+            />
             </div>
           </div>
         </div>
@@ -153,13 +155,13 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
             <Image
-                src={questionImage} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
+              src={questionImage}
+              alt="cours de trompette paris"
+              className="rounded-lg shadow-lg w-full h-auto"
+              width={500}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 500px"
+            />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
               <p className="text-lg mt-6">Pourquoi ? <br /> <br /> La plupart des professeurs jouent tous plus ou moins bien mais n'ont aucune idée de comment ils le font. <br /> En d'autres termes ils n'ont aucune méthode. <br /><br />(Ce qui est problématique pour enseigner...) </p>
@@ -213,14 +215,21 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
               </Card>
             </div>
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <Image
-                src={jc1} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
+            <Image
+              src={jc1}
+              alt="cours de trompette paris"
+              className="rounded-lg shadow-lg w-full h-auto"
+              width={500}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 500px"
+            /><Image
+            src={jc1}
+            alt="cours de trompette paris"
+            className="rounded-lg shadow-lg w-full h-auto"
+            width={500}
+            height={300}
+            sizes="(max-width: 768px) 100vw, 500px"
+          />          
             </div>
           </div>
         </div>
@@ -236,13 +245,13 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
             <Image
-                src={profMat}
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} 
-                height={300} 
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
+              src={profMat}
+              alt="cours de trompette paris"
+              className="rounded-lg shadow-lg w-full h-auto"
+              width={500}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 500px"
+            />
             </div>
             <div className="w-full md:w-2/3 md:pl-8">
               <h3 className="text-2xl font-semibold mb-4">J'ai découvert ma passion pour l'enseignement de la trompette <br />en aidant le meilleur ami de mon  petit frère.        </h3>
@@ -274,14 +283,14 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
           </h2>
           <div className="flex flex-wrap items-center">
             <div className="w-full md:w-1/2 md:pr-8">
-              <Image
-                src={pkoi} // Utilisation de l'image importée
-                alt="cours de trompette paris"
-                className="rounded-lg shadow-lg w-full h-auto"
-                width={500} // Définir la largeur de l'image
-                height={300} // Définir la hauteur de l'image
-                layout="responsive" // Ajuster la taille de l'image à son conteneur
-              />
+            <Image
+              src={pkoi}
+              alt="cours de trompette paris"
+              className="rounded-lg shadow-lg w-full h-auto"
+              width={500}
+              height={300}
+              sizes="(max-width: 768px) 100vw, 500px"
+            />
             </div>
             <div className="w-full md:w-1/2 mb-8 md:mb-0">
               <h3 className="text-2xl font-semibold mb-4">

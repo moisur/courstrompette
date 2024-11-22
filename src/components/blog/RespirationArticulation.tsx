@@ -15,7 +15,7 @@ export default function RespirationArticulation() {
       </h1>
 
       <Image
-        src="/trompette.jpg"
+        src="/respiration.webp"
         alt="Un trompettiste débutant pratiquant des exercices"
         width={500}
         height={300}

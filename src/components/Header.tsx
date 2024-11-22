@@ -29,7 +29,7 @@ export default function Header() {
     timeoutRef.current = setTimeout(() => {
       setShowBlogMenu(false)
       setActiveCategory(null)
-    }, 300) // Délai de 300ms avant de fermer le menu
+    }, 300)
   }
 
   useEffect(() => {
@@ -82,10 +82,10 @@ export default function Header() {
                       {category.name}
                     </Link>
                     {activeCategory === category.slug && (
-                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-md py-2 ">
+                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-md py-2">
                         {category.posts.map((post) => (
                           <li key={post.slug}>
-                            <Link href={`/blog/${post.slug}`} className="block px-4 py-2 hover:bg-gray-100">
+                            <Link href={`/blog/category/${category.slug}/${post.slug}`} className="block px-4 py-2 hover:bg-gray-100">
                               {post.title}
                             </Link>
                           </li>
@@ -106,3 +106,4 @@ export default function Header() {
     </nav>
   )
 }
+
