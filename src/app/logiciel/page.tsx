@@ -90,16 +90,23 @@ const EXERCISE_PATTERNS: ExercisePattern = {
   'Arpège avec septième': (scale) => [scale[0], scale[2], scale[4], scale[6], scale[7]],
   'Quinte-Tonale-Quinte-Octave': (scale) => {
     const result = [];
-    for (let i = 0; i < scale.length; i++) {
+    let i = scale.length - 1; // Commencer par la dernière note
+    while (true) {
       const tonale = scale[i];
-      const quinteIndex = (i - 7 + scale.length) % scale.length;
-      const octaveIndex = (i - 12 + scale.length) % scale.length;
+      const quinteIndex = (i + 7) % scale.length;
+      const octaveIndex = (i + 12) % scale.length;
       const quinte = scale[quinteIndex];
       const octave = scale[octaveIndex];
       result.push(quinte, tonale, quinte, octave);
+      
+      // Descendre d'un demi-ton
+      i = (i - 1 + scale.length) % scale.length;
+      
+      // Arrêter si on atteint Do# (C#)
+      if (tonale.startsWith('C#')) break;
     }
     return result;
-  }
+  },
 };
 
 const INSTRUMENTS: { [key: string]: number } = {

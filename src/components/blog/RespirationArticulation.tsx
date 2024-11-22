@@ -43,31 +43,24 @@ export default function RespirationArticulation() {
           <AccordionTrigger>1. Respiration : La Base du Son</AccordionTrigger>
           <AccordionContent>
             <p className="mb-4">
-              Une bonne respiration est essentielle pour produire un son de qualité
-              et maintenir une endurance lors du jeu. Voici quelques exercices pour
-              améliorer votre technique de respiration :
+              Une bonne respiration et un contrôle musculaire précis sont essentiels pour produire un son puissant et stable à la trompette. Voici une technique adaptée et des exercices pour maîtriser votre souffle et votre embouchure :
             </p>
             <ul className="list-disc pl-6 mb-4">
               <li className="mb-2">
-                <strong>Respiration abdominale :</strong> Allongez-vous sur le dos,
-                placez une main sur votre ventre et inspirez profondément en
-                gonflant votre ventre. Expirez lentement en laissant votre ventre
-                se dégonfler. Répétez 10 fois.
+                <strong>Inspiration « Dark Vador » :</strong> Inspirez profondément en formant un « O » avec la bouche, comme si vous imitiez l'inspiration de Dark Vador. Cette technique ouvre la gorge pour permettre un flux d'air optimal.
               </li>
               <li className="mb-2">
-                <strong>Respiration en carré :</strong> Inspirez pendant 4 secondes,
-                retenez votre souffle pendant 4 secondes, expirez pendant 4 secondes,
-                puis attendez 4 secondes avant de recommencer. Répétez 5 fois.
+                <strong>Expiration chaude :</strong> Expirez en prononçant « tu » avec un souffle chaud et constant. Imaginez que vous soufflez sur une vitre pour la réchauffer.
               </li>
               <li className="mb-2">
-                <strong>Souffler dans l'embouchure :</strong> Pratiquez la respiration
-                abdominale en soufflant dans l'embouchure seule. Concentrez-vous sur
-                la production d'un son stable et continu.
+                <strong>Tension au niveau des zygomatiques :</strong> Gardez les côtés de la bouche très serrés, comme une petite pince, en tirant vos zygomatiques vers l’extérieur de toutes vos forces. Cette zone est la seule partie du corps qui doit être tendue. Le reste du corps, notamment les épaules et le cou, doit rester complètement détendu.
+              </li>
+              <li className="mb-2">
+                <strong>Exercice en mesures :</strong> Inspirez pendant 2 mesures avec la technique « Dark Vador », en maintenant la tension des zygomatiques, puis expirez pendant 2 mesures avec un flux d'air constant. Répétez plusieurs fois pour synchroniser votre souffle avec le rythme musical.
               </li>
             </ul>
             <p>
-              <strong>Conseil :</strong> Pratiquez ces exercices quotidiennement pour
-              renforcer vos muscles respiratoires et améliorer votre contrôle du souffle.
+              <strong>Conseil :</strong> Pratiquez ces exercices quotidiennement pour développer une embouchure stable, une respiration fluide, et un contrôle musculaire optimal. Cette combinaison est la clé pour un son puissant et une endurance accrue.
             </p>
           </AccordionContent>
         </AccordionItem>

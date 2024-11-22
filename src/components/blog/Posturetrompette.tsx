@@ -73,33 +73,21 @@ export default function PostureTrompette() {
           <AccordionTrigger>2. Tenue de la Trompette : Pour une Précision Optimale</AccordionTrigger>
           <AccordionContent>
             <p className="mb-4">
-              Une bonne tenue de la trompette est essentielle pour une
-              précision optimale et un confort accru.
+              Une bonne tenue de la trompette est essentielle pour une précision optimale et un confort accru.
             </p>
             <ul className="list-disc pl-6 mb-4">
               <li className="mb-2">
-                <strong>Main gauche :</strong> Placez votre main gauche sur
-                la première valve, en gardant vos doigts légèrement
-                arqués. Utilisez votre pouce pour soutenir la
-                trompette sur le côté gauche.
+                <strong>Main gauche :</strong> Placez votre pouce gauche dans l’anneau sous la première coulisse, et passez votre doigt annulaire dans l’anneau de la coulisse de la troisième valve. Les autres doigts entourent doucement le corps de la trompette pour stabiliser l’instrument.
               </li>
               <li className="mb-2">
-                <strong>Main droite :</strong> Placez votre main droite sur
-                la troisième valve, en gardant vos doigts
-                légèrement arqués. Utilisez votre pouce pour soutenir
-                la trompette sur le côté droit.
+                <strong>Main droite :</strong> Positionnez votre pouce droit sous la tige de la première coulisse, entre la première et la deuxième valve. Placez vos index, majeur, et annulaire sur les pistons correspondants, en gardant les doigts légèrement arqués. Laissez l’auriculaire droit reposer sur le crochet ou flotter sans forcer.
               </li>
               <li className="mb-2">
-                <strong>Embouchure :</strong> Placez l'embouchure contre
-                vos lèvres de manière ferme, mais confortable. Évitez
-                de serrer trop fort ou de relâcher l'embouchure.
+                <strong>Embouchure :</strong> Placez l’embouchure au centre de vos lèvres de manière ferme mais confortable. Appliquez une pression modérée pour assurer l’étanchéité sans écraser les lèvres.
               </li>
             </ul>
             <p>
-              <strong>Conseils Pratiques :</strong> N'hésitez pas à ajuster
-              votre tenue pour trouver la position la plus confortable.
-              Utilisez un miroir pour vérifier votre tenue et
-              s'assurer que vos doigts sont positionnés correctement.
+              <strong>Conseils Pratiques :</strong> Tenez-vous droit avec les épaules détendues, et gardez la trompette légèrement inclinée vers le bas. Utilisez un miroir pour vérifier votre posture et vos positions, et pratiquez une respiration abdominale pour un soutien optimal.
             </p>
           </AccordionContent>
         </AccordionItem>
