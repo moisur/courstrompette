@@ -162,7 +162,7 @@ const EntraineurNote: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-50 to-blue-50">
+    <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-purple-50 to-blue-50 px-4 py-20">
       <CardHeader className="text-center space-y-4">
         <div className="flex justify-center">
           <Music2 className="w-12 h-12 text-purple-600" />
