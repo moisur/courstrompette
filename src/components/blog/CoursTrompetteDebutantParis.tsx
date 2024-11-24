@@ -5,6 +5,7 @@
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
 
 export default function CoursDeTrompetteDebutantParis() {
   return (
@@ -101,7 +102,7 @@ export default function CoursDeTrompetteDebutantParis() {
       <p>
         <strong>Prêt à commencer ?</strong> Contactez-moi dès aujourd’hui pour réserver votre premier cours et embarquez dans l’apprentissage de la trompette à Paris !
       </p>
-
+      <RelatedArticles />
       <AccessoiresTrompette />
     </article>
   );

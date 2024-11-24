@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
 
 export default function ChoisirTrompette() {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
@@ -216,7 +217,7 @@ export default function ChoisirTrompette() {
         enrichissante et motivante. Bienvenue dans le monde de la
         trompette !
       </p>
-
+      <RelatedArticles />
       <AccessoiresTrompette />
 
 

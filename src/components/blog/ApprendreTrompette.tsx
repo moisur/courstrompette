@@ -5,6 +5,7 @@
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
 
 export default function ApprendreTrompette() {
   return (
@@ -60,7 +61,7 @@ export default function ApprendreTrompette() {
       <p className="mb-4">
         La trompette est un instrument fascinant qui offre une multitude de possibilités musicales. N'attendez plus, lancez-vous ! 
       </p>
-
+      <RelatedArticles />
       <AccessoiresTrompette />
     </article>
   );

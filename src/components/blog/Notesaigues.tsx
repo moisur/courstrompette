@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card"
 import Link from 'next/link'; // Importer Link
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
+
 export default function NotesAiguës() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -79,9 +81,7 @@ export default function NotesAiguës() {
         N'hésite pas à tester la méthode M.D.A.S. et à voir par toi-même à quel point elle peut t'aider à progresser !
       </p>
 
-      <Link href="/trompette-guide-debutant" className="button">
-        Découvrez le guide complet pour les débutants
-      </Link>
+      <RelatedArticles />
       <AccessoiresTrompette />
 
     </article>

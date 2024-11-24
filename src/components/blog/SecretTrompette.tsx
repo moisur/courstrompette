@@ -5,6 +5,7 @@
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
 
 export default function SecretTrompette() {
   return (
@@ -104,6 +105,8 @@ export default function SecretTrompette() {
       <p className="mb-4">
          Contactez moi vite pour votre premier cours de trompette !
       </p>
+      <RelatedArticles />
+
       <AccessoiresTrompette />
     </article>
   );

@@ -5,6 +5,7 @@
 import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card"
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
 
 export default function MilesDavis() {
   return (
@@ -126,6 +127,7 @@ export default function MilesDavis() {
         musiques. Vous découvrirez un univers musical riche et
         fascinant!</strong>
       </p>
+      <RelatedArticles />
       <AccessoiresTrompette />
     </article>
     

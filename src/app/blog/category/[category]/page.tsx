@@ -41,7 +41,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
       case 'cours-trompette-debutant-paris':
         return '/aigu.jpg'
       default:
-        return '/placeholder.svg'
+        return '/trompette.webp'
     }
   }
 

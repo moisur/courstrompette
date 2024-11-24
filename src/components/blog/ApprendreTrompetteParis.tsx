@@ -5,6 +5,7 @@
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
 
 export default function ApprendreTrompetteParis() {
   return (
@@ -95,7 +96,7 @@ export default function ApprendreTrompetteParis() {
       <p>
         <strong>Prêt à commencer ?</strong> Je suis impatient de vous accompagner dans votre aventure musicale à Paris !
       </p>
-
+      <RelatedArticles />
       <AccessoiresTrompette />
     </article>
   );

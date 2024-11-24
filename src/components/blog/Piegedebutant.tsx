@@ -5,6 +5,8 @@
 import Image from 'next/image';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import AccessoiresTrompette from './AccessoireRecommandes';
+import RelatedArticles from './RelatedArticles';
+
 export default function PiegesDebutant() {
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
@@ -119,6 +121,7 @@ export default function PiegesDebutant() {
         peut vous aider à corriger vos erreurs et à améliorer votre
         technique.</strong>
       </p>
+      <RelatedArticles />
       <AccessoiresTrompette />  
     </article>
   );
