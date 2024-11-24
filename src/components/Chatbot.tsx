@@ -206,7 +206,7 @@ export default function Component() {
     handleSendMessage(option)
     
     if (option.toLowerCase() === "voir les disponibilités") {
-      window.open('https://calendly.com/jctrompette', '_blank', 'noopener,noreferrer')
+      window.open('https://calendly.com/yervantj/jctrompette', '_blank', 'noopener,noreferrer')
     }
   }
   return (
