@@ -19,7 +19,7 @@ type Message = {
 }
 
 const introMessages = [
-  "👋 Bonjour ! Je suis l'assistant virtuel de JC Trompette.",
+  "👋 Bonjour ! Je suis l'assistant virtuel de JC.",
   "Apprenez à jouer de la trompette facilement grâce à la méthode Z2G !"
 ]
 
@@ -209,9 +209,8 @@ export default function Component() {
       window.open('https://calendly.com/jctrompette', '_blank', 'noopener,noreferrer')
     }
   }
-
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] w-full sm:w-auto">
       <AnimatePresence>
         {!isOpen && (
           <motion.div
@@ -222,9 +221,9 @@ export default function Component() {
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="rounded-full w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-lg"
+              className="rounded-full w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-lg"
             >
-              <MessageCircle className="w-8 h-8" />
+              <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />
             </Button>
           </motion.div>
         )}
@@ -236,11 +235,12 @@ export default function Component() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
+            className="w-full sm:w-96"
           >
-            <Card className="w-96 h-[32rem] flex flex-col shadow-xl">
-              <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4">
-                <h3 className="font-semibold">Chat avec l'assistant de JC Trompette</h3>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+            <Card className="h-[calc(100vh-2rem)] sm:h-[32rem] flex flex-col shadow-xl overflow-hidden rounded-lg">
+              <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-t-lg">
+                <h3 className="font-semibold text-sm sm:text-base">Chat avec l'assistant de JC Trompette</h3>
+                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:text-white/80">
                   <X className="w-4 h-4" />
                 </Button>
               </CardHeader>
@@ -257,7 +257,7 @@ export default function Component() {
                       }`}
                     >
                       <span
-                        className={`inline-block p-2 rounded-lg ${
+                        className={`inline-block p-2 rounded-lg text-sm sm:text-base ${
                           message.type === 'user'
                             ? 'bg-orange-500 text-white'
                             : 'bg-gray-100 text-gray-800'
@@ -270,7 +270,7 @@ export default function Component() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: 0.2 }}
-                          className="mt-2 space-y-2"
+                          className="mt-2 space-y-2 flex flex-wrap justify-start"
                         >
                           {message.options.map((option, optionIndex) => (
                             <Button
@@ -278,7 +278,7 @@ export default function Component() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleOptionClick(option)}
-                              className="mr-2 mb-2"
+                              className="mr-2 mb-2 text-xs sm:text-sm rounded-full"
                             >
                               {option}
                             </Button>
@@ -312,8 +312,9 @@ export default function Component() {
                     placeholder="Tapez votre message..."
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
+                    className="text-sm sm:text-base rounded-full"
                   />
-                  <Button type="submit" size="icon">
+                  <Button type="submit" size="icon" className="rounded-full">
                     <Send className="w-4 h-4" />
                   </Button>
                 </form>
@@ -325,3 +326,4 @@ export default function Component() {
     </div>
   )
 }
+
