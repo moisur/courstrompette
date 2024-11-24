@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { getAllPosts } from '@/app/lib/blogUtils'
 import { blogCategories } from '@/app/lib/blogPosts'
 import { cn } from '../lib/utils'
+import Chatbot from "@/components/Chatbot"
 
 export default function BlogPage() {
   const posts = getAllPosts()
@@ -87,7 +88,9 @@ export default function BlogPage() {
           </div>
         ))}
       </div>
+      <Chatbot />
     </div>
+    
   )
 }
 

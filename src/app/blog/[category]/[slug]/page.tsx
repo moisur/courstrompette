@@ -14,6 +14,9 @@ import ApprendreTrompette from '@/components/blog/ApprendreTrompette'
 import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
 import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
 import SecretTrompette from '@/components/blog/SecretTrompette'
+import Chatbot from "@/components/Chatbot"
+import type { Metadata } from 'next'
+
 
 const articleComponents: { [key: string]: React.ComponentType } = {
   'secret-de-trompette': SecretTrompette,
@@ -29,6 +32,26 @@ const articleComponents: { [key: string]: React.ComponentType } = {
   'apprendre-trompette': ApprendreTrompette,
   'apprendre-trompette-paris': ApprendreTrompetteParis,
   'cours-trompette-debutant-paris': CoursDeTrompetteDebutantParis,
+}
+type Props = {
+  params: { category: string; slug: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const post = getPostBySlug(params.slug)
+  if (!post) return { title: 'Article not found' }
+
+  return {
+    title: post.title,
+    description: `Notre nouvel article ${post.title} du blog JC prof de Trompette à Paris.`,
+    openGraph: {
+      title: post.title,
+      description: `Notre nouvel article ${post.title} du blog JC prof de Trompette à Paris`,
+      type: 'article',
+      publishedTime: post.date,
+      authors: ['JC Trompette'],
+    },
+  }
 }
 
 export default function ArticlePage({ params }: { params: { category: string, slug: string } }) {
@@ -48,6 +71,7 @@ export default function ArticlePage({ params }: { params: { category: string, sl
   return (
     <div className="container mx-auto px-4 py-20">
       <ArticleComponent />
+      <Chatbot />
     </div>
   )
 }
