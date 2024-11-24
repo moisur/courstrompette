@@ -13,8 +13,10 @@ import NotesAiguesTrompette from '@/components/blog/Notesaigues'
 import ApprendreTrompette from '@/components/blog/ApprendreTrompette'
 import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
 import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
+import SecretTrompette from '@/components/blog/SecretTrompette'
 
 const articleComponents: { [key: string]: React.ComponentType } = {
+  'secret-de-trompette': SecretTrompette,
   'choisir-trompette': ChoisirTrompette,
   'entretien-trompette': EntretienTrompette,
   'lexique-trompette': LexiqueTrompette,

@@ -6,6 +6,11 @@ export const blogCategories: BlogCategory[] = [
     slug: "guide-apprentissage",
     posts: [
       {
+        slug: 'secret-de-trompette',
+        title: 'LE secret pour devenir un bon trompettiste',
+        date: '2024-11-24',
+      },  
+      {
         slug: 'cours-trompette-debutant-paris',
         title: 'Cours de trompette pour débutants à Paris',
         date: '2024-11-22',
