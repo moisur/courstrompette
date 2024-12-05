@@ -14,6 +14,8 @@ export default function CategoryPage({ params }: { params: { category: string } 
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'la-trompette-a-30-ans':
+        return '/ZE.webp'
       case 'secret-de-trompette':
         return '/valves.jpg'
       case 'choisir-trompette':

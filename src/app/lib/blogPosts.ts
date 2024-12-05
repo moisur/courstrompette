@@ -6,6 +6,11 @@ export const blogCategories: BlogCategory[] = [
     slug: "guide-apprentissage",
     posts: [
       {
+        slug: 'la-trompette-a-30-ans',
+        title: 'Apprendre la trompette à 30 ans et plus !',
+        date: '2024-12-04',
+      },
+      {
         slug: 'secret-de-trompette',
         title: 'LE secret pour devenir un bon trompettiste',
         date: '2024-11-24',

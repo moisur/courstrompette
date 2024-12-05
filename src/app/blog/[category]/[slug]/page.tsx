@@ -14,11 +14,13 @@ import ApprendreTrompette from '@/components/blog/ApprendreTrompette'
 import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
 import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
 import SecretTrompette from '@/components/blog/SecretTrompette'
+import TrompetteApres30 from '@/components/blog/Latrompettea30ans'
 import Chatbot from "@/components/Chatbot"
 import type { Metadata } from 'next'
 
 
 const articleComponents: { [key: string]: React.ComponentType } = {
+  'la-trompette-a-30-ans': TrompetteApres30,
   'secret-de-trompette': SecretTrompette,
   'choisir-trompette': ChoisirTrompette,
   'entretien-trompette': EntretienTrompette,
