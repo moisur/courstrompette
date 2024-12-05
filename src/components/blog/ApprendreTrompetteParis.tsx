@@ -93,9 +93,19 @@ export default function ApprendreTrompetteParis() {
         Apprendre la trompette à Paris est une expérience unique, enrichie par l’effervescence musicale de la ville. Que vous soyez passionné par le jazz ou l’électro, vous trouverez ici de nombreuses opportunités pour vous immerger dans la scène musicale.
         En choisissant un cours particulier, vous bénéficiez d'un apprentissage rapide et efficace, avec un professeur à votre écoute.
       </p>
-      <p>
-        <strong>Prêt à commencer ?</strong> Je suis impatient de vous accompagner dans votre aventure musicale à Paris !
-      </p>
+      {/* Call to Action */}
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-primary mb-4">Prêt à Commencer ?</h2>
+        <p className="text-xl text-gray-700 mb-6">
+          Votre premier cours d&apos;essai est gratuit. Aucun engagement, juste la musique.
+        </p>
+        <a 
+          href="/#booking" 
+          className="w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
+          >
+          Réserver mon cours gratuit
+        </a>
+      </div>
       <RelatedArticles />
       <AccessoiresTrompette />
     </article>

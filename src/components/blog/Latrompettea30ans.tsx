@@ -103,9 +103,9 @@ export default function TrompetteApres30() {
         </p>
         <a 
           href="/#booking" 
-          className="bg-primary text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-primary-dark transition-colors"
-        >
-          Réserver Mon Cours Découverte
+          className="w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
+          >
+          Réserver mon cours gratuit
         </a>
       </div>
 

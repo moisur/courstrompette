@@ -61,6 +61,19 @@ export default function ApprendreTrompette() {
       <p className="mb-4">
         La trompette est un instrument fascinant qui offre une multitude de possibilités musicales. N'attendez plus, lancez-vous ! 
       </p>
+      {/* Call to Action */}
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-primary mb-4">Prêt à Commencer ?</h2>
+        <p className="text-xl text-gray-700 mb-6">
+          Votre premier cours d&apos;essai est gratuit. Aucun engagement, juste la musique.
+        </p>
+        <a 
+          href="/#booking" 
+          className="w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
+          >
+          Réserver mon cours gratuit
+        </a>
+      </div>
       <RelatedArticles />
       <AccessoiresTrompette />
     </article>
