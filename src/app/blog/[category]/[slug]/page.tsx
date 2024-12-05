@@ -15,10 +15,12 @@ import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
 import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
 import SecretTrompette from '@/components/blog/SecretTrompette'
 import TrompetteApres30 from '@/components/blog/Latrompettea30ans'
+import PourquoiUnProfesseur from '@/components/blog/PourquoiUnProfesseur'
 import type { Metadata } from 'next'
 
 
 const articleComponents: { [key: string]: React.ComponentType } = {
+  'pourquoi-un-prof': PourquoiUnProfesseur,
   'la-trompette-a-30-ans': TrompetteApres30,
   'secret-de-trompette': SecretTrompette,
   'choisir-trompette': ChoisirTrompette,

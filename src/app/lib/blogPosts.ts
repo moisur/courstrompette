@@ -5,6 +5,11 @@ export const blogCategories: BlogCategory[] = [
     name: "Guide d'apprentissage trompette",
     slug: "guide-apprentissage",
     posts: [
+      { 
+        slug: 'pourquoi-un-prof',
+        title: 'Pourquoi choisir un prof de trompette ?',
+        date: '2024-12-04',
+      },
       {
         slug: 'la-trompette-a-30-ans',
         title: 'Apprendre la trompette à 30 ans et plus !',
