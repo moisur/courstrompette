@@ -11,7 +11,7 @@ export default function TrompetteApres30() {
       {/* Header Section */}
       <header className="text-center space-y-4">
         <h1 className="text-4xl lg:text-5xl font-bold text-primary leading-tight">
-          Découvrez la Trompette Après 30 Ans : Votre Passion, Votre Rythme
+          Découvrez la trompette après 30 ans : votre passion, votre rythme
         </h1>
         <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
           Transformez votre rêve musical en réalité, quels que soient votre âge et votre expérience.
@@ -83,11 +83,11 @@ export default function TrompetteApres30() {
           <AccordionContent>
             <div className="grid md:grid-cols-2 gap-6 text-gray-800">
               <div>
-                <h3 className="text-lg font-medium mb-3">Cours Sur Mesure</h3>
+                <h3 className="text-lg font-medium mb-3">Cours sur mesure</h3>
                 <p>Chaque leçon est adaptée à votre niveau, vos objectifs et votre rythme d&apos;apprentissage.</p>
               </div>
               <div>
-                <h3 className="text-lg font-medium mb-3">Accompagnement Personnalisé</h3>
+                <h3 className="text-lg font-medium mb-3">Accompagnement personnalisé</h3>
                 <p>Un suivi individualisé qui vous encourage et vous motive à chaque étape.</p>
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function TrompetteApres30() {
 
       {/* Call to Action */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-primary mb-4">Prêt à Commencer ?</h2>
+        <h2 className="text-3xl font-bold text-primary mb-4">Prêt à commencer ?</h2>
         <p className="text-xl text-gray-700 mb-6">
           Votre premier cours d&apos;essai est gratuit. Aucun engagement, juste la musique.
         </p>

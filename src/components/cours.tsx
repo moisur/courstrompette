@@ -11,7 +11,6 @@ import { AnimatedListDemo } from './Animated-list-jc'
 import Mission from './Mission'
 import Method from './Method'
 import Formulaire from './Formulaire'
-import Footer from './Footer'
 import Puissance from './Puissance'
 import Image from 'next/image';
 import questionImage from '../../public/1.jpg'
@@ -432,7 +431,6 @@ Vous en avez marre de jouer vos gammes sans jamais avoir             <span class
         </div>
       </section>
 
-      <Footer />
       <div
         className="elfsight-app-bb687b25-4aa4-4b59-bb2b-16fd7b98a74d"
         data-elfsight-app-lazy

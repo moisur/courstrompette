@@ -15,7 +15,6 @@ import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
 import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
 import SecretTrompette from '@/components/blog/SecretTrompette'
 import TrompetteApres30 from '@/components/blog/Latrompettea30ans'
-import Chatbot from "@/components/Chatbot"
 import type { Metadata } from 'next'
 
 
@@ -73,7 +72,6 @@ export default function ArticlePage({ params }: { params: { category: string, sl
   return (
     <div className="container mx-auto px-4 py-20">
       <ArticleComponent />
-      <Chatbot />
     </div>
   )
 }
