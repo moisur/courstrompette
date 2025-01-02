@@ -1,7 +1,7 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { getAllPosts } from '@/app/lib/blogUtils'
 import { blogCategories } from '@/app/lib/blogPosts'
+import { getAllPosts } from '@/app/lib/blogUtils'
+import Image from 'next/image'
+import Link from 'next/link'
 import { cn } from '../lib/utils'
 
 export default function BlogPage() {
@@ -9,6 +9,8 @@ export default function BlogPage() {
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'trompette-astuces-son':
+        return '/blog/TrompetteAstucesSon(1).webp'
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
@@ -45,7 +47,7 @@ export default function BlogPage() {
   }
 
   const renderPostList = (category: typeof blogCategories[0]) => {
-    const categoryPosts = posts.filter(post => 
+    const categoryPosts = posts.filter(post =>
       category.posts.some(p => p.slug === post.slug)
     )
 
@@ -92,7 +94,7 @@ export default function BlogPage() {
         ))}
       </div>
     </div>
-    
+
   )
 }
 

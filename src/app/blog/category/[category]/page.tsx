@@ -1,19 +1,21 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { getAllPosts } from '@/app/lib/blogUtils'
 import { blogCategories } from '@/app/lib/blogPosts'
-import { cn } from '../../../lib/utils'
+import { getAllPosts } from '@/app/lib/blogUtils'
+import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { cn } from '../../../lib/utils'
 
 export default function CategoryPage({ params }: { params: { category: string } }) {
   const category = blogCategories.find(cat => cat.slug === params.category)
-  
+
   if (!category) {
     notFound()
   }
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'trompette-astuces-son':
+        return '/TrompetteAstucesSon(1).webp'
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
@@ -49,7 +51,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
     }
   }
 
-  const posts = getAllPosts().filter(post => 
+  const posts = getAllPosts().filter(post =>
     category.posts.some(p => p.slug === post.slug)
   )
 

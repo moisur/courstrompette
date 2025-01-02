@@ -1,24 +1,26 @@
-import { notFound } from 'next/navigation'
-import { getPostBySlug, getAllPosts } from '@/app/lib/blogUtils'
 import { blogCategories } from '@/app/lib/blogPosts'
-import ChoisirTrompette from '@/components/blog/Choisirtrompette'
-import EntretienTrompette from '@/components/blog/Entretientrompette'
-import LexiqueTrompette from '@/components/blog/Lexiquetrompette'
-import MilesDavis from '@/components/blog/Milesdavis'
-import PiegeDebutant from '@/components/blog/Piegedebutant'
-import PostureTrompette from '@/components/blog/Posturetrompette'
-import RespirationArticulation from '@/components/blog/RespirationArticulation'
-import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
-import NotesAiguesTrompette from '@/components/blog/Notesaigues'
+import { getAllPosts, getPostBySlug } from '@/app/lib/blogUtils'
 import ApprendreTrompette from '@/components/blog/ApprendreTrompette'
 import ApprendreTrompetteParis from '@/components/blog/ApprendreTrompetteParis'
+import ChoisirTrompette from '@/components/blog/Choisirtrompette'
 import CoursDeTrompetteDebutantParis from '@/components/blog/CoursTrompetteDebutantParis'
-import SecretTrompette from '@/components/blog/SecretTrompette'
+import EntretienTrompette from '@/components/blog/Entretientrompette'
 import TrompetteApres30 from '@/components/blog/Latrompettea30ans'
+import LexiqueTrompette from '@/components/blog/Lexiquetrompette'
+import MilesDavis from '@/components/blog/Milesdavis'
+import NotesAiguesTrompette from '@/components/blog/Notesaigues'
+import PiegeDebutant from '@/components/blog/Piegedebutant'
+import PostureTrompette from '@/components/blog/Posturetrompette'
 import PourquoiUnProfesseur from '@/components/blog/PourquoiUnProfesseur'
+import RespirationArticulation from '@/components/blog/RespirationArticulation'
+import SecretTrompette from '@/components/blog/SecretTrompette'
+import TrompetteAstucesSon from '@/components/blog/TrompetteAstucesSon'
+import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
+import { notFound } from 'next/navigation'
 
 const articleComponents: { [key: string]: React.ComponentType } = {
-  'pourquoi-un-prof' : PourquoiUnProfesseur,
+  'trompette-astuce-son': TrompetteAstucesSon,
+  'pourquoi-un-prof': PourquoiUnProfesseur,
   'la-trompette-a-30-ans': TrompetteApres30,
   'secret-de-trompette': SecretTrompette,
   'choisir-trompette': ChoisirTrompette,
@@ -58,7 +60,7 @@ export default function ArticlePage({ params }: { params: { category: string, sl
 
 export async function generateStaticParams() {
   const posts = getAllPosts()
-  return posts.flatMap((post) => 
+  return posts.flatMap((post) =>
     blogCategories.map(category => ({
       category: category.slug,
       slug: post.slug,

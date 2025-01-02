@@ -1,11 +1,16 @@
-import { BlogPost, BlogCategory } from '@/app/types/blog'
+import { BlogCategory, BlogPost } from '@/app/types/blog'
 
 export const blogCategories: BlogCategory[] = [
   {
     name: "Guide d'apprentissage trompette",
     slug: "guide-apprentissage",
     posts: [
-      { 
+      {
+        slug: "trompette-astuce-son",
+        title: "3 Astuces pour Améliorer Immédiatement Votre Son à la Trompette",
+        date: "2025-01-02"
+      },
+      {
         slug: 'pourquoi-un-prof',
         title: 'Pourquoi choisir un prof de trompette ?',
         date: '2024-12-04',
@@ -19,27 +24,27 @@ export const blogCategories: BlogCategory[] = [
         slug: 'secret-de-trompette',
         title: 'LE secret pour devenir un bon trompettiste',
         date: '2024-11-24',
-      },  
+      },
       {
         slug: 'cours-trompette-debutant-paris',
         title: 'Cours de trompette pour débutants à Paris',
         date: '2024-11-22',
-      },   
+      },
       {
         slug: 'apprendre-trompette-paris',
         title: 'Apprendre la trompette à Paris',
         date: '2024-11-14',
-      },    
+      },
       {
         slug: 'choisir-trompette',
         title: 'Choisir sa trompette : Guide complet',
         date: '2023-05-28',
-      },         
+      },
       {
         slug: 'apprendre-trompette',
         title: 'Apprendre la trompette : Le Guide Complet pour Débutants et Confirmés',
         date: '2023-05-28',
-      },      
+      },
       {
         slug: 'notes-aigues',
         title: 'Atteindre les notes aigues',
@@ -49,7 +54,7 @@ export const blogCategories: BlogCategory[] = [
         slug: 'entretien-trompette',
         title: 'Entretenir sa Trompette : Conseils pour un Instrument Brillant',
         date: '2023-05-30',
-      },      
+      },
       {
         slug: 'lexique-trompette',
         title: 'Lexique Trompette : Quel est notre champ Lexical ?',
