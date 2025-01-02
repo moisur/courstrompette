@@ -10,7 +10,7 @@ export default function BlogPage() {
   const getImagePath = (slug: string) => {
     switch (slug) {
       case 'trompette-astuces-son':
-        return '/blog/TrompetteAstucesSon(1).webp'
+        return "/blog/TrompetteAstucesSon (4).webp"
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
@@ -42,7 +42,7 @@ export default function BlogPage() {
       case 'cours-trompette-debutant-paris':
         return '/aigu.jpg'
       default:
-        return '/aigu.jpg'
+        return "/blog/TrompetteAstucesSon (4).webp"
     }
   }
 
