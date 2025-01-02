@@ -1,8 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
+
 'use client';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 const AccessoiresTrompette = dynamic(() => import('./AccessoireRecommandes'), {
     loading: () => <div className="animate-pulse p-4">Loading accessories...</div>,
