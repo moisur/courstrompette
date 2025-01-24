@@ -3,12 +3,6 @@
 "use client";
 
 import Image from "next/image";
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger
-} from "@/components/ui/accordion";
 import AccessoiresTrompette from "./AccessoireRecommandes";
 import RelatedArticles from "./RelatedArticles";
 
@@ -277,62 +271,6 @@ export default function AmeliorerVitesseLangueTrompette() {
           musical abordé : classique, jazz, improvisation, etc.
         </p>
 
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Envie d'aller plus loin ?</AccordionTrigger>
-            <AccordionContent>
-              <ul className="list-disc list-inside space-y-3 text-gray-700">
-                <li>
-                  N'hésitez pas à{" "}
-                  <a
-                    href="https://www.ridgewoodschoolofmusic.com/"
-                    className="text-primary hover:underline"
-                  >
-                    visiter notre site web
-                  </a>{" "}
-                  pour explorer nos cours en ligne ou en présentiel à Brooklyn,
-                  Queens et dans la grande région de New York.
-                </li>
-                <li>
-                  Suivez{" "}
-                  <a
-                    href="https://www.instagram.com/bobspellman/"
-                    className="text-primary hover:underline"
-                  >
-                    Bobby Spellman sur Instagram
-                  </a>
-                  ,{" "}
-                  <a
-                    href="https://www.facebook.com/bobbyspellmanmusic/"
-                    className="text-primary hover:underline"
-                  >
-                    Facebook
-                  </a>
-                  , et{" "}
-                  <a
-                    href="https://twitter.com/bobbyspellman"
-                    className="text-primary hover:underline"
-                  >
-                    Twitter
-                  </a>{" "}
-                  pour accéder à davantage de contenu pédagogique et musical.
-                </li>
-                <li>
-                  Si cet article vous a été utile, vous pouvez soutenir notre
-                  travail en faisant un{" "}
-                  <a
-                    href="https://venmo.com/ridgewoodmusic"
-                    className="text-primary hover:underline"
-                  >
-                    don sur Venmo @ridgewood music
-                  </a>
-                  . Votre contribution nous aide à créer davantage de ressources
-                  éducatives.
-                </li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
       </div>
 
       {/* Related Articles & Accessories */}
