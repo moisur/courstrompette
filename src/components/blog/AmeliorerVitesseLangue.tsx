@@ -87,8 +87,8 @@ export default function AmeliorerVitesseLangueTrompette() {
                 </h3>
                 <p>
                   Dans cet exercice, le flux d'air est d'une importance{" "}
-                  <b>capitale</b>. Assurez-vous de maintenir un flux d'air{" "}
-                  <b>stable et continu</b>. Cela permettra à votre langue de se
+                  <b><i>capitale</i></b>. Assurez-vous de maintenir un flux d'air{" "}
+                  <b><i>stable et continu</i></b>. Cela permettra à votre langue de se
                   déplacer avec agilité et légèreté. Un flux d'air irrégulier
                   rendra l'exercice beaucoup plus difficile, voire
                   contre-productif.
@@ -108,7 +108,7 @@ export default function AmeliorerVitesseLangueTrompette() {
                   Être précis sur le plan rythmique
                 </h3>
                 <p>
-                  Portez une attention constante à la <b>précision rythmique</b>
+                  Portez une attention constante à la <b><i>précision rythmique</i></b>
                   . Écoutez attentivement le métronome, intégrez son tempo et
                   travaillez à subdiviser le temps. La subdivision consiste à
                   ressentir et à visualiser mentalement les divisions du temps :
@@ -120,7 +120,7 @@ export default function AmeliorerVitesseLangueTrompette() {
           </ul>
         </div>
         <Image
-          src="/blog/AmeliorerVitesseLangueTrompette (2).webp"
+          src="/blog/AmeliorerVitesseLangueTrompette (4).webp"
           alt="Métronome pour la pratique de la trompette"
           width={500}
           height={300}
@@ -129,31 +129,44 @@ export default function AmeliorerVitesseLangueTrompette() {
         />
       </section>
 
-      {/* Augmentation Graduelle Section */}
-      <section className="grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-primary">
-            Astuce n°1 : Augmenter progressivement le tempo
-          </h2>
+      {/* Astuce 1 Section */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-primary">
+          Astuce n°1 : Augmenter progressivement le tempo
+        </h2>
+        <section className="grid md:grid-cols-2 gap-8 items-center"> {/* Grid 50/50 pour Image + Intro */}
+          <div className="space-y-6">
+            <p>
+              L'objectif de cet exercice est d'éduquer vos muscles à fonctionner
+              dans un cadre temporel précis. En entraînant vos muscles à maintenir
+              une régularité rythmique à un tempo donné, vous facilitez
+              l'augmentation progressive de la vitesse d'articulation.
+            </p>
+            <p>
+              Nous débuterons à 120 bpm en détachant des croches. L'approche
+              consiste à augmenter graduellement le tempo du métronome. Si vous
+              parvenez à maintenir un tempo constant et régulier, augmentez
+              légèrement la vitesse.
+            </p>
+          </div>
+          <Image
+            src="/blog/AmeliorerVitesseLangueTrompette (5).webp"
+            alt="Illustration de l'augmentation graduelle du tempo"
+            width={1500}
+            height={1500}
+            className="rounded-lg shadow-lg"
+            priority
+          />
+        </section>
+        {/* Suite Astuce 1 en PLEINE LARGEUR */}
+        <section className="prose prose-lg max-w-none text-gray-800 space-y-6">
           <p>
-            L'objectif de cet exercice est d'éduquer vos muscles à fonctionner
-            dans un cadre temporel précis. En entraînant vos muscles à maintenir
-            une régularité rythmique à un tempo donné, vous facilitez
-            l'augmentation progressive de la vitesse d'articulation.
-          </p>
-          <p>
-            Nous débuterons à 120 bpm en détachant des croches. L'approche
-            consiste à augmenter graduellement le tempo du métronome. Si vous
-            parvenez à maintenir un tempo constant et régulier, augmentez
-            légèrement la vitesse.
-          </p>
-          <p>
-            L'augmentation doit être <b>progressive</b>. Pour les besoins de
+            L'augmentation doit être <b><i>progressive</i></b>. Pour les besoins de
             cette démonstration, nous allons procéder par paliers plus
             importants. Cependant, dans votre pratique personnelle, privilégiez
             une progression graduelle. Nous passons maintenant à 160 bpm. Je
             maintiens toujours un flux d'air constant et je me concentre sur la
-            précision rythmique des croches entre les battements.
+            <b><i>précision rythmique</i></b> des croches entre les battements.
           </p>
           <p>
             Nous allons monter à 200 bpm. Si vous atteignez la limite supérieure
@@ -162,76 +175,50 @@ export default function AmeliorerVitesseLangueTrompette() {
             doubles croches. Par exemple, si vous étiez à 200 bpm en croches,
             redescendez à 100 bpm et travaillez les doubles croches.
           </p>
-        </div>
-        <Image
-          src="/blog/AmeliorerVitesseLangueTrompette (3).webp"
-          alt="Illustration de l'augmentation graduelle du tempo"
-          width={1500}
-          height={1500}
-          className="rounded-lg shadow-lg"
-          priority
-        />
+        </section>
       </section>
 
-      {/* Depasser ses Limites Section */}
-      <section className="grid md:grid-cols-2 gap-8 items-center">
-        <Image
-          src="/blog/AmeliorerVitesseLangueTrompette (1).webp"
-          alt="Illustration de ne pas dépasser ses limites"
-          width={1500}
-          height={1500}
-          className="rounded-lg shadow-lg"
-          priority
-        />
-        <div className="space-y-6 bg-gray-100 p-6 rounded-lg shadow-inner space-y-6">
-          <h2 className="text-2xl font-semibold text-primary">
-            Astuce n°2 : Ne pas forcer, respecter ses limites
-          </h2>
-          <div className="space-y-4">
-            <p>
-              Continuons l'augmentation progressive du tempo. Suivez
-              attentivement les indications. Nous sommes à 120 bpm. Nous
-              atteignons un tempo où je commence à ressentir un certain confort.
-              Augmentons à 160 bpm. Observons ce qu'il se passe lorsque l'on
-              dépasse ses limites.
-            </p>
-            <p>
-              À ce stade, vous pouvez entendre que je perds en précision
-              rythmique. Je ne parviens plus à maintenir un rythme constant. Il
-              est possible que vous constatiez également une perte de régularité
-              dans votre articulation. Si vous n'articulez plus des doubles
-              croches régulières et que votre rythme devient irrégulier, il est
-              impératif de <b>revenir en arrière</b>. Réduisez le tempo du
-              métronome jusqu'à retrouver un point où vous pouvez maintenir une
-              régularité rythmique stable et précise, aussi longtemps que
-              possible.
-            </p>
-            <p>
-              Une fois que vous avez retrouvé ce tempo stable, maintenez-le.
-              Consacrez du temps à consolider votre articulation à cette
-              vitesse. N'hésitez pas à faire de courtes pauses régulières, mais
-              concentrez-vous sur la précision rythmique et la constance du flux
-              d'air.
-            </p>
-            <p>
-              Pour renforcer votre sens du rythme, vous pouvez accentuer
-              légèrement les temps forts. Cela vous aidera à ancrer votre
-              articulation dans le tempo du métronome. L'objectif n'est pas
-              d'atteindre une perfection absolue sur chaque note, mais de
-              développer la capacité à articuler en rythme avec un flux d'air
-              constant et maîtrisé.
-            </p>
-            <p>
-              Il est essentiel de comprendre que la fatigue est un facteur
-              limitant. Avec la pratique prolongée, vous ressentirez
-              inévitablement de la fatigue et une perte de précision. Dès que
-              vous constatez que vous ne parvenez plus à maintenir la régularité
-              rythmique (croches, doubles croches, etc.), il est temps de faire
-              une pause ou de réduire à nouveau le tempo. Le repos fait partie
-              intégrante du processus d'apprentissage.
-            </p>
+      {/* Astuce 2 Section */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-primary">
+          Astuce n°2 : Ne pas forcer, respecter ses limites
+        </h2>
+        <section className="grid md:grid-cols-2 gap-8 items-center"> {/* Grid 50/50 pour Image + Intro */}
+          <Image
+            src="/blog/AmeliorerVitesseLangueTrompette (6).webp"
+            alt="Illustration de ne pas dépasser ses limites"
+            width={1500}
+            height={1500}
+            className="rounded-lg shadow-lg"
+            priority
+          />
+          <div className="space-y-6 bg-gray-100 p-6 rounded-lg shadow-inner space-y-6">
+            <div className="space-y-4">
+              <p>
+                Continuons l'augmentation progressive du tempo. Suivez
+                attentivement les indications. Nous sommes à 120 bpm. Nous
+                atteignons un tempo où je commence à ressentir un certain confort.
+                Augmentons à 160 bpm. Observons ce qu'il se passe lorsque l'on
+                dépasse ses limites.
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
+        {/* Suite Astuce 2 en PLEINE LARGEUR */}
+        <section className="prose prose-lg max-w-none text-gray-800 space-y-6">
+          <p>
+            À ce stade, vous peut être que vous allez perdre en <b><i>précision rythmique</i></b>. Vous ne parvenez plus à maintenir un rythme constant. Il est possible que vous constatiez également une perte de régularité dans votre articulation. Si vous n'articulez plus des doubles croches régulières et que votre rythme devient irrégulier, il est impératif de <b><i>revenir en arrière</i></b>. Réduisez le tempo du métronome jusqu'à retrouver un point où vous pouvez maintenir une <b><i>régularité rythmique stable et précise</i></b>, aussi longtemps que possible.
+          </p>
+          <p>
+            Une fois que vous avez retrouvé ce tempo stable, maintenez-le. Consacrez du temps à consolider votre articulation à cette vitesse. N'hésitez pas à faire de courtes pauses régulières, mais concentrez-vous sur la <b><i>précision rythmique</i></b> et la <b><i>constance du flux d'air</i></b>.
+          </p>
+          <p>
+            Pour renforcer votre sens du rythme, vous pouvez accentuer légèrement les temps forts. Cela vous aidera à ancrer votre articulation dans le tempo du métronome. L'objectif n'est pas d'atteindre une perfection absolue sur chaque note, mais de développer la capacité à articuler en rythme avec un <b><i>flux d'air constant et maîtrisé</i></b>.
+          </p>
+          <p>
+            Il est essentiel de comprendre que la fatigue est un facteur limitant. Avec la pratique prolongée, vous ressentirez inévitablement de la fatigue et une perte de précision. Dès que vous constatez que vous ne parvenez plus à maintenir la <b><i>régularité rythmique</i></b> (croches, doubles croches, etc.), il est temps de faire une pause ou de réduire à nouveau le tempo. Le repos fait partie intégrante du processus d'apprentissage.
+          </p>
+        </section>
       </section>
 
       {/* Call to Action */}
@@ -252,26 +239,23 @@ export default function AmeliorerVitesseLangueTrompette() {
       </div>
 
       {/* Conclusion et Appel à l'Action */}
-      <div className="text-center space-y-6">
+      <section className="prose prose-lg max-w-none text-gray-800 space-y-6 text-center"> {/* SECTION CONCLUSION AVEC LES CLASSES */}
         <h2 className="text-3xl font-bold text-primary mb-4">
           Conclusion : simplicité, efficacité, nécessité
         </h2>
-        <p className="text-xl text-gray-700 mb-6">
-          Cette méthode, bien que simple en apparence, est d'une{" "}
-          <b>efficacité redoutable</b> pour développer la vitesse et la clarté
+        <p className="text-l text-gray-700 mb-6">
+          Cette méthode, bien que simple en apparence, est d'une <b><i>efficacité redoutable</i></b> pour développer la vitesse et la clarté
           de votre détaché simple.
         </p>
-        <p className="text-gray-700 mb-6">
-          L'essentiel réside dans la constance du flux d'air, la précision
-          rythmique et l'écoute active du métronome. En vous concentrant sur ces
+        <p className="text-l text-gray-700 mb-6">
+          L'essentiel réside dans la <b><i>constance du flux d'air</i></b>, la <b><i>précision rythmique</i></b> et l'<b><i>écoute active du métronome</i></b>. En vous concentrant sur ces
           éléments clés et en augmentant progressivement le tempo, vous
-          constaterez des progrès significatifs dans votre vitesse
-          d'articulation. Cette amélioration se traduira par une plus grande
-          aisance technique et une musicalité accrue, quel que soit le style
+          constaterez des progrès significatifs dans votre <b><i>vitesse
+          d'articulation</i></b>. Cette amélioration se traduira par une plus grande
+          <b><i>aisance technique</i></b> et une <b><i>musicalité accrue</i></b>, quel que soit le style
           musical abordé : classique, jazz, improvisation, etc.
         </p>
-
-      </div>
+      </section>
 
       {/* Related Articles & Accessories */}
       <RelatedArticles />
