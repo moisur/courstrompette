@@ -6,6 +6,11 @@ export const blogCategories: BlogCategory[] = [
     slug: "guide-apprentissage",
     posts: [
       {
+        slug: "ameliorer-vitesse-langue-trompette",
+        title: "Améliorer la vitesse de la langue à la trompette : 3 exercices efficaces",
+        date: "2025-01-02"
+      },
+      {
         slug: "trompette-astuce-son",
         title: "3 Astuces pour Améliorer Immédiatement Votre Son à la Trompette",
         date: "2025-01-02"

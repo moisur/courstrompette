@@ -16,12 +16,15 @@ import RespirationArticulation from '@/components/blog/RespirationArticulation'
 import SecretTrompette from '@/components/blog/SecretTrompette'
 import TrompetteAstucesSon from '@/components/blog/TrompetteAstucesSon'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
+import AmeliorerVitesseLangueTrompette from '@/components/blog/AmeliorerVitesseLangue'
+
 import { notFound } from 'next/navigation'
 
 import type { Metadata } from 'next'
 
 
 const articleComponents: { [key: string]: React.ComponentType } = {
+  'ameliorer-vitesse-langue-trompette': AmeliorerVitesseLangueTrompette,
   "trompette-astuce-son": TrompetteAstucesSon,
   'pourquoi-un-prof': PourquoiUnProfesseur,
   'la-trompette-a-30-ans': TrompetteApres30,

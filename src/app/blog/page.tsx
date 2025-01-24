@@ -9,6 +9,8 @@ export default function BlogPage() {
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'ameliorer-vitesse-langue-trompette':
+        return '/blog/AmeliorerVitesseLangueTrompette (1).webp'
       case 'trompette-astuces-son':
         return "/blog/TrompetteAstucesSon (4).webp"
       case 'pourquoi-un-prof':

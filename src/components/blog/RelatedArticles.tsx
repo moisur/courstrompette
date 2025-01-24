@@ -25,6 +25,14 @@ export default function RelatedArticles() {
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'ameliorer-vitesse-langue-trompette':
+        return '/blog/AmeliorerVitesseLangueTrompette (1).webp'
+      case 'trompette-astuce-son':
+        return '/blog/TrompetteAstucesSon (1).webp'
+      case 'pourquoi-un-prof':
+        return '/jc.jpg'
+      case 'la-trompette-a-30-ans':
+        return '/blog/ZE.webp'
       case 'secret-de-trompette':
         return '/valves.jpg'
       case 'choisir-trompette':
@@ -50,7 +58,7 @@ export default function RelatedArticles() {
       case 'miles-davis':
         return '/miles.jpg'
       default:
-        return '/placeholder.svg'
+        return "/blog/AmeliorerVitesseLangueTrompette (1).webp";
     }
   };
 
