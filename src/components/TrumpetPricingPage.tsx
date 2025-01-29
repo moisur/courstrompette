@@ -4,7 +4,7 @@ import React from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/app/lib/utils"
 
 type PricingCardProps = {
   title: string
@@ -33,7 +33,7 @@ const PricingCard = ({ title, price, description, features, actionLabel, popular
         <CardTitle className="text-zinc-700 dark:text-zinc-300 text-lg">{title}</CardTitle>
         <div className="flex items-baseline gap-1 mt-2">
           <h3 className="text-4xl font-bold">{price}€</h3>
-          <span className="text-sm text-zinc-500">{popular ? "/forfait" : "/séance"}</span>
+          <span className="text-sm text-zinc-500"> / leçon </span>
         </div>
         {discount && (
           <div className="mt-2 inline-block px-2.5 py-1 bg-gradient-to-r from-[#F16] to-[#F97316] text-white text-sm font-semibold rounded-full">
@@ -63,27 +63,27 @@ const TrumpetPricingPage: React.FC = () => {
   const plans = [
     {
       title: "Cours à l'unité",
-      price: 35,
+      price: 40,
       description: "Flexibilité maximale pour tous les niveaux",
       features: ["Flexibilité maximale", "Idéal pour essayer", "Adapté à tous les niveaux"],
       actionLabel: "Réserver",
     },
     {
       title: "Forfait 10 séances",
-      price: 315,
+      price: 36,
       description: "Progression optimale pour jouer votre premier morceau",
       features: ["10% de réduction", "Progression optimale", "Jouer votre premier morceau"],
       actionLabel: "Choisir ce forfait",
       popular: true,
-      discount: 35,
+      discount: 40,
     },
     {
       title: "Forfait 5 séances",
-      price: 166.25,
+      price: 38,
       description: "Progression rapide avec suivi personnalisé",
       features: ["5% de réduction", "Progrès rapides", "Suivi personnalisé"],
       actionLabel: "Choisir ce forfait",
-      discount: 8.75,
+      discount: 10,
     },
   ]
 
