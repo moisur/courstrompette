@@ -3,13 +3,13 @@
 
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MessageCircle, Send, X, Calendar } from 'lucide-react'
+import { MessageCircle, Send, X } from 'lucide-react'
 
 type Message = {
   id: number
@@ -63,15 +63,15 @@ const botResponses = {
     ]
   },
   "cours à l'unité": {
-    content: "Le prix d'une séance individuelle est de 35€. C'est idéal si vous voulez essayer la méthode Z2G ou si vous préférez une flexibilité maximale.",
+    content: "Le prix d'une séance individuelle est de 40€. C'est idéal si vous voulez essayer la méthode Z2G ou si vous préférez une flexibilité maximale.",
     options: ["Voir les autres forfaits", "Réserver un cours", "Retour au menu principal"]
   },
   "forfait 5 séances": {
-    content: "Le forfait 5 séances bénéficie d'une réduction de 5%. Le prix total est de 166,25€, soit 33,25€ par séance. C'est parfait pour débuter et faire des progrès significatifs.",
+    content: "Le forfait 5 séances bénéficie d'une réduction de 5%. Le prix total est de 190€, soit 38€ par séance. C'est parfait pour débuter et faire des progrès significatifs.",
     options: ["Voir les autres forfaits", "Réserver ce forfait", "Retour au menu principal"]
   },
   "forfait 10 séances": {
-    content: "Notre forfait le plus populaire ! 10 séances avec une réduction de 10%. Le prix total est de 315€, soit 31,50€ par séance. C'est l'idéal pour maîtriser la méthode Z2G et jouer votre premier morceau.",
+    content: "Notre forfait le plus populaire ! 10 séances avec une réduction de 10%. Le prix total est de 360€, soit 36€ par séance. C'est l'idéal pour maîtriser la méthode Z2G et jouer votre premier morceau.",
     options: ["Voir les autres forfaits", "Réserver ce forfait", "Retour au menu principal"]
   },
   "cours découverte gratuit": {
