@@ -17,13 +17,14 @@ import SecretTrompette from '@/components/blog/SecretTrompette'
 import TrompetteAstucesSon from '@/components/blog/TrompetteAstucesSon'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
 import AmeliorerVitesseLangueTrompette from '@/components/blog/AmeliorerVitesseLangue'
-
+import TopTrumpetAdvice from '@/components/blog/TopTrumpetAdvice'
 import { notFound } from 'next/navigation'
 
 import type { Metadata } from 'next'
 
 
 const articleComponents: { [key: string]: React.ComponentType } = {
+  'top-trumpet-advice': TopTrumpetAdvice,
   'ameliorer-vitesse-langue-trompette': AmeliorerVitesseLangueTrompette,
   "trompette-astuce-son": TrompetteAstucesSon,
   'pourquoi-un-prof': PourquoiUnProfesseur,
@@ -93,4 +94,3 @@ export async function generateStaticParams() {
     }))
   )
 }
-
