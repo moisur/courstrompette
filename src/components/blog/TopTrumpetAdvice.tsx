@@ -13,11 +13,13 @@ export default function WisdomFromTheMasters() {
       {/* Header Section */}
       <header className="text-center space-y-4">
         <h1 className="text-4xl lg:text-5xl font-bold text-primary leading-tight">
-          Conseils de Top Trompettistes : Routine de Pratique & Sagesse des Maîtres
+          Conseils de Top Trompettistes : Routine de Pratique & Sagesse des
+          Maîtres
         </h1>
         <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          Découvrez les routines de pratique des 17 plus grands trompettistes (Michael Sachs, Arturo
-          Sandoval, Randy Brecker) pour améliorer votre jeu et votre routine de trompette.
+          Découvrez les routines de pratique des 17 plus grands trompettistes
+          (Michael Sachs, Arturo Sandoval, Randy Brecker) pour améliorer votre
+          jeu et votre routine de trompette.
         </p>
       </header>
 
@@ -32,10 +34,12 @@ export default function WisdomFromTheMasters() {
           priority
         />
         <p>
-          Alors que vous sortez votre livre d'Arban pour la énième fois, vous vous êtes probablement
-          demandé ce que vos trompettistes préférés pratiquent. Vos héros s'appuient-ils également
-          sur les mêmes études et les mêmes exercices de lèvres ? Combien d'heures par jour
-          jouent-ils ? Découvrez comment les plus grands trompettistes abordent leur pratique.
+          Alors que vous sortez votre livre d'Arban pour la énième fois, vous
+          vous êtes probablement demandé ce que vos trompettistes préférés
+          pratiquent. Vos héros s'appuient-ils également sur les mêmes études et
+          les mêmes exercices de lèvres ? Combien d'heures par jour jouent-ils ?
+          Découvrez comment les plus grands trompettistes abordent leur
+          pratique.
         </p>
         <p>
           Le trompettiste et YouTuber{" "}
@@ -46,7 +50,8 @@ export default function WisdomFromTheMasters() {
           >
             Josh Rzepka
           </a>{" "}
-          avait les mêmes questions et a décidé de les poser. Dans une vidéo intitulée «
+          avait les mêmes questions et a décidé de les poser. Dans une vidéo
+          intitulée «
           <a
             href="https://www.youtube.com/watch?v=3vmTFumXOsI&list=PLSfMy6oITkkvEWisa13-xD82wgcFFMG3k&index=2"
             target="_blank"
@@ -54,12 +59,13 @@ export default function WisdomFromTheMasters() {
           >
             À quoi ressemble votre journée de pratique typique ?
           </a>
-           », Rzepka interviewe 17 trompettistes très différents, tous légendes et lauréats, sur
-          leurs routines typiques — et idéales. Les interviews varient en longueur ; certains
-          approfondissent les livres qu'ils utilisent et pendant combien de temps. D'autres sont
-          plus généraux ou philosophiques. Ensemble, ils dressent un portrait illuminant des types
-          de pratique qui contribuent à une carrière de trompettiste réussie. Découvrez les secrets
-          de leur succès.
+           », Rzepka interviewe 17 trompettistes très différents, tous légendes
+          et lauréats, sur leurs routines typiques — et idéales. Les interviews
+          varient en longueur ; certains approfondissent les livres qu'ils
+          utilisent et pendant combien de temps. D'autres sont plus généraux ou
+          philosophiques. Ensemble, ils dressent un portrait illuminant des
+          types de pratique qui contribuent à une carrière de trompettiste
+          réussie. Découvrez les secrets de leur succès.
         </p>
         <p>Voici les trompettistes interviewés :</p>
         <ul>
@@ -181,7 +187,11 @@ export default function WisdomFromTheMasters() {
             </a>
           </li>
           <li>
-            <a href="https://www.instagram.com/kblizo/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.instagram.com/kblizo/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Karin Bliznik
             </a>
           </li>
@@ -221,30 +231,38 @@ export default function WisdomFromTheMasters() {
           Focus sur le Son : L'importance capitale pour les Trompettistes
         </h2>
         <p className="text-gray-800">
-          S'il y a une chose sur laquelle la plupart des personnes interrogées s'entendent, c'est
-          qu'un bon son passe avant tout. De nombreux joueurs commencent la journée avec des
-          exercices axés sur la production du son, du bourdonnement aux sons longs en passant par
-          les études de flux et les études lyriques. Même les jazzmen et les pop stars comme Randy
-          Brecker et Lessie Vonner incluent des études classiques dans leurs routines afin de garder
-          leurs sons cohérents et résonnants. Améliorez votre technique de son à la trompette.
+          S'il y a une chose sur laquelle la plupart des personnes interrogées
+          s'entendent, c'est qu'un bon son passe avant tout. De nombreux joueurs
+          commencent la journée avec des exercices axés sur la production du
+          son, du bourdonnement aux sons longs en passant par les études de flux
+          et les études lyriques. Même les jazzmen et les pop stars comme Randy
+          Brecker et Lessie Vonner incluent des études classiques dans leurs
+          routines afin de garder leurs sons cohérents et résonnants. Améliorez
+          votre technique de son à la trompette.
         </p>
       </section>
 
       {/* Fundamentals Section */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold text-primary">
-          Fondamentaux de la Trompette : Flexibilité, Articulation & Gamme Essentielles
+          Fondamentaux de la Trompette : Flexibilité, Articulation & Gamme
+          Essentielles
         </h2>
         <p className="text-gray-800">
-          Il existe d'autres fondamentaux qui nécessitent également un travail quotidien, et presque
-          tous les joueurs intègrent la flexibilité, l'articulation et la gamme dans leurs routines.
-          Travaillez la flexibilité, l'articulation et la gamme pour une technique de trompette
-          solide.
+          Il existe d'autres fondamentaux qui nécessitent également un travail
+          quotidien, et presque tous les joueurs intègrent la flexibilité,
+          l'articulation et la gamme dans leurs routines. Travaillez la
+          flexibilité, l'articulation et la gamme pour une technique de
+          trompette solide.
         </p>
         <ul>
           <li>
             Randy Brecker et{" "}
-            <a href="https://www.jazz.org/JLCO/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.jazz.org/JLCO/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Kenny Rampton de l'Orchestre de Jazz du Lincoln Center
             </a>{" "}
             utilisent des exercices de la méthode{" "}
@@ -258,8 +276,8 @@ export default function WisdomFromTheMasters() {
             . Apprenez la méthode Carmine Caruso
           </li>
           <li>
-            Michael Sachs de l'Orchestre de Cleveland et Karin Bliznik de l'Orchestre Symphonique de
-            Saint-Louis ne jurent que par les{" "}
+            Michael Sachs de l'Orchestre de Cleveland et Karin Bliznik de
+            l'Orchestre Symphonique de Saint-Louis ne jurent que par les{" "}
             <a
               href="https://charlescolin.com/product/articulation-studies/"
               target="_blank"
@@ -270,8 +288,8 @@ export default function WisdomFromTheMasters() {
             . Découvrez les études de Chris Gekker.
           </li>
           <li>
-            Pour la flexibilité, Sachs et le joueur de jazz acclamé Brian Lynch recommandent les
-            exercices{" "}
+            Pour la flexibilité, Sachs et le joueur de jazz acclamé Brian Lynch
+            recommandent les exercices{" "}
             <a
               href="https://www.amazon.com/Lip-Flexibilities-All-Brass-Instruments/dp/0963085662"
               target="_blank"
@@ -282,8 +300,9 @@ export default function WisdomFromTheMasters() {
             . Utilisez les exercices de Bai Lin.
           </li>
           <li>
-            Les classiques : presque tous les joueurs ont mentionné Arban, Clarke ou Schlossberg.
-            Consultez les méthode Arban, Clarke ou Schlossberg
+            Les classiques : presque tous les joueurs ont mentionné Arban,
+            Clarke ou Schlossberg. Consultez les méthode Arban, Clarke ou
+            Schlossberg
           </li>
         </ul>
       </section>
@@ -294,16 +313,18 @@ export default function WisdomFromTheMasters() {
           Personnalisez Votre Routine de Trompette : Conseils d'Experts
         </h2>
         <p className="text-gray-800">
-          Et bien qu'ils s'inspirent de diverses méthodes populaires, les joueurs ont tous passé du
-          temps à modifier et à personnaliser leurs routines pour qu'elles correspondent à leurs
-          préférences et à leurs besoins personnels. Le joueur de premier plan acclamé Roger Ingram
-          intègre un accordeur dans sa pratique de Schlossberg, et Lynch modifie les études de flux
-          pour les rendre plus semblables aux modèles de jazz. Tage Larsen, de l'Orchestre
-          Symphonique de Chicago, suivait strictement l'échauffement de 20 minutes de Michael Davis,
-          mais il a modifié de nombreux aspects de la routine au fil des ans pour qu'elle
-          corresponde à ses propres besoins (il s'amuse toujours à jouer avec l'accompagnement du CD
-          inclus !). De nombreux joueurs divisent leur pratique en séances de longueurs variables,
-          en veillant à intégrer{" "}
+          Et bien qu'ils s'inspirent de diverses méthodes populaires, les
+          joueurs ont tous passé du temps à modifier et à personnaliser leurs
+          routines pour qu'elles correspondent à leurs préférences et à leurs
+          besoins personnels. Le joueur de premier plan acclamé Roger Ingram
+          intègre un accordeur dans sa pratique de Schlossberg, et Lynch modifie
+          les études de flux pour les rendre plus semblables aux modèles de
+          jazz. Tage Larsen, de l'Orchestre Symphonique de Chicago, suivait
+          strictement l'échauffement de 20 minutes de Michael Davis, mais il a
+          modifié de nombreux aspects de la routine au fil des ans pour qu'elle
+          corresponde à ses propres besoins (il s'amuse toujours à jouer avec
+          l'accompagnement du CD inclus !). De nombreux joueurs divisent leur
+          pratique en séances de longueurs variables, en veillant à intégrer{" "}
           <a
             href="https://www.trumpetwarmup.com/post/a-guide-to-fundamentals-building-a-great-foundation"
             target="_blank"
@@ -317,16 +338,22 @@ export default function WisdomFromTheMasters() {
 
       {/* Practice Duration Section */}
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold text-primary">Combien de temps pratiquer ?</h2>
+        <h2 className="text-2xl font-semibold text-primary">
+          Combien de temps pratiquer ?
+        </h2>
         <p className="text-gray-800">
-          S'il y a une chose qui varie le plus entre toutes les interviews, c'est quand et pendant
-          combien de temps les joueurs pratiquent. Certaines personnes sont constamment sur la route
-          et n'ont jamais l'occasion de s'échauffer. D'autres limitent leurs séances de pratique à
-          90 minutes maximum, tandis qu'
-          <strong>Arturo Sandoval prétend qu'il pratiquait huit heures par jour !</strong>. Ingram
-          aime garder ses trompettes autour de la maison pour de courtes séances de pratique
-          impromptues. Et tandis que de nombreux joueurs aiment s'échauffer tôt le matin, Brecker
-          préfère s'échauffer l'après-midi et pratiquer tard dans la nuit. Trouvez le temps de
+          S'il y a une chose qui varie le plus entre toutes les interviews,
+          c'est quand et pendant combien de temps les joueurs pratiquent.
+          Certaines personnes sont constamment sur la route et n'ont jamais
+          l'occasion de s'échauffer. D'autres limitent leurs séances de pratique
+          à 90 minutes maximum, tandis qu'
+          <strong>
+            Arturo Sandoval prétend qu'il pratiquait huit heures par jour !
+          </strong>
+          . Ingram aime garder ses trompettes autour de la maison pour de
+          courtes séances de pratique impromptues. Et tandis que de nombreux
+          joueurs aiment s'échauffer tôt le matin, Brecker préfère s'échauffer
+          l'après-midi et pratiquer tard dans la nuit. Trouvez le temps de
           pratique idéal pour vous.
         </p>
       </section>
@@ -335,30 +362,38 @@ export default function WisdomFromTheMasters() {
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold text-primary">Chris Coletti</h2>
         <p className="text-gray-800">
-          Chris Coletti, ancien membre du Canadian Brass, décrit une approche particulièrement
-          intéressante de la structuration d'une routine. Inspiré par des investisseurs comme David
-          Swensen, il a créé un diagramme à secteurs qui intègre les différents fondamentaux dans la
-          mesure qu'il juge nécessaire. Chaque séance de pratique, quelle que soit sa durée, suit
-          les proportions du diagramme à secteurs, et à la fin de la semaine, il ajuste le diagramme
-          en fonction des domaines qui se sont le plus améliorés. Comme beaucoup d'autres joueurs,
-          son approche systématique combine une cohérence hebdomadaire avec une réévaluation et une
-          modification constantes. Adaptez votre routine comme Chris Coletti.
+          Chris Coletti, ancien membre du Canadian Brass, décrit une approche
+          particulièrement intéressante de la structuration d'une routine.
+          Inspiré par des investisseurs comme David Swensen, il a créé un
+          diagramme à secteurs qui intègre les différents fondamentaux dans la
+          mesure qu'il juge nécessaire. Chaque séance de pratique, quelle que
+          soit sa durée, suit les proportions du diagramme à secteurs, et à la
+          fin de la semaine, il ajuste le diagramme en fonction des domaines qui
+          se sont le plus améliorés. Comme beaucoup d'autres joueurs, son
+          approche systématique combine une cohérence hebdomadaire avec une
+          réévaluation et une modification constantes. Adaptez votre routine
+          comme Chris Coletti.
         </p>
       </section>
 
       {/* Just Play Section */}
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold text-primary">JOUEZ tout simplement !</h2>
+        <h2 className="text-2xl font-semibold text-primary">
+          JOUEZ tout simplement !
+        </h2>
         <p className="text-gray-800">
-          Bien sûr, une journée de pratique idéale ne serait pas complète sans un peu de musique.
-          Les routines de nombreux joueurs changent en fonction des représentations musicales à
-          venir. Brecker aime jouer avec des disques pendant des heures chaque soir, augmentant son
-          temps de jeu à l'approche d'un concert à haute intensité. Roger Ingram essaie de jouer
-          dans un style différent chaque jour pour rester flexible et inspiré. La soliste de
-          trompette norvégienne Tine Thing Helseth, qui admet qu'elle n'aime pas pratiquer, essaie
-          de garder les choses fraîches, changeant complètement la plupart de sa routine en fonction
-          des concerts à venir. Et José Sibaja du Boston Brass aime réserver du temps à la fin de sa
-          journée de pratique « juste pour jouer ». N'oubliez pas de vous faire plaisir !
+          Bien sûr, une journée de pratique idéale ne serait pas complète sans
+          un peu de musique. Les routines de nombreux joueurs changent en
+          fonction des représentations musicales à venir. Brecker aime jouer
+          avec des disques pendant des heures chaque soir, augmentant son temps
+          de jeu à l'approche d'un concert à haute intensité. Roger Ingram
+          essaie de jouer dans un style différent chaque jour pour rester
+          flexible et inspiré. La soliste de trompette norvégienne Tine Thing
+          Helseth, qui admet qu'elle n'aime pas pratiquer, essaie de garder les
+          choses fraîches, changeant complètement la plupart de sa routine en
+          fonction des concerts à venir. Et José Sibaja du Boston Brass aime
+          réserver du temps à la fin de sa journée de pratique « juste pour
+          jouer ». N'oubliez pas de vous faire plaisir !
         </p>
       </section>
 
@@ -368,9 +403,10 @@ export default function WisdomFromTheMasters() {
           Conclusion : Apprenez des meilleurs trompettistes
         </h2>
         <p className="text-gray-800">
-          Il est clair que chaque joueur a réfléchi de manière critique et méthodique à sa routine
-          de pratique, en s'efforçant d'adopter un régime qui corresponde à ses objectifs
-          techniques, créatifs et personnels. Regardez la
+          Il est clair que chaque joueur a réfléchi de manière critique et
+          méthodique à sa routine de pratique, en s'efforçant d'adopter un
+          régime qui corresponde à ses objectifs techniques, créatifs et
+          personnels. Regardez la
           <a
             href="https://www.youtube.com/watch?v=3vmTFumXOsI&t=134s"
             target="_blank"
@@ -378,8 +414,8 @@ export default function WisdomFromTheMasters() {
           >
             vidéo complète
           </a>
-          pour en savoir plus auprès de ces grands trompettistes ! Et consultez le reste de la
-          chaîne de
+          pour en savoir plus auprès de ces grands trompettistes ! Et consultez
+          le reste de la chaîne de
           <a
             href="https://www.youtube.com/channel/UCFxmvV7-hslNN_B3U4EA8rg"
             target="_blank"
@@ -387,18 +423,25 @@ export default function WisdomFromTheMasters() {
           >
             Josh
           </a>
-          pour d'autres interviews, des conseils de trompette et de nombreux autres éléments liés à
-          la trompette.
+          pour d'autres interviews, des conseils de trompette et de nombreux
+          autres éléments liés à la trompette.
         </p>
-        <ul>
-          <li>
-            <em>
-              (Intéressé par un essai gratuit de 14 jours sur trumpetwarmup.com ?
-              <a href="https://www.trumpetwarmup.com/free-trial">Cliquez ici !</a>)
-            </em>
-            <br />
-          </li>
-        </ul>
+
+        {/* Call to Action */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-primary mb-4">
+            Prêt à Vous Lancer ?
+          </h2>
+          <p className="text-xl text-gray-700 mb-6">
+            Commencez votre apprentissage de la trompette dès aujourd'hui !
+          </p>
+          <a
+            href="/#booking" // Remplacez par le lien correct
+            className="w-full bg-orange-500 text-white font-semibold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
+          >
+            Trouver un Cours de Trompette
+          </a>
+        </div>
       </section>
 
       {/* Related Articles & Accessories */}
