@@ -5,6 +5,7 @@
 import AccessoiresTrompette from "./AccessoireRecommandes"; // Conserve l'import
 import RelatedArticles from "./RelatedArticles"; // Conserve l'import
 import { useState } from "react"; //Ajout useState pour le bouton
+import Image from "next/image"; // Import de l'image
 
 export default function ProfesseurRecommandes() {
   // Changement du nom du composant
@@ -21,7 +22,16 @@ export default function ProfesseurRecommandes() {
           l'instrument, embouchure, premières notes, et plus encore !
         </p>
       </header>
-
+      <div className="flex justify-center my-6">
+        <Image
+          src="/blog/ProfesseurRecommandes (1).webp"
+          alt="Jolie trompettistes"
+          width={500}
+          height={300}
+          className="rounded-lg shadow-lg"
+          priority
+        />
+      </div>
       {/* Introductory Content */}
       <section className="prose prose-lg max-w-none text-gray-800 space-y-6">
         <p>
@@ -109,7 +119,7 @@ export default function ProfesseurRecommandes() {
           )}
           <button
             onClick={() => setShowMoreMatos(!showMoreMatos)}
-            className="text-blue-500 hover:underline"
+            className="text-gray-500 hover:underline"
           >
             {showMoreMatos
               ? "Voir moins de détails"
