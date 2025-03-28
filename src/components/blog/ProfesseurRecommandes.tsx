@@ -55,20 +55,24 @@ export default function ProfesseurRecommandes() {
               <strong>débutant en trompette</strong>.
             </li>
             <li>
-              <strong>Embouchure :</strong>{" "}
-              <a href="#embouchure" className="text-blue-500 hover:underline">
-                Une 1 1/2 C
-              </a>{" "}
-              est un standard pour commencer. Nous parlerons plus en détail de
-              l'
+              <a href="#embouchure" className="text-orange-500 hover:underline">
+                <strong>Embouchure </strong>
+              </a>
+              : Une 1 1/2 C est un standard pour commencer. Nous parlerons plus
+              en détail de l'
               <strong>embouchure trompette débutant</strong>.
             </li>
             <li>
-              <strong>Huile pour pistons :</strong> Essentiel pour l'entretien.
+              <a href="#nettoyage" className="text-orange-500 hover:underline">
+                <strong>Huile pour pistons </strong>{" "}
+              </a>
+              : Essentiel pour l'entretien.
             </li>
             <li>
-              <strong>Graisse pour coulisses :</strong> Pour un bon
-              fonctionnement.
+              <a href="#nettoyage" className="text-orange-500 hover:underline">
+                <strong>Graisse pour coulisses </strong>{" "}
+              </a>{" "}
+              : Pour un bon fonctionnement.
             </li>
             <li>
               <strong>Chiffon :</strong> Pour nettoyer après chaque utilisation.
@@ -91,9 +95,15 @@ export default function ProfesseurRecommandes() {
                 spécialisé.
               </p>
               <p>
-                Pour l'<strong>embouchure trompette débutant</strong>, si la 1
-                1/2C ne vous convient pas, votre professeur pourra vous guider
-                vers d'autres options.
+                Pour l'<strong>embouchure trompette débutant</strong>, si
+                <a
+                  href="#embouchure"
+                  className="text-orange-500 hover:underline"
+                >
+                  <strong> l'embouchure 1 1/2C </strong>
+                </a>{" "}
+                ne vous convient pas, votre professeur pourra vous guider vers
+                d'autres options.
               </p>
             </div>
           )}

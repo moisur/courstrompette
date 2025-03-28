@@ -14,6 +14,7 @@ const AccessoiresTrompette = () => {
       affiliateLink: "https://amzn.to/3TGm4kR",
     },
     {
+      id: "nettoyage",
       title: "Huile pour Pistons La Tromba",
       description:
         "L'huile La Tromba pour pistons des instruments cuivres. (Pistons acier fin ou monel).",
@@ -23,6 +24,7 @@ const AccessoiresTrompette = () => {
       affiliateLink: "https://amzn.to/4eaaM0H",
     },
     {
+      id: "graisse",
       title: "La Tromba - Graisse pour liège et coulisse - 15g",
       description: "Graisse unique et stable pour les instruments de musique.",
       imageUrl:
