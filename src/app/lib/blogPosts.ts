@@ -6,6 +6,11 @@ export const blogCategories: BlogCategory[] = [
     slug: "guide-apprentissage",
     posts: [
       {
+        slug: "professeur-recommandes",
+        title: "Professeurs de trompette recommandés",
+        date: "2025-03-09",
+      },
+      {
         slug: "top-trumpet-advice",
         title: "Les meilleurs conseils des meilleurs trompettistes",
         date: "2025-03-09",

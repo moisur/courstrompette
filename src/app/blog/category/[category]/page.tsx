@@ -14,6 +14,8 @@ export default function CategoryPage({ params }: { params: { category: string } 
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'professeur-recommandes':
+        return '/blog/ProfesseurRecommandes (1).webp'
       case 'top-trumpet-advice':
         return '/blog/TopTrumpetAdvice (1).webp'    
       case 'ameliorer-vitesse-langue-trompette':

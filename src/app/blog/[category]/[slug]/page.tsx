@@ -18,12 +18,15 @@ import TrompetteAstucesSon from '@/components/blog/TrompetteAstucesSon'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
 import AmeliorerVitesseLangueTrompette from '@/components/blog/AmeliorerVitesseLangue'
 import TopTrumpetAdvice from '@/components/blog/TopTrumpetAdvice'
+import ProfesseurRecommandes from '@/components/blog/ProfesseurRecommandes'
+
 import { notFound } from 'next/navigation'
 
 import type { Metadata } from 'next'
 
 
 const articleComponents: { [key: string]: React.ComponentType } = {
+  'professeur-recommandes': ProfesseurRecommandes,
   'top-trumpet-advice': TopTrumpetAdvice,
   'ameliorer-vitesse-langue-trompette': AmeliorerVitesseLangueTrompette,
   "trompette-astuce-son": TrompetteAstucesSon,
