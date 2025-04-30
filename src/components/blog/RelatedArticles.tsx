@@ -23,44 +23,7 @@ export default function RelatedArticles() {
       .slice(0, limit);
   };
 
-  const getImagePath = (slug: string) => {
-    switch (slug) {
-      case 'ameliorer-vitesse-langue-trompette':
-        return '/blog/AmeliorerVitesseLangueTrompette (1).webp'
-      case 'trompette-astuce-son':
-        return '/blog/TrompetteAstucesSon (1).webp'
-      case 'pourquoi-un-prof':
-        return '/jc.jpg'
-      case 'la-trompette-a-30-ans':
-        return '/blog/ZE.webp'
-      case 'secret-de-trompette':
-        return '/valves.jpg'
-      case 'choisir-trompette':
-        return '/trompette.webp'
-      case 'apprendre-trompette':
-        return '/debutant.jpg'
-      case 'apprendre-trompette-paris':
-        return '/jc.jpg'
-      case 'notes-aigues':
-        return '/aigu.jpg'
-      case 'entretien-trompette':
-        return '/pavillon.jpg'
-      case 'lexique-trompette':
-        return '/lexique.jpg'
-      case 'posture-trompette':
-        return '/posture.jpg'
-      case 'respiration-articulation':
-        return '/respiration.webp'
-      case 'trompette-premiers-pas':
-        return '/corps.jpg'
-      case 'piege-debutant':
-        return '/prof.webp'
-      case 'miles-davis':
-        return '/miles.jpg'
-      default:
-        return "/blog/AmeliorerVitesseLangueTrompette (1).webp";
-    }
-  };
+  // Removed getImagePath function
 
   const relatedPosts = getRelatedPosts(currentCategoryPosts, currentSlug, 3);
 
@@ -115,7 +78,7 @@ export default function RelatedArticles() {
               <Link href={`/blog/category/${currentCategory}/${post.slug}`}>
                 <div className="relative h-48 w-full">
                   <Image
-                    src={getImagePath(post.slug)}
+                    src={post.image} // Use post.image directly
                     alt={post.title}
                     fill
                     className="object-cover"
@@ -136,4 +99,3 @@ export default function RelatedArticles() {
     </div>
   );
 }
-

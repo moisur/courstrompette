@@ -1,11 +1,21 @@
 /* eslint-disable react/no-unescaped-entities */
 
+/* eslint-disable react/no-unescaped-entities */
+
 'use client';
 
 import Image from 'next/image';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import dynamic from 'next/dynamic';
+// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"; // Remove direct import
 import AccessoiresTrompette from './AccessoireRecommandes';
 import RelatedArticles from './RelatedArticles';
+
+// Dynamically import Accordion components with SSR disabled
+const Accordion = dynamic(() => import('@/components/ui/accordion').then(mod => mod.Accordion), { ssr: false });
+const AccordionItem = dynamic(() => import('@/components/ui/accordion').then(mod => mod.AccordionItem), { ssr: false });
+const AccordionTrigger = dynamic(() => import('@/components/ui/accordion').then(mod => mod.AccordionTrigger), { ssr: false });
+const AccordionContent = dynamic(() => import('@/components/ui/accordion').then(mod => mod.AccordionContent), { ssr: false });
+
 
 export default function CoursDeTrompetteDebutantParis() {
   return (

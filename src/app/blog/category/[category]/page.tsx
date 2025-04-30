@@ -14,6 +14,8 @@ export default function CategoryPage({ params }: { params: { category: string } 
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'cours-trompette-paris-guide-debutants-erreurs-a-eviter':
+        return '/blog/5trucscourstrompette.webp'
       case 'professeur-recommandes':
         return '/blog/ProfesseurRecommandes (1).webp'
       case 'top-trumpet-advice':
@@ -25,7 +27,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
-        return '/ze.webp'
+        return '/ZE.webp'
       case 'secret-de-trompette':
         return '/valves.jpg'
       case 'choisir-trompette':

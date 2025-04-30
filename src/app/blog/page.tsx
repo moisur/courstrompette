@@ -9,10 +9,11 @@ export default function BlogPage() {
 
   const getImagePath = (slug: string) => {
     switch (slug) {
+      case 'cours-trompette-paris-guide-debutants-erreurs-a-eviter':
+        return '/blog/5trucscourstrompette.webp'
       case 'professeur-recommandes':
         return '/blog/ProfesseurRecommandes (1).webp'
-      case 'top-trumpet-advice':
-        return '/blog/TopTrumpetAdvice (1).webp'
+      // Removed top-trumpet-advice case
       case 'ameliorer-vitesse-langue-trompette':
         return '/blog/AmeliorerVitesseLangueTrompette (1).webp'
       case 'trompette-astuces-son':
@@ -20,7 +21,7 @@ export default function BlogPage() {
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
-        return '/blog/ze.webp'
+        return '/blog/ZE.webp'
       case 'secret-de-trompette':
         return '/valves.jpg'
       case 'choisir-trompette':

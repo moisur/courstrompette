@@ -17,32 +17,32 @@ import SecretTrompette from '@/components/blog/SecretTrompette'
 import TrompetteAstucesSon from '@/components/blog/TrompetteAstucesSon'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
 import AmeliorerVitesseLangueTrompette from '@/components/blog/AmeliorerVitesseLangue'  
-import TopTrumpetAdvice from '@/components/blog/TopTrumpetAdvice'
 import ProfesseurRecommandes from '@/components/blog/ProfesseurRecommandes'
+import erreurs from "@/components/blog/5erreurs";
 
 import { notFound } from 'next/navigation'
 
 const articleComponents: { [key: string]: React.ComponentType } = {
-  'professeur-recommandes': ProfesseurRecommandes,
-  'top-trumpet-advice': TopTrumpetAdvice,
-  'ameliorer-vitesse-langue-trompette': AmeliorerVitesseLangueTrompette,
-  'trompette-astuce-son': TrompetteAstucesSon,
-  'pourquoi-un-prof': PourquoiUnProfesseur,
-  'la-trompette-a-30-ans': TrompetteApres30,
-  'secret-de-trompette': SecretTrompette,
-  'choisir-trompette': ChoisirTrompette,
-  'entretien-trompette': EntretienTrompette,
-  'lexique-trompette': LexiqueTrompette,
-  'miles-davis': MilesDavis,
-  'piege-debutant': PiegeDebutant,
-  'posture-trompette': PostureTrompette,
-  'respiration-articulation': RespirationArticulation,
-  'trompette-premiers-pas': TrompettePremiersPas,
-  'notes-aigues': NotesAiguesTrompette,
-  'apprendre-trompette': ApprendreTrompette,
-  'apprendre-trompette-paris': ApprendreTrompetteParis,
-  'cours-trompette-debutant-paris': CoursDeTrompetteDebutantParis,
-}
+  "cours-trompette-paris-guide-debutants-erreurs-a-eviter": erreurs,
+  "professeur-recommandes": ProfesseurRecommandes,
+  "ameliorer-vitesse-langue-trompette": AmeliorerVitesseLangueTrompette,
+  "trompette-astuce-son": TrompetteAstucesSon,
+  "pourquoi-un-prof": PourquoiUnProfesseur,
+  "la-trompette-a-30-ans": TrompetteApres30,
+  "secret-de-trompette": SecretTrompette,
+  "choisir-trompette": ChoisirTrompette,
+  "entretien-trompette": EntretienTrompette,
+  "lexique-trompette": LexiqueTrompette,
+  "miles-davis": MilesDavis,
+  "piege-debutant": PiegeDebutant,
+  "posture-trompette": PostureTrompette,
+  "respiration-articulation": RespirationArticulation,
+  "trompette-premiers-pas": TrompettePremiersPas,
+  "notes-aigues": NotesAiguesTrompette,
+  "apprendre-trompette": ApprendreTrompette,
+  "apprendre-trompette-paris": ApprendreTrompetteParis,
+  "cours-trompette-debutant-paris": CoursDeTrompetteDebutantParis,
+};
 
 export default function ArticlePage({ params }: { params: { category: string, slug: string } }) {
   const post = getPostBySlug(params.slug)
