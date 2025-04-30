@@ -25,7 +25,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
-        return '/ZE.webp'
+        return '/ze.webp'
       case 'secret-de-trompette':
         return '/valves.jpg'
       case 'choisir-trompette':

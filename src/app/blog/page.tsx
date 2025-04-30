@@ -20,7 +20,7 @@ export default function BlogPage() {
       case 'pourquoi-un-prof':
         return '/jc.jpg'
       case 'la-trompette-a-30-ans':
-        return '/ZE.webp'
+        return '/blog/ze.webp'
       case 'secret-de-trompette':
         return '/valves.jpg'
       case 'choisir-trompette':

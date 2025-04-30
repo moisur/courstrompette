@@ -18,7 +18,7 @@ import TrumpetPricingPage from './TrumpetPricingPage'
 import profMat from '@/../public/2.jpg'
 import jc1 from "@/../public/jc.jpg"
 import pkoi from '@/../public/3.jpeg'
-import ze from '@/../public/ZE.webp'
+import jc from '@/../public/jc.jpg'
 import AccessoiresTrompette from './blog/AccessoireRecommandes'
 export default function Cours() {
   const [showPopup, setShowPopup] = useState(false)
@@ -178,7 +178,7 @@ export default function Cours() {
             </div>
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
               <Image
-                src={ze}
+                src={jc}
                 alt="cours de trompette paris"
                 className="rounded-lg shadow-lg w-full h-auto"
                 width={500}
