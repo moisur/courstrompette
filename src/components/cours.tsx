@@ -20,6 +20,8 @@ import jc1 from "@/../public/jc.jpg"
 import pkoi from '@/../public/3.jpeg'
 import jc from '@/../public/jc.jpg'
 import AccessoiresTrompette from './blog/AccessoireRecommandes'
+import GoogleReviewsDisplay from '@/components/reviews/GoogleReviewsDisplay'; // Import the reviews component
+
 export default function Cours() {
   const [showPopup, setShowPopup] = useState(false)
   const [showExitPopup, setShowExitPopup] = useState(false)
@@ -454,9 +456,10 @@ export default function Cours() {
             <span className="pl-2 pr-2   bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
               élèves
             </span>
-            peuvent vous le confirmer :
+            m'aiment et me recommandent !:
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Original Testimonial Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"> {/* Added mb-12 */}
             <Card>
               <CardContent className="p-6">
                 <p className="italic mb-4">
@@ -495,6 +498,14 @@ export default function Cours() {
               </CardContent>
             </Card>
           </div>
+          {/* Add the Google Reviews Display below the original testimonials */}
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 mt-16"> {/* Added title for Google Reviews */}
+            Ce qu'ils disent sur
+            <span className="pl-2 pr-2   bg-gradient-to-br from-[#4285F4] via-[#DB4437] to-[#F4B400] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+              Google
+            </span>
+          </h3>
+          <GoogleReviewsDisplay />
         </div>
       </section>
 

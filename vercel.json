@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "courstrompette.vercel.app"
+        }
+      ],
+      "destination": "https://courstrompetteparis.lecoledes1.com/$1",
+      "permanent": true
+    }
+  ]
+}

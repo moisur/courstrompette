@@ -16,7 +16,6 @@ import PourquoiUnProfesseur from '@/components/blog/PourquoiUnProfesseur'
 import ProfesseurRecommandes from '@/components/blog/ProfesseurRecommandes'
 import RespirationArticulation from '@/components/blog/RespirationArticulation'
 import SecretTrompette from '@/components/blog/SecretTrompette'
-// Removed TopTrumpetAdvice import
 import TrompetteAstucesSon from '@/components/blog/TrompetteAstucesSon'
 import TrompettePremiersPas from '@/components/blog/Trompettepremierspas'
 
@@ -106,11 +105,8 @@ export default function ArticlePage({ params }: { params: { category: string, sl
   }
 
   console.log("--- Rendu du composant ArticleComponent ---"); // Log success
-  return (
-    <div className="container mx-auto px-4 py-20">
-      <ArticleComponent />
-    </div>
-  )
+  // The container div is removed, layout.tsx will handle the main structure
+  return <ArticleComponent />;
 }
 
 export async function generateStaticParams() {
