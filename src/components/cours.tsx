@@ -452,11 +452,11 @@ export default function Cours() {
       <section id="testimonials" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl mb-16 md:text-4xl font-bold text-center">
-            Mes
+            Ce que 
             <span className="pl-2 pr-2   bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-              élèves
+              disent
             </span>
-            m'aiment et me recommandent !:
+            mes élèves :
           </h2>
           {/* Original Testimonial Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"> {/* Added mb-12 */}
@@ -498,14 +498,7 @@ export default function Cours() {
               </CardContent>
             </Card>
           </div>
-          {/* Add the Google Reviews Display below the original testimonials */}
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-8 mt-16"> {/* Added title for Google Reviews */}
-            Ce qu'ils disent sur
-            <span className="pl-2 pr-2   bg-gradient-to-br from-[#4285F4] via-[#DB4437] to-[#F4B400] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-              Google
-            </span>
-          </h3>
-          <GoogleReviewsDisplay />
+
         </div>
       </section>
 

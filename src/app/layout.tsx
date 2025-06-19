@@ -10,9 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title:
-    "Cours de Trompette Paris | Le Meilleur Prof Particulier (+150 Élèves)",
+    "Cours particuliers de trompette Paris | (+150 Élèves) conquis !",
   description:
-    "Devenez trompettiste à Paris ! Professeur expert, méthode unique et efficace. +150 élèves conquis. Débutants bienvenus. Réservez votre cours d'essai !",
+    "Cours de trompette à Paris par professeur expert. +150 élèves ont déjà progressé avec ma méthode unique. Réservez votre cours d'essai dès aujourd'hui!",
 };
 
 export default function RootLayout({
