@@ -2,7 +2,8 @@ export interface BlogPost {
   slug: string
   title: string
   date: string
-  image: string // Added image path field
+  image: string
+  niveau?: string // Added difficulty level
 }
 
 export interface BlogCategory {

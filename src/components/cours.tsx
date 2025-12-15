@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import Autoplay from "embla-carousel-autoplay"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Music, Globe, Users, Mic, HeadphonesIcon, BookOpenIcon, ZapIcon } from 'lucide-react'
@@ -21,11 +22,13 @@ import pkoi from '@/../public/3.jpeg'
 import jc from '@/../public/jc.jpg'
 import AccessoiresTrompette from './blog/AccessoireRecommandes'
 import GoogleReviewsDisplay from '@/components/reviews/GoogleReviewsDisplay'; // Import the reviews component
+import { useBooking } from '@/context/BookingContext'; // Import the useBooking hook
 
 export default function Cours() {
   const [showPopup, setShowPopup] = useState(false)
   const [showExitPopup, setShowExitPopup] = useState(false)
   const [hasShownExitPopup, setHasShownExitPopup] = useState(false)
+  const { openModal } = useBooking();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,6 +57,7 @@ export default function Cours() {
         <Carousel
           className="w-full h-full absolute top-0 left-0"
           opts={{ loop: true }}
+          plugins={[Autoplay({ delay: 5000 })]}
         >
           <CarouselContent>
             <CarouselItem>
@@ -61,22 +65,7 @@ export default function Cours() {
                 className="w-full h-screen bg-cover bg-center"
                 style={{
                   backgroundImage:
-                    "url('https://images.pexels.com/photos/4087991/pexels-photo-4087991.jpeg?auto=compress&cs=tinysrgb&w=1600')",
-                }}
-              />
-            </CarouselItem>
-            <CarouselItem>
-              <div
-                className="w-full h-screen bg-cover bg-center"
-                style={{ backgroundImage: "url('image1.jpg')" }}
-              />
-            </CarouselItem>
-            <CarouselItem>
-              <div
-                className="w-full h-screen bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('https://images.pexels.com/photos/1246437/pexels-photo-1246437.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+                    "url('/Cours-trompette-paris.png')",
                 }}
               />
             </CarouselItem>
@@ -92,7 +81,7 @@ export default function Cours() {
           </p>
           <a
             href="#booking"
-            className="inline-block text-2xl mt-6 bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300"
+            className="inline-block text-2xl mt-6 bg-slate-200 text-orange-700 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300"
           >
             Jouez votre premier morceau 🎺
           </a>
@@ -452,7 +441,7 @@ export default function Cours() {
       <section id="testimonials" className="bg-gray-100 py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl mb-16 md:text-4xl font-bold text-center">
-            Ce que 
+            Ce que
             <span className="pl-2 pr-2   bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
               disent
             </span>
@@ -513,7 +502,7 @@ export default function Cours() {
           </p>
           <a
             href="#booking"
-            className="inline-block bg-slate-200 text-orange-500 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300"
+            className="inline-block bg-slate-200 text-orange-700 font-semibold py-3 px-6 rounded-full text-center transition duration-300 ease-in-out hover:bg-slate-300"
           >
             Réservez Votre Cours Gratuit
           </a>
@@ -561,7 +550,7 @@ export default function Cours() {
                 Ça m'intéresse, combien ça coûte ?
               </AccordionTrigger>
               <AccordionContent className="text-2xl">
-                35 € la séance. Forfait -10 % les 10 séances.
+                40 € la séance. Forfait -10 % les 10 séances.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
@@ -569,7 +558,7 @@ export default function Cours() {
                 On fait ça où ?
               </AccordionTrigger>
               <AccordionContent className="text-2xl">
-                Chez moi ! Mes voisins sont habitués.
+                Chez moi  Mes voisins sont habitués.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -586,6 +575,7 @@ export default function Cours() {
             <button
               onClick={() => setShowPopup(false)}
               className="float-right text-gray-600 hover:text-gray-800"
+              aria-label="Fermer"
             >
               <X size={24} />
             </button>
@@ -613,6 +603,7 @@ export default function Cours() {
             <button
               onClick={() => setShowExitPopup(false)}
               className="float-right text-gray-600 hover:text-gray-800"
+              aria-label="Fermer"
             >
               <X size={24} />
             </button>

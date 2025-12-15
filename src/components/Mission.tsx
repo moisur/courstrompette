@@ -1,8 +1,8 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-  faPlus, faMusic, faArrowTrendUp, faHeadphones , faCheck, 
+import {
+  faPlus, faMusic, faArrowTrendUp, faHeadphones, faCheck,
   faBolt, faHand, faBookOpen, faMagicWandSparkles
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -30,7 +30,7 @@ export default function Mission() {
         </h2>
         <div className="max-w-4xl mx-auto">
           <h3 className="text-3xl font-semibold mb-6 text-center">Le promesse ultime ?</h3>
-          <p className="text-2xl font-bold text-center mb-12 text-orange-500">
+          <p className="text-2xl font-bold text-center mb-12 text-orange-700">
             Jouer des morceaux en <em>10 séances</em>.
           </p>
           <p className="text-xl mb-8 text-center">

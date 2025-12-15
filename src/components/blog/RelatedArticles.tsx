@@ -1,101 +1,99 @@
-'use client';
-
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
-import { blogCategories, allBlogPosts } from '@/app/lib/blogPosts';
-import { BlogPost } from '@/app/types/blog';
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 
-export default function RelatedArticles() {
-  const params = useParams();
-  const currentSlug = params.slug as string;
-  const currentCategory = params.category as string;
+export interface BlogPostLink {
+    slug: string;
+    title: string;
+    category: string;
+    image?: string;
+    date?: string;
+    description?: string;
+}
 
-  const currentPost = allBlogPosts.find(post => post.slug === currentSlug);
-  const currentCategoryPosts = blogCategories.find(cat => cat.slug === currentCategory)?.posts || [];
+interface RelatedArticlesProps {
+    prevPost: BlogPostLink | null;
+    nextPost: BlogPostLink | null;
+    relatedPosts: BlogPostLink[];
+}
 
-  const getRelatedPosts = (posts: BlogPost[], currentSlug: string, limit: number) => {
-    return posts
-      .filter(post => post.slug !== currentSlug)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, limit);
-  };
+export default function RelatedArticles({ prevPost, nextPost, relatedPosts }: RelatedArticlesProps) {
+    return (
+        <div className="border-t border-gray-100 pt-12">
+            {/* Navigation Previous/Next */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                {prevPost ? (
+                    <Link href={`/blog/${prevPost.category}/${prevPost.slug}`} className="group flex items-center p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all duration-300">
+                        <div className="bg-orange-50 p-3 rounded-full mr-4 group-hover:bg-orange-100 transition-colors">
+                            <ArrowLeft className="w-5 h-5 text-orange-600" />
+                        </div>
+                        <div>
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Article précédent</span>
+                            <h4 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">{prevPost.title}</h4>
+                        </div>
+                    </Link>
+                ) : <div />}
 
-  // Removed getImagePath function
+                {nextPost ? (
+                    <Link href={`/blog/${nextPost.category}/${nextPost.slug}`} className="group flex items-center justify-end text-right p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all duration-300">
+                        <div>
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Article suivant</span>
+                            <h4 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1">{nextPost.title}</h4>
+                        </div>
+                        <div className="bg-orange-50 p-3 rounded-full ml-4 group-hover:bg-orange-100 transition-colors">
+                            <ArrowRight className="w-5 h-5 text-orange-600" />
+                        </div>
+                    </Link>
+                ) : <div />}
+            </div>
 
-  const relatedPosts = getRelatedPosts(currentCategoryPosts, currentSlug, 3);
-
-  const currentIndex = currentCategoryPosts.findIndex(post => post.slug === currentSlug);
-  const prevPost = currentCategoryPosts[currentIndex - 1];
-  const nextPost = currentCategoryPosts[currentIndex + 1];
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  return (
-    <div className="mt-12 space-y-8">
-            <section className="border-t pt-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-          {prevPost && (
-            <Link 
-              href={`/blog/category/${currentCategory}/${prevPost.slug}`}
-              className="flex items-center group hover:text-primary"
-            >
-              <ChevronLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-              <div>
-                <div className="text-sm text-muted-foreground">Article précédent</div>
-                <div className="font-medium">{prevPost.title}</div>
-              </div>
-            </Link>
-          )}
-          {nextPost && (
-            <Link 
-              href={`/blog/category/${currentCategory}/${nextPost.slug}`}
-              className="flex items-center group hover:text-primary text-right sm:ml-auto"
-            >
-              <div>
-                <div className="text-sm text-muted-foreground">Article suivant</div>
-                <div className="font-medium">{nextPost.title}</div>
-              </div>
-              <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-            </Link>
-          )}
-        </div>
-      </section>
-      
-      <section>
-        <h2 className="text-2xl font-bold mb-6">Articles connexes</h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          {relatedPosts.map((post) => (
-            <Card key={post.slug} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <Link href={`/blog/category/${currentCategory}/${post.slug}`}>
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={post.image} // Use post.image directly
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                  />
+            {/* Related Posts Grid */}
+            {relatedPosts.length > 0 && (
+                <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-8 border-l-4 border-orange-500 pl-4">
+                        Vous aimerez aussi
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {relatedPosts.map((post) => (
+                            <Card key={post.slug} className="group border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-white">
+                                <Link href={`/blog/${post.category}/${post.slug}`} className="block relative h-48 overflow-hidden">
+                                    {post.image ? (
+                                        <Image
+                                            src={post.image}
+                                            alt={post.title}
+                                            fill
+                                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                            No Image
+                                        </div>
+                                    )}
+                                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-orange-600 shadow-sm">
+                                        {post.category}
+                                    </div>
+                                </Link>
+                                <CardContent className="p-5">
+                                    <div className="flex items-center text-xs text-gray-500 mb-3">
+                                        <Calendar className="w-3 h-3 mr-1" />
+                                        {post.date}
+                                    </div>
+                                    <h4 className="font-bold text-lg text-gray-900 mb-2 leading-tight group-hover:text-orange-600 transition-colors">
+                                        <Link href={`/blog/${post.category}/${post.slug}`}>
+                                            {post.title}
+                                        </Link>
+                                    </h4>
+                                    <Link href={`/blog/${post.category}/${post.slug}`} className="text-sm font-semibold text-orange-600 hover:text-orange-800 inline-flex items-center mt-2">
+                                        Lire l&apos;article <ArrowRight className="w-3 h-3 ml-1" />
+                                    </Link>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold line-clamp-2 mb-2">{post.title}</h3>
-                  <time className="text-sm text-muted-foreground">
-                    {formatDate(post.date)}
-                  </time>
-                </CardContent>
-              </Link>
-            </Card>
-          ))}
+            )}
         </div>
-      </section>
-
-    </div>
-  );
+    );
 }
