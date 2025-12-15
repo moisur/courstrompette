@@ -1,5 +1,6 @@
 import React from 'react';
 import { Star } from 'lucide-react'; // Removed Quote icon
+import Image from 'next/image';
 
 interface Review {
   author: string;
@@ -20,9 +21,8 @@ const GoogleReviewCard: React.FC<GoogleReviewCardProps> = ({ review }) => {
       stars.push(
         <Star
           key={i}
-          className={`w-4 h-4 ${
-            i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-          }`}
+          className={`w-4 h-4 ${i <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+            }`}
         />
       );
     }
@@ -35,10 +35,12 @@ const GoogleReviewCard: React.FC<GoogleReviewCardProps> = ({ review }) => {
       <div className="flex items-center mb-2">
         {/* Avatar or Initial */}
         {review.avatarUrl ? (
-          <img
+          <Image
             src={review.avatarUrl}
             alt={review.author}
-            className="w-10 h-10 rounded-full mr-3" // Standard size
+            width={40}
+            height={40}
+            className="rounded-full mr-3" // Standard size
           />
         ) : (
           // Google's typical blue background for initials

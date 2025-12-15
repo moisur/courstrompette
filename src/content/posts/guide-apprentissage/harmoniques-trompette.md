@@ -23,77 +23,77 @@ niveau: "Intermédiaire"
   <h2 class="text-2xl font-bold text-orange-600 mt-8 mb-4">Les 8 premiers harmoniques (doigté à vide)</h2>
 
   <div class="space-y-4">
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">1er Harmonique (La Fondamentale)</h3>
-        <span class="text-blue-600 font-mono font-bold">Do grave (Do3)</span>
-      </div>
-      <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Fondamentale</p>
-      <p>Souvent appelée la 'pédale'. Difficile à produire pour les débutants et peu utilisée dans le répertoire classique, mais elle est la base de la série.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">1er Harmonique (La Fondamentale)</h3>
+    <span class="text-blue-600 font-mono font-bold">Do grave (Do3)</span>
+  </div>
+  <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Fondamentale</p>
+  <p>Souvent appelée la 'pédale'. Difficile à produire pour les débutants et peu utilisée dans le répertoire classique, mais elle est la base de la série.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">2ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Do bas (Do4)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave</p>
-      <p>C'est la première note grave que les élèves apprennent. Elle est stable et facile à produire.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">2ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Do bas (Do4)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave</p>
+  <p>C'est la première note grave que les élèves apprennent. Elle est stable et facile à produire.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">3ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Sol médium (Sol4)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Quinte</p>
-      <p>Une note pivot dans le registre médium.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">3ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Sol médium (Sol4)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Quinte</p>
+  <p>Une note pivot dans le registre médium.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">4ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Do médium (Do5)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Quarte</p>
-      <p>Complète l'octave par rapport au Do4. C'est une note de référence.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">4ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Do médium (Do5)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Quarte</p>
+  <p>Complète l'octave par rapport au Do4. C'est une note de référence.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">5ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Mi (Mi5)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce majeure</p>
-      <p>Naturellement un peu bas (trop plat). Il doit être corrigé avec les lèvres pour être juste.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">5ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Mi (Mi5)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce majeure</p>
+  <p>Naturellement un peu bas (trop plat). Il doit être corrigé avec les lèvres pour être juste.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">6ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Sol aigu (Sol5)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce mineure</p>
-      <p>Une note clé du registre aigu.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">6ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Sol aigu (Sol5)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce mineure</p>
+  <p>Une note clé du registre aigu.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">7ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Si bémol (Sib5)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce mineure (approximative)</p>
-      <p>Naturellement très faux (très bas). En pratique, on utilise le 1er piston pour obtenir un Si bémol juste.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">7ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Si bémol (Sib5)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce mineure (approximative)</p>
+  <p>Naturellement très faux (très bas). En pratique, on utilise le 1er piston pour obtenir un Si bémol juste.</p>
+</div>
 
-    <div class="border rounded-lg p-4 bg-gray-50">
-      <div class="flex justify-between items-baseline mb-2">
-        <h3 class="font-bold text-lg">8ème Harmonique</h3>
-        <span class="text-blue-600 font-mono font-bold">Do suraigu (Do6)</span>
-      </div>
-       <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave par rapport au 4ème harmonique</p>
-      <p>Le fameux 'Contre-Ut', un objectif pour de nombreux trompettistes.</p>
-    </div>
+<div class="border rounded-lg p-4 bg-gray-50">
+  <div class="flex justify-between items-baseline mb-2">
+    <h3 class="font-bold text-lg">8ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Do suraigu (Do6)</span>
+  </div>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave par rapport au 4ème harmonique</p>
+  <p>Le fameux 'Contre-Ut', un objectif pour de nombreux trompettistes.</p>
+</div>
   </div>
 
   <div class="mt-8 p-6 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">

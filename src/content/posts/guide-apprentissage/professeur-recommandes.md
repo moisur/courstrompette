@@ -232,7 +232,7 @@ Prêt à Vous Lancer ?
 <p class="text-xl text-gray-700 mb-6">
 Commencez votre apprentissage de la trompette dès aujourd'hui !
 </p>
-<a href="/#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 text-lg mb-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+<a href="#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 text-lg mb-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
 Trouver un Cours de Trompette
 </a>
 </div>

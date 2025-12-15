@@ -7,6 +7,8 @@ const postsDirectory = path.join(process.cwd(), 'src/content/posts');
 export const categoryNames: { [key: string]: string } = {
     'guide-apprentissage': "Guide d'apprentissage trompette",
     'biographies-trompettistes': "Biographies de trompettistes célèbres",
+    'avis': "Avis & Comparatifs",
+    'temoignages': "Témoignages élèves",
 };
 
 

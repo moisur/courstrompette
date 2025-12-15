@@ -142,7 +142,7 @@ niveau: "Débutant"
   <p class="text-xl text-gray-700 mb-6">
     ➡️ Réservez dès maintenant votre premier cours de trompette à Paris et bénéficiez d'un bilan personnalisé offert !
   </p>
-  <a href="/#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 text-lg mb-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+  <a href="#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 text-lg mb-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
     Réserver mon cours
   </a>
   <p class="text-lg text-gray-600 mt-2">

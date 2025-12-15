@@ -1,4 +1,4 @@
-import { getSortedPostsData } from '@/lib/markdown';
+import { getSortedPostsData, categoryNames } from '@/lib/markdown';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -9,12 +9,6 @@ import BlogCTA from '@/components/BlogCTA';
 export const metadata = {
   title: 'Blog - Cours de Trompette',
   description: 'Découvrez nos articles de blog sur la trompette, des conseils pour débutants aux astuces pour les pros, en passant par l\'entretien de votre instrument et l\'histoire des grands trompettistes.',
-};
-
-// Map category slugs to readable names
-const categoryNames: { [key: string]: string } = {
-  'guide-apprentissage': "Guide d'apprentissage trompette",
-  'biographies-trompettistes': "Biographies de trompettistes célèbres",
 };
 
 function groupPostsByCategory(posts: any[]) {

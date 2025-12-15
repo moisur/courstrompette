@@ -41,7 +41,7 @@ niveau: "Débutant"
   <p class="text-xl text-gray-700 mb-6">
     Si vous êtes <i><b>sérieux</b></i> dans votre désir d’apprendre la trompette, investir dans un professeur est la <i><b>meilleure décision</b></i> que vous puissiez prendre. C’est un investissement en vous-même, en votre passion, en votre avenir musical. Alors, n’hésitez plus, trouvez le professeur qui vous correspond et lancez-vous dans cette merveilleuse aventureÂ !
   </p>        
-  <a href="/#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 text-lg mb-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+  <a href="#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 text-lg mb-4 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
     Réserver mon cours gratuit
   </a>
 </div>
