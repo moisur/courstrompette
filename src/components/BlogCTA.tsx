@@ -1,26 +1,44 @@
 "use client";
 
 import { useBooking } from "@/context/BookingContext";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { ConfettiButton } from "@/components/magicui/confetti";
 
 export default function BlogCTA() {
     const { openModal } = useBooking();
 
     return (
-        <div className="bg-orange-50 border border-orange-100 rounded-2xl p-8 mb-16 text-center shadow-sm">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Envie de jouer votre premier morceau ?
-            </h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Ne perdez plus de temps à chercher des tutos au hasard. Réservez votre cours offert et profitez d&apos;un accompagnement personnalisé.
-            </p>
-            <button
-                onClick={openModal}
-                className="inline-flex items-center bg-orange-600 text-white font-bold py-4 px-8 rounded-full hover:bg-orange-700 transition-all duration-300 shadow-lg hover:shadow-orange-500/25 text-lg"
-            >
-                Réserver mon 1er cours maintenant
-                <ArrowRight className="ml-2 w-5 h-5" />
-            </button>
+        <div className="relative overflow-hidden bg-gradient-to-br from-amber-600 via-amber-500 to-amber-700 rounded-3xl p-8 md:p-12 text-center shadow-xl">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+            <div className="relative z-10">
+                <div className="inline-flex items-center gap-2 bg-white/20 border border-white/20 text-white px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6 backdrop-blur-sm">
+                    <Sparkles size={14} className="text-white" />
+                    Offre découverte
+                </div>
+
+                <h2 className="text-3xl md:text-4xl font-serif text-white mb-6 leading-tight">
+                    Envie de jouer votre <span className="italic">premier morceau</span> ?
+                </h2>
+
+                <p className="text-lg text-amber-50 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+                    Ne perdez plus de temps à chercher des tutos au hasard. Réservez votre cours offert et profitez d&apos;un accompagnement personnalisé.
+                </p>
+
+                <ConfettiButton
+                    onClick={openModal}
+                    className="inline-flex items-center bg-white text-amber-700 font-bold py-4 px-8 rounded-full border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all duration-300 transform hover:-translate-y-1 text-lg group"
+                >
+                    Réserver mon 1er cours maintenant
+                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </ConfettiButton>
+
+                <p className="mt-6 text-sm text-amber-100/80">
+                    Sans engagement • Accès immédiat
+                </p>
+            </div>
         </div>
     );
 }

@@ -18,11 +18,10 @@ export default function Header({ menuItems }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const blogMenuRef = useRef<HTMLLIElement>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null) // New ref for category delay
+  const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pathname = usePathname()
-  const { openModal } = useBooking(); // Hook for modal
+  const { openModal } = useBooking();
 
-  // Helper to normalize level - purely for matching logic
   const normalizeLevel = (level: string | undefined) => {
     if (!level) return 'Autre';
     if (level.includes('Débutant') || level.includes('butant')) return 'Débutant';
@@ -30,7 +29,6 @@ export default function Header({ menuItems }: HeaderProps) {
     if (level.includes('Avancé') || level.includes('Avanc')) return 'Avancé';
     return 'Autre';
   };
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,7 +42,7 @@ export default function Header({ menuItems }: HeaderProps) {
     setIsMenuOpen(false)
     setShowBlogMenu(false)
     setActiveCategory(null)
-    setActiveLevel(null) // Reset active level
+    setActiveLevel(null)
   }
 
   const handleMouseEnter = () => {
@@ -62,10 +60,9 @@ export default function Header({ menuItems }: HeaderProps) {
     }, 300)
   }
 
-  // Handlers for Category Items
   const handleCategoryEnter = (slug: string) => {
     if (categoryTimeoutRef.current) clearTimeout(categoryTimeoutRef.current);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current); // Keep main menu open too
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveCategory(slug);
     setActiveLevel(null);
   };
@@ -73,7 +70,7 @@ export default function Header({ menuItems }: HeaderProps) {
   const handleCategoryLeave = () => {
     categoryTimeoutRef.current = setTimeout(() => {
       setActiveCategory(null);
-    }, 300); // 300ms delay for category submenu
+    }, 300);
   };
 
   useEffect(() => {
@@ -97,18 +94,18 @@ export default function Header({ menuItems }: HeaderProps) {
   const isTransparentHeader = !isScrolled && pathname === '/';
   const isSolidContext = isScrolled || isMenuOpen || !isTransparentHeader;
 
-  const textColor = isSolidContext ? 'text-gray-800' : 'text-white';
-  const hoverColor = isSolidContext ? 'hover:text-orange-500' : 'hover:text-gray-200';
+  const textColor = isSolidContext ? 'text-stone-700' : 'text-white';
+  const hoverColor = isSolidContext ? 'hover:text-amber-700' : 'hover:text-stone-200';
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
-      <div className="container mx-auto px-4 grid grid-cols-[auto_1fr_auto] items-center gap-4">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm py-3' : 'bg-transparent py-5'}`}>
+      <div className="container mx-auto px-6 grid grid-cols-[auto_1fr_auto] items-center gap-4">
         {/* 1. LEFT: LOGO */}
-        <Link href="/" className="font-bold text-2xl bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] z-50 relative">
-          JC Trompette
+        <Link href="/" className={`font-serif font-semibold text-2xl z-50 relative transition-colors ${isSolidContext ? 'text-stone-900' : 'text-white'}`}>
+          <span className={isSolidContext ? 'text-amber-700' : 'text-amber-400'}>JC</span> Trompette
         </Link>
 
-        {/* Mobile Menu Button (Absolute Right on Mobile) */}
+        {/* Mobile Menu Button */}
         <div className="md:hidden flex justify-end col-start-3">
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="" aria-label="Menu principal">
             <svg className={`w-6 h-6 ${textColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -119,18 +116,18 @@ export default function Header({ menuItems }: HeaderProps) {
 
         {/* 2. CENTER: NAVIGATION LINKS */}
         <ul className={`
-                    fixed md:static inset-0 bg-white md:bg-transparent flex-col md:flex-row items-center justify-center gap-6 
-                    ${isMenuOpen ? 'flex' : 'hidden md:flex'} 
-                    transition-all duration-300 md:ml-auto md:mr-auto
-                `}>
+          fixed md:static inset-0 bg-white md:bg-transparent flex-col md:flex-row items-center justify-center gap-8 
+          ${isMenuOpen ? 'flex' : 'hidden md:flex'} 
+          transition-all duration-300 md:ml-auto md:mr-auto
+        `}>
           {/* Mobile Close Button */}
           <li className="md:hidden absolute top-6 right-6">
-            <button onClick={closeMenu} className="text-gray-800">
+            <button onClick={closeMenu} className="text-stone-800">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </li>
 
-          <li><Link href="/#about" onClick={closeMenu} className={`block px-2 text-lg md:text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-gray-800' : textColor}`}>À propos</Link></li>
+          <li><Link href="/#about" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>À propos</Link></li>
 
           {/* Blog Menu Item */}
           <li
@@ -139,10 +136,10 @@ export default function Header({ menuItems }: HeaderProps) {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <Link href="/blog" onClick={closeMenu} className={`block px-2 text-lg md:text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-gray-800' : textColor}`}>Blog</Link>
+            <Link href="/blog" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>Blog</Link>
             {showBlogMenu && (
               <ul
-                className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 bg-white shadow-lg rounded-xl py-2 z-50 border border-gray-100 hidden md:block"
+                className="absolute left-1/2 -translate-x-1/2 mt-3 w-64 bg-white shadow-lg rounded-xl py-2 z-50 border border-stone-100 hidden md:block"
                 onMouseEnter={() => {
                   if (timeoutRef.current) clearTimeout(timeoutRef.current);
                 }}
@@ -155,31 +152,30 @@ export default function Header({ menuItems }: HeaderProps) {
                     onMouseLeave={handleCategoryLeave}
                     className="relative"
                   >
-                    <Link href={`/blog/${category.slug}`} className="block px-4 py-3 hover:bg-orange-50 text-gray-700 font-medium flex justify-between items-center group/item transition-colors">
+                    <Link href={`/blog/${category.slug}`} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium flex justify-between items-center group/item transition-colors">
                       {category.name}
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 group-hover/item:text-orange-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400 group-hover/item:text-amber-700 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
-                    {/* Submenu Logic (kept same structure) */}
                     {activeCategory === category.slug && (
-                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-xl py-2 min-h-full border border-gray-100 ml-1">
+                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-xl py-2 min-h-full border border-stone-100 ml-1">
                         {category.slug === 'guide-apprentissage' ? (
                           ['Débutant', 'Intermédiaire', 'Avancé'].map((level) => {
                             const postsForLevel = category.posts.filter(p => normalizeLevel(p.niveau) === level);
                             return (
                               <li key={level} className="relative" onMouseEnter={() => setActiveLevel(level)}>
-                                <Link href={`/blog/guide-apprentissage?level=${level}`} className="block px-4 py-2 hover:bg-orange-50 text-gray-700 flex justify-between items-center">
+                                <Link href={`/blog/guide-apprentissage?level=${level}`} className="block px-4 py-2 hover:bg-amber-50 text-stone-700 flex justify-between items-center">
                                   Niveau {level}
                                   {postsForLevel.length > 0 && (
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                                   )}
                                 </Link>
                                 {activeLevel === level && postsForLevel.length > 0 && (
-                                  <ul className="absolute left-full top-0 w-72 bg-white shadow-xl rounded-xl py-2 max-h-[80vh] overflow-y-auto z-50 border border-gray-100 ml-1 p-2 space-y-1">
+                                  <ul className="absolute left-full top-0 w-72 bg-white shadow-xl rounded-xl py-2 max-h-[80vh] overflow-y-auto z-50 border border-stone-100 ml-1 p-2 space-y-1">
                                     {postsForLevel.map(post => (
                                       <li key={post.slug}>
-                                        <Link href={`/blog/${category.slug}/${post.slug}`} className="block px-3 py-2 hover:bg-orange-50 text-gray-700 text-sm rounded-lg transition-colors">
+                                        <Link href={`/blog/${category.slug}/${post.slug}`} className="block px-3 py-2 hover:bg-amber-50 text-stone-700 text-sm rounded-lg transition-colors">
                                           {post.title}
                                         </Link>
                                       </li>
@@ -192,7 +188,7 @@ export default function Header({ menuItems }: HeaderProps) {
                         ) : (
                           category.posts.slice(0, 5).map((post) => (
                             <li key={post.slug}>
-                              <Link href={`/blog/${category.slug}/${post.slug}`} className="block px-4 py-2 hover:bg-orange-50 text-gray-700">
+                              <Link href={`/blog/${category.slug}/${post.slug}`} className="block px-4 py-2 hover:bg-amber-50 text-stone-700">
                                 {post.title}
                               </Link>
                             </li>
@@ -206,15 +202,15 @@ export default function Header({ menuItems }: HeaderProps) {
             )}
           </li>
 
-          <li><Link href="/#method" onClick={closeMenu} className={`block px-2 text-lg md:text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-gray-800' : textColor}`}>La méthode JC</Link></li>
-          <li><Link href="/#testimonials" onClick={closeMenu} className={`block px-2 text-lg md:text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-gray-800' : textColor}`}>Témoignages</Link></li>
-          <li><Link href="/#faq" onClick={closeMenu} className={`block px-2 text-lg md:text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-gray-800' : textColor}`}>FAQ</Link></li>
+          <li><Link href="/#method" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>La méthode JC</Link></li>
+          <li><Link href="/#testimonials" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>Témoignages</Link></li>
+          <li><Link href="/#faq" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>FAQ</Link></li>
 
           {/* Mobile Only Booking Button */}
           <li className="md:hidden mt-8">
             <button
               onClick={() => { closeMenu(); openModal(); }}
-              className="bg-orange-500 text-white font-bold py-3 px-8 rounded-full hover:bg-orange-600 transition-colors shadow-lg flex items-center gap-2"
+              className="bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold py-3.5 px-8 rounded-full border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all flex items-center gap-2"
             >
               <span className="text-xl">🎺</span> Réservez Votre Cours
             </button>
@@ -226,15 +222,18 @@ export default function Header({ menuItems }: HeaderProps) {
           <button
             onClick={openModal}
             className={`
-                            group relative px-6 py-2.5 rounded-full font-bold transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-3
-                            ${isSolidContext ? 'bg-orange-600 text-white hover:bg-orange-700' : 'bg-white text-orange-600 hover:bg-gray-100'}
-                        `}
+              group relative px-6 py-2.5 rounded-full font-bold transition-all duration-300 flex items-center gap-3 border-2 border-stone-900
+              ${isSolidContext
+                ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-white hover:from-amber-700 hover:to-amber-600 shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] hover:shadow-[4px_4px_0px_0px_rgba(28,25,23,1)]'
+                : 'bg-white text-stone-900 hover:bg-stone-50 shadow-[4px_4px_0px_0px_rgba(251,191,36,1)] hover:shadow-[6px_6px_0px_0px_rgba(251,191,36,1)]'
+              }
+            `}
           >
             <span>Réservez Votre Cours</span>
             <span className="transform group-hover:rotate-12 transition-transform duration-300 text-xl">🎺</span>
           </button>
         </div>
-      </div >
-    </nav >
+      </div>
+    </nav>
   )
 }

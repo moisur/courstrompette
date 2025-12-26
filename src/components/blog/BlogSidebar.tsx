@@ -41,7 +41,7 @@ export default function BlogSidebar() {
 
                     <button
                         onClick={openModal}
-                        className="w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold py-3.5 rounded-xl hover:from-orange-700 hover:to-orange-600 transition-all shadow-lg shadow-orange-500/30 transform hover:-translate-y-0.5 text-sm uppercase tracking-wide flex items-center justify-center gap-2"
+                        className="w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white font-bold py-3.5 rounded-xl border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all transform hover:-translate-y-1 text-sm uppercase tracking-wide flex items-center justify-center gap-2"
                     >
                         <PhoneIcon className="w-4 h-4" />
                         Cours offert
@@ -61,7 +61,7 @@ export default function BlogSidebar() {
 
                     <button
                         onClick={openModal}
-                        className="relative z-10 inline-block bg-white text-gray-900 font-bold py-3 px-8 rounded-full hover:bg-orange-50 transition-colors shadow-lg text-sm"
+                        className="relative z-10 inline-block bg-white text-gray-900 font-bold py-3 px-8 rounded-full border-2 border-stone-900 shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] hover:shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:bg-orange-50 transition-all text-sm transform hover:-translate-y-0.5"
                     >
                         Je me lance  !
                     </button>

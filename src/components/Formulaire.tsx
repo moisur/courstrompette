@@ -3,7 +3,7 @@
 import React from 'react';
 import { useForm, ValidationError } from '@formspree/react';
 import { ConfettiButton } from "@/components/magicui/confetti";
-import { CheckCircle2, User, Mail, Phone, Trophy } from "lucide-react"; // Optionnel: pour les icônes
+import { CheckCircle2 } from "lucide-react";
 
 interface FormulaireProps {
   isModal?: boolean;
@@ -16,19 +16,19 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
   if (state.succeeded) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-10 animate-in fade-in zoom-in duration-500">
-        <div className="bg-green-100 p-4 rounded-full mb-4">
-          <CheckCircle2 className="w-12 h-12 text-green-600" />
+        <div className="bg-amber-50 p-4 rounded-full mb-4">
+          <CheckCircle2 className="w-12 h-12 text-amber-700" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-2">Message envoyé !</h3>
-        <p className="text-gray-500 max-w-xs">
+        <h3 className="text-2xl font-serif text-stone-900 mb-2">Message envoyé !</h3>
+        <p className="text-stone-500 max-w-xs">
           Super, votre demande a bien été reçue. Je vous recontacte très rapidement.
         </p>
       </div>
     );
   }
 
-  const inputStyles = "w-full pl-4 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all duration-200 outline-none text-gray-800 placeholder:text-gray-400";
-  const labelStyles = "block text-sm font-semibold text-gray-700 mb-1.5 ml-1";
+  const inputStyles = "w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-200 outline-none text-stone-800 placeholder:text-stone-400";
+  const labelStyles = "block text-sm font-medium text-stone-700 mb-2";
 
   const Content = (
     <form className="max-w-lg mx-auto w-full space-y-5" onSubmit={handleSubmit}>
@@ -36,21 +36,18 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
       {/* Nom */}
       <div>
         <label htmlFor="name" className={labelStyles}>Nom complet</label>
-        <div className="relative">
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="Jean Dupont"
-            className={inputStyles}
-            required
-          />
-          {/* Exemple d'icône positionnée en absolute si tu veux (nécessite pl-10 sur l'input) */}
-        </div>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Jean Dupont"
+          className={inputStyles}
+          required
+        />
         <ValidationError prefix="Name" field="name" errors={state.errors} className="text-red-500 text-sm mt-1" />
       </div>
 
-      {/* Email & Téléphone (Grid sur grand écran) */}
+      {/* Email & Téléphone */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="email" className={labelStyles}>Email</label>
@@ -95,8 +92,7 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
             <option value="intermediate">Intermédiaire</option>
             <option value="advanced">Avancé</option>
           </select>
-          {/* Petite flèche custom CSS pour remplacer celle du navigateur moche */}
-          <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
+          <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-stone-500">
             <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
           </div>
         </div>
@@ -119,12 +115,12 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
       <div className="pt-2">
         <ConfettiButton
           type="submit"
-          className="w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-orange-500/30 transform transition hover:-translate-y-0.5"
+          className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold py-4 px-4 rounded-xl border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transform transition hover:-translate-y-1"
           disabled={state.submitting}
         >
           {state.submitting ? "Envoi en cours..." : "Réserver Mon Cours Gratuit"}
         </ConfettiButton>
-        <p className="text-xs text-center text-gray-400 mt-3">
+        <p className="text-xs text-center text-stone-400 mt-4">
           Aucun engagement requis. Vos données restent confidentielles.
         </p>
       </div>
@@ -135,19 +131,25 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
     return Content;
   }
 
-  // Version Section de page (hors modal)
   return (
-    <section id="booking" className="bg-white py-24">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12">
+    <section id="booking" className="py-24 bg-white">
+      <div className="container mx-auto px-6 max-w-4xl">
+        <div className="bg-stone-50 rounded-3xl border border-stone-100 p-8 md:p-12">
+
+          {/* En-tête */}
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
-              Réservez Votre <span className="text-orange-600">Cours Gratuit</span>
+            <span className="text-amber-700 font-medium tracking-widest text-sm uppercase">
+              Réservation
+            </span>
+            <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mt-4 mb-3">
+              Réservez Votre <span className="italic text-stone-500">Cours Gratuit</span>
             </h2>
-            <p className="text-gray-500 text-lg">
+            <div className="w-24 h-1 bg-amber-600 mx-auto rounded-full opacity-60 mb-4"></div>
+            <p className="text-stone-500">
               Rejoignez-nous pour une séance découverte inoubliable.
             </p>
           </div>
+
           {Content}
         </div>
       </div>

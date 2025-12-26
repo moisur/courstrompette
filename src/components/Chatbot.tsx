@@ -1,6 +1,4 @@
 /* eslint-disable react/no-unescaped-entities */
-
-
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -9,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MessageCircle, Send, X } from 'lucide-react'
+import { MessageCircle, Send, X, User, Bot } from 'lucide-react'
 
 type Message = {
   id: number
@@ -125,12 +123,13 @@ const botResponses = {
   }
 }
 
-export default function Component() {
+export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const [lastBotMessageId, setLastBotMessageId] = useState<number | null>(null)
   const [isThinking, setIsThinking] = useState(false)
+  const [isInvitationDismissed, setIsInvitationDismissed] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -144,23 +143,23 @@ export default function Component() {
       ]
       setMessages(allMessages)
       setLastBotMessageId(allMessages.length)
-      
+
       setTimeout(() => {
         setMessages(prev => [...prev!, {
-            id: (prev?.length ?? 0) + 1,
-            type: 'bot',
-            content: "Comment puis-je vous aider aujourd'hui ?",
-            options: initialOptions,
-          }]);         
+          id: (prev?.length ?? 0) + 1,
+          type: 'bot',
+          content: "Comment puis-je vous aider aujourd'hui ?",
+          options: initialOptions,
+        }]);
         setLastBotMessageId(prev => (prev ?? 0) + 1)
       }, 1000)
     }
   }, [isOpen, messages])
-  
+
   useEffect(() => {
     scrollToBottom()
   }, [messages, isThinking])
-  
+
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]')
@@ -195,7 +194,7 @@ export default function Component() {
           options: initialOptions,
         };
       }
-      
+
       setMessages(prev => [...prev, botResponse])
       setLastBotMessageId(botResponse.id)
       scrollToBottom()
@@ -204,26 +203,58 @@ export default function Component() {
 
   const handleOptionClick = (option: string) => {
     handleSendMessage(option)
-    
+
     if (option.toLowerCase() === "voir les disponibilités") {
       window.open('https://calendly.com/yervantj/jctrompette', '_blank', 'noopener,noreferrer')
     }
   }
+
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] w-full sm:w-auto">
+    <div className="fixed bottom-6 right-6 z-[60] max-w-[calc(100vw-2rem)] w-full sm:w-auto flex flex-col items-end">
+
+      {/* Invitation Bubble */}
+      <AnimatePresence>
+        {!isOpen && messages.length === 0 && !isInvitationDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ delay: 2, duration: 0.5 }}
+            className="mb-4 bg-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-xl border border-stone-100 max-w-[220px] relative group/invitation"
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsInvitationDismissed(true);
+              }}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-900 hover:border-stone-900 shadow-sm transition-all z-20"
+            >
+              <X className="w-3 h-3" />
+            </button>
+            <p className="text-sm text-stone-700 font-medium pr-2">
+              Une question sur la méthode ? Je suis là ! 👋
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence>
         {!isOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.3 }}
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="rounded-full w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white shadow-lg"
+              className="relative rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all"
             >
-              <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />
+              <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8" />
+              {/* Status dot */}
+              <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-stone-900 rounded-full"></span>
             </Button>
           </motion.div>
         )}
@@ -231,90 +262,133 @@ export default function Component() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="w-full sm:w-96"
+            initial={{ opacity: 0, y: 40, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.9 }}
+            transition={{ type: "spring", damping: 25, stiffness: 260 }}
+            className="w-full sm:w-[400px]"
           >
-            <Card className="h-[calc(100vh-2rem)] sm:h-[32rem] flex flex-col shadow-xl overflow-hidden rounded-lg">
-              <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-t-lg">
-                <h3 className="font-semibold text-sm sm:text-base">Chat avec l'assistant de JC Trompette</h3>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:text-white/80">
-                  <X className="w-4 h-4" />
+            <Card className="h-[calc(100vh-6rem)] sm:h-[600px] flex flex-col shadow-2xl overflow-hidden rounded-3xl border-stone-200">
+              {/* Header */}
+              <CardHeader className="flex flex-row items-center justify-between bg-stone-900 text-white p-5 rounded-t-3xl border-b border-stone-800">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-transparent">
+                      <span className="text-2xl">🎺</span>
+                    </div>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-stone-900 rounded-full"></span>
+                  </div>
+                  <div>
+                    <h3 className="font-serif font-medium text-lg text-stone-50">Assistant JC</h3>
+                    <p className="text-xs text-stone-400">Répond instantanément</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="text-stone-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
                 </Button>
               </CardHeader>
-              <CardContent className="flex-grow overflow-hidden p-4">
-                <ScrollArea className="h-full pr-4" ref={scrollAreaRef}>
-                  {messages.map((message) => (
-                    <motion.div
-                      key={message.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className={`mb-4 ${
-                        message.type === 'user' ? 'text-right' : 'text-left'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block p-2 rounded-lg text-sm sm:text-base ${
-                          message.type === 'user'
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}
+
+              <CardContent className="flex-grow overflow-hidden p-0 bg-stone-50/50 relative">
+                <ScrollArea className="h-full px-5 py-6" ref={scrollAreaRef}>
+                  <div className="space-y-6 pb-4">
+                    {messages.map((message) => (
+                      <motion.div
+                        key={message.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
+                          }`}
                       >
-                        {message.content}
-                      </span>
-                      {message.options && message.id === lastBotMessageId && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: 0.2 }}
-                          className="mt-2 space-y-2 flex flex-wrap justify-start"
-                        >
-                          {message.options.map((option, optionIndex) => (
-                            <Button
-                              key={optionIndex}
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOptionClick(option)}
-                              className="mr-2 mb-2 text-xs sm:text-sm rounded-full"
+                        {/* Avatar */}
+                        <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.type === 'user'
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-stone-200 text-stone-600'
+                          }`}>
+                          {message.type === 'user' ? <User size={14} /> : <Bot size={16} />}
+                        </div>
+
+                        <div className={`flex flex-col gap-2 max-w-[80%] ${message.type === 'user' ? 'items-end' : 'items-start'
+                          }`}>
+                          <div
+                            className={`p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${message.type === 'user'
+                              ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-white rounded-tr-none'
+                              : 'bg-white text-stone-800 border border-stone-100 rounded-tl-none'
+                              }`}
+                          >
+                            {message.content}
+                          </div>
+
+                          {/* Options / Quick Replies */}
+                          {message.options && message.id === lastBotMessageId && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.3 }}
+                              className="flex flex-wrap gap-2 mt-1"
                             >
-                              {option}
-                            </Button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </motion.div>
-                  ))}
-                  {isThinking && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center space-x-2 text-gray-500"
-                    >
-                      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-                    </motion.div>
-                  )}
+                              {message.options.map((option, optionIndex) => (
+                                <button
+                                  key={optionIndex}
+                                  onClick={() => handleOptionClick(option)}
+                                  className="px-4 py-2 text-sm bg-white border border-stone-200 text-stone-600 rounded-xl hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 transition-all duration-200 shadow-sm text-left"
+                                >
+                                  {option}
+                                </button>
+                              ))}
+                            </motion.div>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {isThinking && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex gap-3"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center">
+                          <Bot size={16} />
+                        </div>
+                        <div className="bg-white border border-stone-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1.5 min-w-[60px]">
+                          <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                          <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                          <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
                 </ScrollArea>
               </CardContent>
-              <CardFooter className="p-4">
+
+              <CardFooter className="p-4 bg-white border-t border-stone-100">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault()
                     if (inputValue.trim()) handleSendMessage(inputValue)
                   }}
-                  className="flex w-full items-center space-x-2"
+                  className="relative w-full flex items-center gap-2"
                 >
                   <Input
-                    placeholder="Tapez votre message..."
+                    placeholder="Écrivez votre message..."
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    className="text-sm sm:text-base rounded-full"
+                    className="flex-grow pl-5 pr-12 py-6 rounded-full bg-stone-50 border-stone-200 focus:border-amber-500 focus:ring-amber-500/20"
                   />
-                  <Button type="submit" size="icon" className="rounded-full">
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!inputValue.trim()}
+                    className={`absolute right-2 w-8 h-8 rounded-full transition-all duration-300 ${inputValue.trim()
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                      : 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                      }`}
+                  >
                     <Send className="w-4 h-4" />
                   </Button>
                 </form>
@@ -326,4 +400,3 @@ export default function Component() {
     </div>
   )
 }
-

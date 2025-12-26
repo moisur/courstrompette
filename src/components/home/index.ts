@@ -1,0 +1,15 @@
+export { HeroSection } from './HeroSection';
+export { AboutMethodSection } from './AboutMethodSection';
+export { ProblemSection } from './ProblemSection';
+export { TeacherSection } from './TeacherSection';
+export { BiographySection } from './BiographySection';
+export { StorySection } from './StorySection';
+export { WhyMethodSection } from './WhyMethodSection';
+export { MethodFeaturesSection } from './MethodFeaturesSection';
+export { TestimonialsSection } from './TestimonialsSection';
+export { GuaranteeSection } from './GuaranteeSection';
+export { DisappearSection } from './DisappearSection';
+export { FAQSection } from './FAQSection';
+export { NotVirtuosoSection } from './NotVirtuosoSection';
+export { IntermediateSection } from './IntermediateSection';
+export { MasterclassSection } from './MasterclassSection';

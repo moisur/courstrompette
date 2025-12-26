@@ -1,51 +1,122 @@
-/* eslint-disable react/no-unescaped-entities */
+"use client"
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import {
-  faPlus, faMusic, faArrowTrendUp, faHeadphones, faCheck,
-  faBolt, faHand, faBookOpen, faMagicWandSparkles
-} from '@fortawesome/free-solid-svg-icons'
+  Music2,
+  Volume2,
+  TrendingUp,
+  Headphones,
+  Target,
+  Zap,
+  Hand,
+  BookOpen,
+  Sparkles
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const aspects = [
+  { icon: Music2, label: 'Rythme', description: 'Maîtriser le tempo et la pulsation', delay: 0 },
+  { icon: Volume2, label: 'Pose du son', description: 'Produire un son clair et stable', delay: 0.1 },
+  { icon: TrendingUp, label: 'Graves & Aigus', description: 'Étendre votre tessiture', delay: 0.2 },
+  { icon: Headphones, label: 'Écoute', description: 'Développer votre oreille musicale', delay: 0.3 },
+  { icon: Target, label: 'Justesse', description: 'Jouer chaque note avec précision', delay: 0.4 },
+  { icon: Zap, label: 'Vitesse', description: 'Passages rapides et fluides', delay: 0.5 },
+  { icon: Hand, label: 'Doigtés', description: 'Automatiser les combinaisons', delay: 0.6 },
+  { icon: BookOpen, label: 'Lecture', description: 'Déchiffrer les partitions', delay: 0.7 },
+  { icon: Sparkles, label: 'Improvisation', description: 'Libérer votre créativité', delay: 0.8 },
+];
 
 export default function Mission() {
-  const aspects = [
-    { icon: faPlus, label: 'Rythme' },
-    { icon: faMusic, label: 'Pose du son' },
-    { icon: faArrowTrendUp, label: 'Maîtrise des graves & des aigus' },
-    { icon: faHeadphones, label: 'Écoute' },
-    { icon: faCheck, label: 'Jouer une note juste' },
-    { icon: faBolt, label: 'Vitesse' },
-    { icon: faHand, label: 'Doigtés' },
-    { icon: faBookOpen, label: 'Lecture de partition' },
-    { icon: faMagicWandSparkles, label: 'Improvisation' },
-  ]
-
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
-          Ma mission est claire 👇
-          <span className="block mt-2  bg-gradient-to-br from-[#F16] from-35% to-[#F97316] bg-clip-text text-transparent dark:drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
-            Vous accompagner à jouer de la trompette
-          </span>
-        </h2>
-        <div className="max-w-4xl mx-auto">
-          <h3 className="text-3xl font-semibold mb-6 text-center">Le promesse ultime ?</h3>
-          <p className="text-2xl font-bold text-center mb-12 text-orange-700">
-            Jouer des morceaux en <em>10 séances</em>.
-          </p>
-          <p className="text-xl mb-8 text-center">
-            Voici les aspects clés que nous aborderons ensemble :
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {aspects.map((aspect, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105">
-                <FontAwesomeIcon icon={aspect.icon} className="text-4xl text-orange-500 mb-4" />
-                <h4 className="text-lg font-semibold mb-2">{aspect.label}</h4>
-              </div>
-            ))}
-          </div>
+    <section className="py-16 md:py-32 bg-white relative overflow-hidden">
+      {/* Decorative background element */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-amber-50/30 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+
+        {/* En-tête */}
+        <div className="text-center mb-24">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-amber-700 font-medium tracking-[0.3em] text-sm uppercase mb-4 block"
+          >
+            Ma Mission
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight mb-8"
+          >
+            Vous accompagner à jouer <br />
+            <span className="italic text-stone-500">de la trompette</span>
+          </motion.h2>
+
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            whileInView={{ opacity: 1, scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="w-24 h-1 bg-amber-600 mx-auto rounded-full opacity-60 mb-12"
+          />
+
+          {/* Promesse */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="max-w-2xl mx-auto bg-stone-50 p-10 rounded-[2.5rem] border border-stone-100 shadow-sm"
+          >
+            <p className="text-stone-500 mb-2 uppercase tracking-widest text-xs font-medium">La promesse ultime</p>
+            <p className="text-2xl md:text-3xl font-serif text-stone-900 leading-relaxed">
+              Jouer vos premiers morceaux en <br />
+              <span className="text-amber-700 italic font-medium underline underline-offset-8 decoration-amber-300">seulement 10 séances</span>
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Aspects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {aspects.map((aspect, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 + aspect.delay }}
+            >
+              <Card className="group h-full border border-amber-100 bg-white hover:-translate-y-2 hover:border-amber-300 hover:shadow-2xl hover:shadow-amber-200/50 transition-all duration-500 rounded-[2rem] overflow-hidden cursor-default">
+                <CardContent className="p-8 flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    {/* Glow is now permanent */}
+                    <div className="absolute inset-0 bg-amber-100 rounded-2xl scale-125 blur-xl opacity-80 group-hover:scale-150 group-hover:opacity-100 transition-all duration-700" />
+
+                    {/* Icon Container is now more intense by default */}
+                    <div className="relative z-10 w-16 h-16 rounded-2xl bg-white shadow-lg flex items-center justify-center transition-all duration-500 border border-amber-200 group-hover:border-amber-500 group-hover:shadow-amber-100">
+                      <aspect.icon className="w-8 h-8 text-amber-700 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12" />
+                    </div>
+
+                    {/* New hover shine effect */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/40 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 z-20 pointer-events-none" />
+                  </div>
+
+                  <h4 className="text-xl font-serif text-stone-900 mb-3 group-hover:text-amber-800 transition-colors">
+                    {aspect.label}
+                  </h4>
+                  <p className="text-stone-500 font-light leading-relaxed">
+                    {aspect.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

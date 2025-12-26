@@ -27,26 +27,8 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <BookingProvider>
-          {/* Correction ici : Utilisation d'une prop 'data' pour passer l'objet JSON complet */}
-          <JsonLd
-            data={{
-              "@context": "https://schema.org",
-              "@type": "MusicSchool", // Ou 'LocalBusiness' selon votre activité
-              "name": "Cours de Trompette Paris",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "9 RUE DE LA FONTAINE AU ROI",
-                "addressLocality": "Paris",
-                "postalCode": "75011",
-                "addressCountry": "FR"
-              },
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "5.0",
-                "reviewCount": "4"
-              }
-            }}
-          />
+
+          <JsonLd />
           <Header menuItems={getBlogMenuData()} />
           {children}
           <Chatbot />
