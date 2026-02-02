@@ -213,30 +213,19 @@ export default function Chatbot() {
     <div className="fixed bottom-6 right-6 z-[60] max-w-[calc(100vw-2rem)] w-full sm:w-auto flex flex-col items-end">
 
       {/* Invitation Bubble */}
-      <AnimatePresence>
-        {!isOpen && messages.length === 0 && !isInvitationDismissed && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ delay: 2, duration: 0.5 }}
-            className="mb-4 bg-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-xl border border-stone-100 max-w-[220px] relative group/invitation"
+      {!isOpen && messages.length === 0 && !isInvitationDismissed && (
+        <div className="mb-4 bg-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-xl border border-stone-100 max-w-[220px] relative">
+          <button
+            onClick={() => setIsInvitationDismissed(true)}
+            className="absolute -top-2 -right-2 w-8 h-8 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-900 hover:border-stone-900 shadow-sm z-20"
           >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsInvitationDismissed(true);
-              }}
-              className="absolute -top-2 -right-2 w-6 h-6 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-900 hover:border-stone-900 shadow-sm transition-all z-20"
-            >
-              <X className="w-3 h-3" />
-            </button>
-            <p className="text-sm text-stone-700 font-medium pr-2">
-              Une question sur la méthode ? Je suis là ! 👋
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <X className="w-4 h-4" />
+          </button>
+          <p className="text-sm text-stone-700 font-medium pr-2">
+            Une question sur la méthode ? Je suis là ! 👋
+          </p>
+        </div>
+      )}
 
       <AnimatePresence>
         {!isOpen && (

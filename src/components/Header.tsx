@@ -38,6 +38,26 @@ export default function Header({ menuItems }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Lock body scroll when mobile menu is open (iOS-compatible fix)
+  useEffect(() => {
+    if (isMenuOpen) {
+      const scrollY = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+    } else {
+      const scrollY = document.body.style.top
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY) * -1)
+      }
+    }
+  }, [isMenuOpen])
+
   const closeMenu = () => {
     setIsMenuOpen(false)
     setShowBlogMenu(false)
@@ -116,9 +136,9 @@ export default function Header({ menuItems }: HeaderProps) {
 
         {/* 2. CENTER: NAVIGATION LINKS */}
         <ul className={`
-          fixed md:static inset-0 bg-white md:bg-transparent flex-col md:flex-row items-center justify-center gap-8 
+          fixed md:static inset-0 z-[100] bg-white md:bg-transparent flex-col md:flex-row items-center justify-center gap-8 
           ${isMenuOpen ? 'flex' : 'hidden md:flex'} 
-          transition-all duration-300 md:ml-auto md:mr-auto
+          md:transition-all md:duration-300 md:ml-auto md:mr-auto md:z-auto
         `}>
           {/* Mobile Close Button */}
           <li className="md:hidden absolute top-6 right-6">

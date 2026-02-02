@@ -29,10 +29,10 @@ export default function BlogCTA() {
 
                 <ConfettiButton
                     onClick={openModal}
-                    className="inline-flex items-center bg-white text-amber-700 font-bold py-4 px-8 rounded-full border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all duration-300 transform hover:-translate-y-1 text-lg group"
+                    className="inline-flex items-center justify-center bg-white text-amber-700 font-bold py-4 px-6 md:px-8 rounded-full border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all duration-300 transform hover:-translate-y-1 text-base md:text-lg group max-w-full"
                 >
-                    Réserver mon 1er cours maintenant
-                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    <span className="text-center">Réserver mon 1er cours</span>
+                    <ArrowRight className="ml-2 w-5 h-5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
                 </ConfettiButton>
 
                 <p className="mt-6 text-sm text-amber-100/80">
