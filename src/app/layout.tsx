@@ -14,8 +14,22 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://courstrompetteparis.lecoledes1.com/'),
-  title: "Cours de Trompette | Apprendre la trompette en ligne",
-  description: "Apprenez la trompette avec nos cours en ligne, guides et exercices pour tous les niveaux.",
+  title: "Cours de Trompette à Paris | Méthode Z2G : Jouez en 10 Séances",
+  description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances. Cours pour débutants et avancés. Réservez votre séance gratuite !",
+  keywords: ["cours de trompette", "trompette paris", "apprendre la trompette", "méthode Z2G", "professeur de trompette"],
+  openGraph: {
+    title: "Cours de Trompette à Paris | Méthode Z2G",
+    description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances.",
+    url: "https://courstrompetteparis.lecoledes1.com/",
+    siteName: "Cours de Trompette Paris",
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cours de Trompette à Paris | Méthode Z2G",
+    description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances.",
+  },
 };
 
 export default function RootLayout({
