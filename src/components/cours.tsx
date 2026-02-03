@@ -35,8 +35,19 @@ import Formulaire from './Formulaire';
 // Shared components
 import { Popup } from '@/components/shared';
 import InlineCTA from '@/components/blog/InlineCTA';
+import LocalMap from '@/components/seo/LocalMap';
 
-export default function Cours() {
+export default function Cours({
+  locationTitle,
+  introContent,
+  locationName,
+  zipCode
+}: {
+  locationTitle?: React.ReactNode;
+  introContent?: React.ReactNode;
+  locationName?: string;
+  zipCode?: string;
+}) {
   const { openModal, isOpen } = useBooking();
   const [showPopup, setShowPopup] = useState(false);
   const [showExitPopup, setShowExitPopup] = useState(false);
@@ -78,7 +89,16 @@ export default function Cours() {
   return (
     <div className="font-sans text-gray-800">
       {/* Hero Section */}
-      <HeroSection />
+      <HeroSection title={locationTitle} />
+
+      {/* Local Introduction (Dynamic) */}
+      {introContent && (
+        <div className="bg-stone-50 border-y border-stone-100">
+          <div className="container mx-auto px-6 py-12 max-w-4xl">
+            {introContent}
+          </div>
+        </div>
+      )}
 
       {/* About the Method */}
       <AboutMethodSection />
@@ -203,6 +223,9 @@ export default function Cours() {
       {/* NEW: Masterclass Section */}
       <MasterclassSection />
 
+      {/* Local Map Signal (Dynamic) */}
+      {locationName && <LocalMap locationName={locationName} zipCode={zipCode} />}
+
       {/* Accessories */}
       <AccessoiresTrompette />
 
@@ -210,7 +233,7 @@ export default function Cours() {
       <Formulaire />
 
       {/* FAQ Section */}
-      <FAQSection />
+      <FAQSection locationName={locationName} />
 
       {/* Elfsight Widget */}
       <div

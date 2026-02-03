@@ -1,48 +1,53 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from 'lucide-react';
 
-const faqItems = [
-    {
-        question: "Comment se passe une séance ?",
-        answer: (
-            <>
-                Les séances durent 45 minutes et se divisent en 3 phases :
-                <ul className="mt-3 space-y-2 text-stone-600">
-                    <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                        Échauffement
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                        Pose de son (technique, rythme)
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                        Apprentissage de morceau
-                    </li>
-                </ul>
-            </>
-        )
-    },
-    {
-        question: "Combien ça coûte ?",
-        answer: "40€ la séance. Forfait -10% pour les 10 séances, soit 360€ au lieu de 400€."
-    },
-    {
-        question: "Où se déroulent les cours ?",
-        answer: "Les cours ont lieu chez moi, dans le 11ème arrondissement de Paris. Mes voisins sont habitués !"
-    },
-    {
-        question: "Je joue depuis plusieurs années, est-ce pour moi ?",
-        answer: "Absolument ! Beaucoup de mes élèves ont 3-5 ans d'expérience. Ma spécialité est justement de diagnostiquer les blocages que les méthodes classiques ne voient pas."
-    },
-    {
-        question: "Proposes-tu des masterclass ou cours en groupe ?",
-        answer: "Oui ! Je propose des sessions en petit groupe pour travailler des thématiques précises (range, endurance, improvisation). Contactez-moi pour les prochaines dates."
-    }
-];
+interface FAQSectionProps {
+    locationName?: string;
+}
 
-export function FAQSection() {
+export function FAQSection({ locationName }: FAQSectionProps) {
+    const faqItems = [
+        {
+            question: "Comment se passe une séance ?",
+            answer: (
+                <>
+                    Les séances durent 45 minutes et se divisent en 3 phases :
+                    <ul className="mt-3 space-y-2 text-stone-600">
+                        <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Échauffement
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Pose de son (technique, rythme)
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            Apprentissage de morceau
+                        </li>
+                    </ul>
+                </>
+            )
+        },
+        {
+            question: "Combien ça coûte ?",
+            answer: "40€ la séance. Forfait -10% pour les 10 séances, soit 360€ au lieu de 400€."
+        },
+        {
+            question: locationName ? `Où se déroulent les cours à ${locationName} ?` : "Où se déroulent les cours ?",
+            answer: locationName
+                ? `Je me déplace directement chez vous à ${locationName} ou dans votre secteur. C'est l'avantage du cours particulier : pas de stress de transport, on travaille dans votre environnement.`
+                : "Les cours ont lieu chez moi, dans le 11ème arrondissement de Paris. Mes voisins sont habitués !"
+        },
+        {
+            question: "Je joue depuis plusieurs années, est-ce pour moi ?",
+            answer: "Absolument ! Beaucoup de mes élèves ont 3-5 ans d'expérience. Ma spécialité est justement de diagnostiquer les blocages que les méthodes classiques ne voient pas."
+        },
+        {
+            question: "Proposes-tu des masterclass ou cours en groupe ?",
+            answer: "Oui ! Je propose des sessions en petit groupe pour travailler des thématiques précises (range, endurance, improvisation). Contactez-moi pour les prochaines dates."
+        }
+    ];
     return (
         <section id="faq" className="py-12 md:py-24 bg-stone-50">
             <div className="container mx-auto px-6 max-w-3xl">
