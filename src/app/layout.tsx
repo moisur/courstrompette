@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     title: "Cours de Trompette à Paris | Méthode Z2G",
     description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances.",
   },
+  verification: {
+    google: "jBElafHqU3eAux7x5QbUblWVpm3kVEjzME6ZKlXzglU",
+  },
 };
 
 export default function RootLayout({
