@@ -505,6 +505,7 @@ const ScalePractice: React.FC = () => {
       }
       schedulerRef.current = null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, tempo, generateScale, isMuted, volume, playClick, playNote]);
 
 

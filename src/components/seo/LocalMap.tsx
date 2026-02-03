@@ -47,7 +47,7 @@ export default function LocalMap({ locationName, zipCode }: LocalMapProps) {
                     {/* Content */}
                     <div className="space-y-8 order-1 lg:order-2">
                         <div className="space-y-4">
-                            <span className="text-amber-600 font-bold uppercase tracking-[0.2em] text-xs">Périmètre d'intervention</span>
+                            <span className="text-amber-600 font-bold uppercase tracking-[0.2em] text-xs">Périmètre d&apos;intervention</span>
                             <h2 className="text-3xl md:text-5xl font-serif text-stone-900 leading-tight">
                                 Disponibilités à <br />
                                 <span className="italic text-amber-600">{locationName} {zipCode}</span>
