@@ -27,11 +27,11 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
     );
   }
 
-  const inputStyles = "w-full px-4 py-3.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-200 outline-none text-stone-800 placeholder:text-stone-400";
-  const labelStyles = "block text-sm font-medium text-stone-700 mb-2";
+  const inputStyles = "w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-200 outline-none text-stone-800 placeholder:text-stone-400 text-sm";
+  const labelStyles = "block text-xs font-medium text-stone-700 mb-1";
 
   const Content = (
-    <form className="max-w-lg mx-auto w-full space-y-5" onSubmit={handleSubmit}>
+    <form className="max-w-lg mx-auto w-full space-y-3" onSubmit={handleSubmit}>
 
       {/* Nom */}
       <div>
@@ -105,7 +105,7 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
         <textarea
           id="message"
           name="message"
-          rows={3}
+          rows={2}
           placeholder="J&apos;aimerais savoir si..."
           className={`${inputStyles} resize-none`}
         />
@@ -115,7 +115,7 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
       <div className="pt-2">
         <ConfettiButton
           type="submit"
-          className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold py-4 px-4 rounded-xl border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transform transition hover:-translate-y-1"
+          className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold py-3 px-4 rounded-xl border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transform transition hover:-translate-y-1"
           disabled={state.submitting}
         >
           {state.submitting ? "Envoi en cours..." : "Réserver Mon Cours Gratuit"}

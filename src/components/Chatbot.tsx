@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { MessageCircle, Send, X, User, Bot } from 'lucide-react'
+import { useBooking } from "@/context/BookingContext"
 
 type Message = {
   id: number
@@ -124,6 +125,7 @@ const botResponses = {
 }
 
 export default function Chatbot() {
+  const { isOpen: isBookingModalOpen } = useBooking();
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -207,6 +209,11 @@ export default function Chatbot() {
     if (option.toLowerCase() === "voir les disponibilités") {
       window.open('https://calendly.com/yervantj/jctrompette', '_blank', 'noopener,noreferrer')
     }
+  }
+
+  // Cacher le chatbot quand le modal de réservation est ouvert
+  if (isBookingModalOpen) {
+    return null;
   }
 
   return (

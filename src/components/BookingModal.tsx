@@ -15,7 +15,7 @@ export function BookingModal() {
 
     return (
         <Dialog open={isOpen} onOpenChange={closeModal}>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-center text-orange-600">
                         Réservez Votre Cours Gratuit

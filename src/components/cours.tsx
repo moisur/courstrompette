@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useBooking } from "@/context/BookingContext";
 import { ArrowRight } from "lucide-react";
 
+
 // Home sections
 import {
   HeroSection,
@@ -36,18 +37,30 @@ import { Popup } from '@/components/shared';
 import InlineCTA from '@/components/blog/InlineCTA';
 
 export default function Cours() {
-  const { openModal } = useBooking();
+  const { openModal, isOpen } = useBooking();
   const [showPopup, setShowPopup] = useState(false);
   const [showExitPopup, setShowExitPopup] = useState(false);
   const [hasShownExitPopup, setHasShownExitPopup] = useState(false);
 
+  // Fermer les popups quand le modal de réservation est ouvert
+  useEffect(() => {
+    if (isOpen) {
+      setShowPopup(false);
+      setShowExitPopup(false);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowPopup(true);
+      // Ne pas afficher le popup si le modal est déjà ouvert
+      if (!isOpen) {
+        setShowPopup(true);
+      }
     }, 20000);
 
     const handleMouseLeave = (event: MouseEvent) => {
-      if (event.clientY <= 0 && !hasShownExitPopup) {
+      // Ne pas afficher le popup si le modal est déjà ouvert
+      if (event.clientY <= 0 && !hasShownExitPopup && !isOpen) {
         setShowExitPopup(true);
         setHasShownExitPopup(true);
       }
@@ -59,7 +72,8 @@ export default function Cours() {
       clearTimeout(timer);
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [hasShownExitPopup]);
+  }, [hasShownExitPopup, isOpen]);
+
 
   return (
     <div className="font-sans text-gray-800">
