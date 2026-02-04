@@ -53,8 +53,8 @@ export default function RootLayout({
           <Footer />
           <Analytics />
           <BookingModal />
+          <Chatbot />
         </BookingProvider>
-        <Chatbot />
       </body>
     </html>
   );
