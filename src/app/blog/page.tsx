@@ -103,7 +103,7 @@ export default function BlogPage() {
               ) : (
                 /* Default display for other categories */
                 <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                  {categoryPosts.map((post: any) => (
+                  {categoryPosts.map((post: any, index: number) => (
                     <li key={post.slug}>
                       <Link href={`/blog/${post.category}/${post.slug}`} passHref>
                         <Card className="h-full border-none shadow-sm hover:shadow-md transition-all duration-300 bg-white group overflow-hidden">
@@ -115,6 +115,7 @@ export default function BlogPage() {
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                priority={index < 3}
                               />
                             ) : (
                               <div className="w-full h-full bg-stone-100 flex items-center justify-center text-stone-400">

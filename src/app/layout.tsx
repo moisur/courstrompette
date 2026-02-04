@@ -50,11 +50,11 @@ export default function RootLayout({
           <JsonLd />
           <Header menuItems={getBlogMenuData()} />
           {children}
-          <Chatbot />
           <Footer />
           <Analytics />
           <BookingModal />
         </BookingProvider>
+        <Chatbot />
       </body>
     </html>
   );
