@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Check } from 'lucide-react';
-import pkoi from '@/../public/3.jpeg';
+import pkoi from '@/../public/3.webp';
 
 const benefits = [
     "Un accompagnement patient et professionnel",
@@ -43,7 +43,7 @@ export function WhyMethodSection() {
                                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                                 width={600}
                                 height={750}
-                                sizes="(max-width: 768px) 100vw, 600px"
+                                sizes="(max-width: 768px) calc(100vw - 48px), 600px"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 to-transparent pointer-events-none" />
                         </div>

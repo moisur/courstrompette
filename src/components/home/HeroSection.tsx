@@ -3,8 +3,6 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import Image from "next/image";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { useBooking } from "@/context/BookingContext";
 
 interface HeroSectionProps {
@@ -16,27 +14,17 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
     const { openModal } = useBooking();
     return (
         <header className="relative min-h-screen flex items-center justify-center text-white text-center px-6 pt-16">
-            <Carousel
-                className="w-full h-full absolute top-0 left-0"
-                opts={{ loop: true }}
-                plugins={[Autoplay({ delay: 5000 })]}
-            >
-                <CarouselContent>
-                    <CarouselItem>
-                        <div className="relative w-full h-screen">
-                            <Image
-                                src="/Cours-trompette-paris.webp"
-                                alt="Cours de trompette à Paris"
-                                fill
-                                className="object-cover"
-                                priority
-                                sizes="100vw"
-                                quality={85}
-                            />
-                        </div>
-                    </CarouselItem>
-                </CarouselContent>
-            </Carousel>
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/Cours-trompette-paris.webp"
+                    alt="Cours de trompette à Paris"
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="100vw"
+                    quality={85}
+                />
+            </div>
 
             {/* Overlay avec effet plus subtil */}
             <div className="absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/80 z-10" />

@@ -22,7 +22,7 @@ export default function BlogSidebar() {
                     <div className="w-24 h-24 relative mb-4 flex-shrink-0 group">
                         <div className="absolute inset-0 bg-orange-100 rounded-full scale-110 group-hover:scale-125 transition-transform duration-500"></div>
                         <Image
-                            src="/jc.jpg"
+                            src="/jc.webp"
                             alt="JC Trompette"
                             fill
                             className="object-cover rounded-full border-4 border-white shadow-md relative z-10"

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import Image from 'next/image';
-import profMat from '@/../public/2.jpg';
+import profMat from '@/../public/2.webp';
 
 export function StorySection() {
     return (
@@ -21,7 +21,7 @@ export function StorySection() {
                                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                                 width={600}
                                 height={750}
-                                sizes="(max-width: 768px) 100vw, 600px"
+                                sizes="(max-width: 768px) calc(100vw - 48px), 600px"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 to-transparent pointer-events-none" />
                         </div>

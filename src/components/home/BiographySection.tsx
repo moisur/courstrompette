@@ -57,7 +57,7 @@ export function BiographySection() {
                                 width={600}
                                 height={750}
                                 priority
-                                sizes="(max-width: 768px) 100vw, 600px"
+                                sizes="(max-width: 768px) calc(100vw - 48px), 600px"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 to-transparent pointer-events-none" />
                         </div>

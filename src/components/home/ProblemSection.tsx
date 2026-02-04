@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import jc from '@/../public/jc.jpg';
+import jc from '@/../public/jc.webp';
 
 const problems = [
     {
@@ -122,6 +122,7 @@ export function ProblemSection() {
                                     width={600}
                                     height={800}
                                     priority
+                                    sizes="(max-width: 768px) calc(100vw - 48px), 600px"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-stone-900/10 to-transparent opacity-60" />
 
