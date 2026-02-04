@@ -43,7 +43,8 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
                                     height: 'auto',
                                     maxHeight: '500px'
                                 }}
-                                unoptimized={true} // Sécurité pour les images externes inconnues
+                                unoptimized={props.src?.startsWith('http')}
+                                sizes="(max-width: 768px) 100vw, 800px"
                             />
                         </span>
                     ),

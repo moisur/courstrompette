@@ -65,6 +65,7 @@ export default function RelatedArticles({ prevPost, nextPost, relatedPosts }: Re
                                             alt={post.title}
                                             fill
                                             className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                            sizes="(max-width: 768px) 100vw, 400px"
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">

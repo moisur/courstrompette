@@ -130,6 +130,7 @@ export default function Post({ params }: Props) {
                     fill
                     className="object-cover"
                     priority
+                    sizes="(max-width: 768px) 100vw, 1000px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
