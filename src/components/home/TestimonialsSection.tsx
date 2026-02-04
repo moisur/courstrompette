@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Quote, Star, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import testimonialImg from '@/../public/testimonials-light.png';
+import testimonialImg from '@/../public/testimonials-light.webp';
 
 const testimonials = [
     {

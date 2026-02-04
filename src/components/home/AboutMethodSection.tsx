@@ -30,7 +30,7 @@ export function AboutMethodSection() {
                         <div className="absolute -top-6 -right-6 w-full h-full border-2 border-stone-200 rounded-[2.5rem] -z-10" />
                         <div className="relative rounded-[2.5rem] overflow-hidden border-2 border-stone-900 shadow-[8px_8px_0px_0px_rgba(251,191,36,1)] transition-transform duration-500 group-hover:-translate-y-1 bg-white">
                             <Image
-                                src="/trumpet_closeup.png"
+                                src="/trumpet_closeup.webp"
                                 alt="Trompette en gros plan - Excellence Technique"
                                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                                 width={600}

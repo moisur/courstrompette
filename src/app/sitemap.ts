@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllPostSlugs } from '@/lib/markdown';
 import { locations } from '@/data/locations';
 
-const BASE_URL = 'https://courstrompetteparis.lecoledes1.com';
+const BASE_URL = 'https://courstrompette.fr';
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const posts = getAllPostSlugs();

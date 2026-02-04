@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: { params: { category: string 
         .join(' ');
 
     return {
-        title: `${categoryName} - Blog Cours de Trompette`,
-        description: `Tous les articles de blog sur la catégorie "${categoryName}" - Retrouvez nos conseils, astuces et analyses sur la trompette.`,
+        title: `${categoryName} : Conseils et Cours de Trompette | Jean Christophe Yervant`,
+        description: `Tous les articles sur "${categoryName}" - Retrouvez les conseils d'expert de Jean Christophe Yervant pour progresser à la trompette.`,
     };
 }
 

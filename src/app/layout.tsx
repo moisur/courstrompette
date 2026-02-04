@@ -14,21 +14,21 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://courstrompette.fr/'),
-  title: "Cours de Trompette à Paris | Méthode Z2G : Jouez en 10 Séances",
-  description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances. Cours pour débutants et avancés. Réservez votre séance gratuite !",
-  keywords: ["cours de trompette", "trompette paris", "apprendre la trompette", "méthode Z2G", "professeur de trompette"],
+  title: "Cours de Trompette en ligne ou à domicile",
+  description: "Découvrez nos cours de Trompette pour apprendre à jouer de la trompette à votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.",
+  keywords: ["cours de trompette", "trompette paris", "apprendre la trompette", "méthode Z2G", "professeur de trompette", "Jean Christophe Yervant"],
   openGraph: {
-    title: "Cours de Trompette à Paris | Méthode Z2G",
-    description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances.",
+    title: "Cours de Trompette en ligne ou à domicile",
+    description: "Découvrez nos cours de Trompette pour apprendre à jouer de la trompette à votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.",
     url: "https://courstrompette.fr/",
-    siteName: "Cours de Trompette Paris",
+    siteName: "Cours de Trompette",
     locale: "fr_FR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cours de Trompette à Paris | Méthode Z2G",
-    description: "Apprenez la trompette à Paris avec la méthode Z2G. Jouez votre premier morceau en seulement 10 séances.",
+    title: "Cours de Trompette en ligne ou à domicile",
+    description: "Découvrez nos cours de Trompette pour apprendre à jouer de la trompette à votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.",
   },
   verification: {
     google: "jBElafHqU3eAux7x5QbUblWVpm3kVEjzME6ZKlXzglU",

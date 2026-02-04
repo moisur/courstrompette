@@ -8,6 +8,7 @@ import { CalendarIcon, UserIcon, ClockIcon } from 'lucide-react';
 import Breadcrumb from '@/components/Breadcrumb';
 import BlogSidebar from '@/components/blog/BlogSidebar';
 import MarkdownContent from '@/components/blog/MarkdownContent';
+import JsonLd from '@/components/seo/JsonLd';
 
 interface Props {
   params: {
@@ -56,8 +57,54 @@ export default function Post({ params }: Props) {
     const shuffled = [...relatedPostsRaw].sort(() => 0.5 - Math.random());
     const relatedPosts = shuffled.slice(0, 3) as BlogPostLink[];
 
+    const breadcrumbData = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://courstrompette.fr"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://courstrompette.fr/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": categoryName,
+          "item": `https://courstrompette.fr/blog/${params.category}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": postData.frontmatter.title
+        }
+      ]
+    };
+
+    const articleData = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": postData.frontmatter.title,
+      "description": postData.frontmatter.description || postData.frontmatter.title,
+      "image": postData.frontmatter.image ? [`https://courstrompette.fr${postData.frontmatter.image}`] : [],
+      "datePublished": postData.frontmatter.date,
+      "author": [{
+        "@type": "Person",
+        "name": postData.frontmatter.author || "Jean Christophe Yervant",
+        "url": "https://courstrompette.fr"
+      }]
+    };
+
     return (
       <div className="min-h-screen bg-stone-50/50 pt-24 pb-16">
+        <JsonLd data={breadcrumbData} />
+        <JsonLd data={articleData} />
         {/* Breadcrumb */}
         <div className="container mx-auto px-6 max-w-7xl mb-8">
           <Breadcrumb items={[
@@ -105,7 +152,7 @@ export default function Post({ params }: Props) {
                       <div className="bg-amber-50 p-2 rounded-full mr-3">
                         <UserIcon className="w-5 h-5 text-amber-600" />
                       </div>
-                      <span className="font-medium text-stone-900">{postData.frontmatter.author || 'JC Trompette'}</span>
+                      <span className="font-medium text-stone-900">{postData.frontmatter.author || 'Jean Christophe Yervant'}</span>
                     </div>
 
                     {postData.frontmatter.date && (

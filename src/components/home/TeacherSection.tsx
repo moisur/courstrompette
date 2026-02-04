@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Quote } from 'lucide-react';
-import questionImage from '@/../public/1.jpg';
+import questionImage from '@/../public/1.webp';
 
 export function TeacherSection() {
     return (
@@ -84,7 +84,7 @@ export function TeacherSection() {
                                     {[1, 2, 3].map((i) => (
                                         <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-sm">
                                             <Image
-                                                src={`/avatar${i}.png`}
+                                                src={`/avatar${i}.webp`}
                                                 alt={`Student ${i}`}
                                                 width={40}
                                                 height={40}

@@ -8,8 +8,8 @@ import BlogCTA from '@/components/BlogCTA';
 import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata = {
-  title: 'Blog - Cours de Trompette',
-  description: 'Découvrez nos articles de blog sur la trompette, des conseils pour débutants aux astuces pour les pros, en passant par l\'entretien de votre instrument et l\'histoire des grands trompettistes.',
+  title: 'Blog de la Trompette : Conseils, Astuces et Histoire | Jean Christophe Yervant',
+  description: 'Découvrez nos articles de blog sur la trompette par Jean Christophe Yervant. Conseils pour débutants, entretien, histoire et biographies des plus grands trompettistes.',
 };
 
 function groupPostsByCategory(posts: any[]) {

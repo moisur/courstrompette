@@ -2,6 +2,7 @@
 
 /* eslint-disable react/no-unescaped-entities */
 
+import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useBooking } from "@/context/BookingContext";
@@ -22,12 +23,17 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
             >
                 <CarouselContent>
                     <CarouselItem>
-                        <div
-                            className="w-full h-screen bg-cover bg-center"
-                            style={{
-                                backgroundImage: "url('/Cours-trompette-paris.png')",
-                            }}
-                        />
+                        <div className="relative w-full h-screen">
+                            <Image
+                                src="/Cours-trompette-paris.webp"
+                                alt="Cours de trompette à Paris"
+                                fill
+                                className="object-cover"
+                                priority
+                                sizes="100vw"
+                                quality={85}
+                            />
+                        </div>
                     </CarouselItem>
                 </CarouselContent>
             </Carousel>

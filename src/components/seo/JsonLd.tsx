@@ -12,8 +12,8 @@ const JsonLd = ({ data }: JsonLdProps) => {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Cours De Trompette Paris",
-        "url": "https://courstrompetteparis.lecoledes1.com",
-        "logo": "https://courstrompetteparis.lecoledes1.com/icon.png",
+        "url": "https://courstrompette.fr",
+        "logo": "https://courstrompette.fr/icon.png",
         "sameAs": [],
         "contactPoint": {
             "@type": "ContactPoint",
@@ -27,11 +27,11 @@ const JsonLd = ({ data }: JsonLdProps) => {
     const webSiteJsonLd = {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Cours De Trompette Paris",
-        "url": "https://courstrompetteparis.lecoledes1.com",
+        "name": "Cours De Trompette",
+        "url": "https://courstrompette.fr",
         "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://courstrompetteparis.lecoledes1.com/blog?search={search_term_string}",
+            "target": "https://courstrompette.fr/blog?search={search_term_string}",
             "query-input": "required name=search_term_string"
         }
     }

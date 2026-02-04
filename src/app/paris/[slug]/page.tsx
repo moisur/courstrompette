@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title,
             description,
             type: 'website',
-            url: `https://courstrompetteparis.lecoledes1.com/paris/${location.slug}`,
+            url: `https://courstrompette.fr/paris/${location.slug}`,
         },
     };
 }

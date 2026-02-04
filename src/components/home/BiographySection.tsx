@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Card, CardContent } from "@/components/ui/card";
 import { Music, Globe, Users, Mic } from 'lucide-react';
-import jc1 from "@/../public/jc.jpg";
+import jc1 from "@/../public/jc.webp";
 
 const credentials = [
     {
