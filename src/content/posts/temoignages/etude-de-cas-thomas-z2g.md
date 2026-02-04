@@ -1,7 +1,7 @@
 ---
 title: "Étude de cas : Comment Thomas a gagné une octave en 3 mois (S'inscrire Méthode Z2G)"
 date: "2025-08-06"
-image: "/debutant.jpg"
+image: "/debutant.webp"
 author: "JC Trompette"
 slug: "etude-de-cas-thomas-z2g"
 description: "Découvrez comment Thomas, amateur bloqué depuis des années, a débloqué ses aigus et joue maintenant lead en Big Band grâce à la méthode Z2G."

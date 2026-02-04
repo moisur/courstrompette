@@ -1,7 +1,7 @@
 ---
 title: "7 Signes Que Votre Méthode de Trompette Vous Freine (Et la solution Z2G)"
 date: "2025-12-15"
-image: "/Cours-trompette-paris3.png"
+image: "/Cours-trompette-paris3.webp"
 author: "JC Trompette"
 slug: "7-signes-methode-freine"
 description: "Vous stagnez malgré vos efforts ? Découvrez si votre méthode d'apprentissage est la cause de vos blocages et comment la méthode Z2G peut libérer votre potentiel."

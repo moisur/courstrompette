@@ -1,7 +1,7 @@
 ---
 title: "Apprendre la Trompette Rapidement : Le Guide Complet de la Méthode Z2G"
 date: "2025-11-15"
-image: "/Cours-trompette-paris.png"
+image: "/Cours-trompette-paris.webp"
 author: "JC Trompette"
 slug: "apprendre-trompette-rapidement"
 description: "Découvrez la méthode Z2G pour apprendre la trompette efficacement. Une approche moderne basée sur la physiologie et le plaisir, loin des contraintes du conservatoire."

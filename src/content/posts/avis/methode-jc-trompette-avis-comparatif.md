@@ -1,7 +1,7 @@
 ---
 title: "Méthode JC Trompette Avis : Comparatif Z2G vs Conservatoire"
 date: "2025-10-05"
-image: "/Cours-trompette-paris4.png"
+image: "/Cours-trompette-paris4.webp"
 author: "JC Trompette"
 slug: "methode-jc-trompette-avis-comparatif"
 description: "Faut-il choisir le conservatoire ou la méthode Z2G ? Un comparatif honnête pour vous aider à choisir la voie qui correspond à vos objectifs."

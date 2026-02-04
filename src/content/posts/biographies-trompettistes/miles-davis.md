@@ -1,14 +1,14 @@
 ---
 title: "Miles Davis: Le Géant du Jazz 🎺"
 date: "2023-06-05"
-image: "/miles.jpg"
+image: "/miles.webp"
 author: "JC Trompette"
 slug: "miles-davis"
 description: "Découvrez la vie et l'oeuvre de Miles Davis, l'un des plus grands trompettistes de jazz de tous les temps."
 ---
 
 <div class="mb-6 rounded-lg overflow-hidden border bg-white shadow-sm">
-  <img src="/miles.jpg" alt="Miles Davis, un des plus grands trompettistes de jazz" width="500" height="300" class="w-full h-auto" />
+  <img src="/miles.webp" alt="Miles Davis, un des plus grands trompettistes de jazz" width="500" height="300" class="w-full h-auto" />
 </div>
 
 <p class="mb-6">
@@ -30,7 +30,7 @@ description: "Découvrez la vie et l'oeuvre de Miles Davis, l'un des plus grands
 </p>
 
 <div class="mb-6 rounded-lg overflow-hidden border bg-white shadow-sm">
-  <img src="/miles2.jpg" alt="Miles Davis jouant du bebop" width="500" height="300" class="w-full h-auto" />
+  <img src="/miles2.webp" alt="Miles Davis jouant du bebop" width="500" height="300" class="w-full h-auto" />
 </div>
 
 <h2 class="text-2xl font-bold mb-4">Le cool jazz et l'innovation</h2>
@@ -57,7 +57,7 @@ description: "Découvrez la vie et l'oeuvre de Miles Davis, l'un des plus grands
 </p>
 
 <div class="mb-6 rounded-lg overflow-hidden border bg-white shadow-sm">
-  <img src="/miles3.jpg" alt="L'influence de Miles Davis sur la musique moderne" width="500" height="300" class="w-full h-auto" />
+  <img src="/miles3.webp" alt="L'influence de Miles Davis sur la musique moderne" width="500" height="300" class="w-full h-auto" />
 </div>
 
 <h2 class="text-2xl font-bold mb-4">Un héritage durable</h2>
@@ -72,7 +72,7 @@ description: "Découvrez la vie et l'oeuvre de Miles Davis, l'un des plus grands
 </p>
 
 <div class="mb-6 rounded-lg overflow-hidden border bg-white shadow-sm">
-  <img src="/miles4.png" alt="Albums emblématiques de Miles Davis" width="500" height="300" class="w-full h-auto" />
+  <img src="/miles4.webp" alt="Albums emblématiques de Miles Davis" width="500" height="300" class="w-full h-auto" />
 </div>
 
 <p class="mb-4">

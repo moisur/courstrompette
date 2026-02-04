@@ -4,11 +4,13 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { getBlogMenuData } from "@/lib/markdown";
 import Footer from "@/components/Footer";
-import Chatbot from "@/components/Chatbot";
-import { Analytics } from "@vercel/analytics/react";
-import { BookingProvider } from "@/context/BookingContext";
 import { BookingModal } from "@/components/BookingModal";
 import JsonLd from "@/components/seo/JsonLd";
+import dynamic from 'next/dynamic';
+import { Analytics } from "@vercel/analytics/react";
+import { BookingProvider } from "@/context/BookingContext";
+
+const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
 
 const inter = Inter({ subsets: ["latin"] });
 

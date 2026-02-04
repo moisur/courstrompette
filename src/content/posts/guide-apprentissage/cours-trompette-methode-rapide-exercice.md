@@ -1,7 +1,7 @@
 ---
 title: "Cours Trompette Méthode Rapide : Votre Premier Exercice Z2G (Essai Gratuit)"
 date: "2025-07-07"
-image: "/Cours-trompette-paris2.png"
+image: "/Cours-trompette-paris2.webp"
 author: "JC Trompette"
 slug: "cours-trompette-methode-rapide-exercice"
 description: "Essayez la méthode Z2G immédiatement avec cet exercice de 5 minutes. Pas besoin d'inscription, juste votre trompette et votre souffle. Résultat immédiat."

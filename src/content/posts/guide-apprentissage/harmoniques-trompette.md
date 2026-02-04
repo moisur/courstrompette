@@ -1,26 +1,26 @@
-ï»¿---
-title: "MaÃ®triser les harmoniques Ã  la trompette"
+---
+title: "Maîtriser les harmoniques à la trompette"
 date: "2023-08-15"
-image: "/aigu.jpg"
+image: "/aigu.webp"
 author: "JC Trompette"
 slug: "harmoniques-trompette"
-description: "DÃ©couvrez les secrets des Ã©tages harmoniques pour Ã©tendre votre tessiture et amÃ©liorer votre souplesse."
-niveau: "IntermÃ©diaire"
+description: "Découvrez les secrets des étages harmoniques pour étendre votre tessiture et améliorer votre souplesse."
+niveau: "Intermédiaire"
 ---
 
 <div class="mb-6 rounded-lg overflow-hidden border bg-white shadow-sm">
-  <img src="/aigu.jpg" alt="SchÃ©ma des harmoniques sur une trompette" width="800" height="400" class="w-full h-auto" />
+  <img src="/aigu.webp" alt="Schéma des harmoniques sur une trompette" width="800" height="400" class="w-full h-auto" />
 </div>
 
 <div class="text-gray-800 space-y-4">
   <p class="text-lg">
-    Comprendre les <strong>Ã©tages harmoniques</strong> est fondamental pour tout trompettiste. C'est la clÃ© qui dÃ©verrouille toute la tessiture de l'instrument sans mÃªme toucher aux pistons. Il s'agit de la sÃ©rie de notes que l'on peut produire avec un seul doigtÃ© (le plus souvent "Ã  vide") simplement en modifiant la tension des lÃ¨vres et la vitesse de la colonne d'air.
+    Comprendre les <strong>étages harmoniques</strong> est fondamental pour tout trompettiste. C'est la clé qui déverrouille toute la tessiture de l'instrument sans même toucher aux pistons. Il s'agit de la série de notes que l'on peut produire avec un seul doigté (le plus souvent "à vide") simplement en modifiant la tension des lèvres et la vitesse de la colonne d'air.
   </p>
   <p class="text-lg">
-    MaÃ®triser le passage fluide entre ces harmoniques, via des exercices de <strong>souplesse</strong>, est essentiel pour dÃ©velopper l'endurance, la justesse et un son riche.
+    Maîtriser le passage fluide entre ces harmoniques, via des exercices de <strong>souplesse</strong>, est essentiel pour développer l'endurance, la justesse et un son riche.
   </p>
 
-  <h2 class="text-2xl font-bold text-orange-600 mt-8 mb-4">Les 8 premiers harmoniques (doigtÃ© Ã  vide)</h2>
+  <h2 class="text-2xl font-bold text-orange-600 mt-8 mb-4">Les 8 premiers harmoniques (doigté à vide)</h2>
 
   <div class="space-y-4">
 <div class="border rounded-lg p-4 bg-gray-50">
@@ -29,80 +29,80 @@ niveau: "IntermÃ©diaire"
     <span class="text-blue-600 font-mono font-bold">Do grave (Do3)</span>
   </div>
   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Fondamentale</p>
-  <p>Souvent appelÃ©e la 'pÃ©dale'. Difficile Ã  produire pour les dÃ©butants et peu utilisÃ©e dans le rÃ©pertoire classique, mais elle est la base de la sÃ©rie.</p>
+  <p>Souvent appelée la 'pédale'. Difficile à produire pour les débutants et peu utilisée dans le répertoire classique, mais elle est la base de la série.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">2Ã¨me Harmonique</h3>
+    <h3 class="font-bold text-lg">2ème Harmonique</h3>
     <span class="text-blue-600 font-mono font-bold">Do bas (Do4)</span>
   </div>
    <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave</p>
-  <p>C'est la premiÃ¨re note grave que les Ã©lÃ¨ves apprennent. Elle est stable et facile Ã  produire.</p>
+  <p>C'est la première note grave que les élèves apprennent. Elle est stable et facile à produire.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">3Ã¨me Harmonique</h3>
-    <span class="text-blue-600 font-mono font-bold">Sol mÃ©dium (Sol4)</span>
+    <h3 class="font-bold text-lg">3ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Sol médium (Sol4)</span>
   </div>
    <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Quinte</p>
-  <p>Une note pivot dans le registre mÃ©dium.</p>
+  <p>Une note pivot dans le registre médium.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">4Ã¨me Harmonique</h3>
-    <span class="text-blue-600 font-mono font-bold">Do mÃ©dium (Do5)</span>
+    <h3 class="font-bold text-lg">4ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Do médium (Do5)</span>
   </div>
    <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Quarte</p>
-  <p>ComplÃ¨te l'octave par rapport au Do4. C'est une note de rÃ©fÃ©rence.</p>
+  <p>Complète l'octave par rapport au Do4. C'est une note de référence.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">5Ã¨me Harmonique</h3>
+    <h3 class="font-bold text-lg">5ème Harmonique</h3>
     <span class="text-blue-600 font-mono font-bold">Mi (Mi5)</span>
   </div>
    <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce majeure</p>
-  <p>Naturellement un peu bas (trop plat). Il doit Ãªtre corrigÃ© avec les lÃ¨vres pour Ãªtre juste.</p>
+  <p>Naturellement un peu bas (trop plat). Il doit être corrigé avec les lèvres pour être juste.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">6Ã¨me Harmonique</h3>
+    <h3 class="font-bold text-lg">6ème Harmonique</h3>
     <span class="text-blue-600 font-mono font-bold">Sol aigu (Sol5)</span>
   </div>
    <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce mineure</p>
-  <p>Une note clÃ© du registre aigu.</p>
+  <p>Une note clé du registre aigu.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">7Ã¨me Harmonique</h3>
-    <span class="text-blue-600 font-mono font-bold">Si bÃ©mol (Sib5)</span>
+    <h3 class="font-bold text-lg">7ème Harmonique</h3>
+    <span class="text-blue-600 font-mono font-bold">Si bémol (Sib5)</span>
   </div>
    <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Tierce mineure (approximative)</p>
-  <p>Naturellement trÃ¨s faux (trÃ¨s bas). En pratique, on utilise le 1er piston pour obtenir un Si bÃ©mol juste.</p>
+  <p>Naturellement très faux (très bas). En pratique, on utilise le 1er piston pour obtenir un Si bémol juste.</p>
 </div>
 
 <div class="border rounded-lg p-4 bg-gray-50">
   <div class="flex justify-between items-baseline mb-2">
-    <h3 class="font-bold text-lg">8Ã¨me Harmonique</h3>
+    <h3 class="font-bold text-lg">8ème Harmonique</h3>
     <span class="text-blue-600 font-mono font-bold">Do suraigu (Do6)</span>
   </div>
-   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave par rapport au 4Ã¨me harmonique</p>
+   <p class="text-sm text-gray-500 mb-2"><strong>Intervalle :</strong> Octave par rapport au 4ème harmonique</p>
   <p>Le fameux 'Contre-Ut', un objectif pour de nombreux trompettistes.</p>
 </div>
   </div>
 
   <div class="mt-8 p-6 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
-    <h3 class="font-bold text-lg text-gray-900">RÃ©sumÃ© de la sÃ©rie Ã  vide :</h3>
+    <h3 class="font-bold text-lg text-gray-900">Résumé de la série à vide :</h3>
     <p class="font-mono text-lg mt-2 text-gray-800">
-      Do (pÃ©dale) â€” Do â€” Sol â€” Do â€” Mi â€” Sol â€” Sib (faux) â€” Do
+      Do (pédale) — Do — Sol — Do — Mi — Sol — Sib (faux) — Do
     </p>
     <p class="mt-2 text-sm text-gray-600">
-      Cette sÃ©rie est la fondation sur laquelle toute la technique de la trompette est construite. Chaque doigtÃ© diffÃ©rent produit sa propre sÃ©rie d'harmoniques, vous donnant accÃ¨s Ã  toutes les notes de l'instrument.
+      Cette série est la fondation sur laquelle toute la technique de la trompette est construite. Chaque doigté différent produit sa propre série d'harmoniques, vous donnant accès à toutes les notes de l'instrument.
     </p>
   </div>
 </div>
