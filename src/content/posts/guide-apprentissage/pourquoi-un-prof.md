@@ -5,7 +5,7 @@ image: "/jc.webp"
 author: "JC Trompette"
 slug: "pourquoi-un-prof"
 description: "Découvrez pourquoi un professeur de trompette est indispensable pour progresser rapidement et éviter les mauvaises habitudes."
-niveau: "D\'butant"
+niveau: "Débutant"
 ---
 
 <div class="space-y-6 text-gray-800">
