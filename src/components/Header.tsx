@@ -77,7 +77,7 @@ export default function Header({ menuItems }: HeaderProps) {
       setShowBlogMenu(false)
       setActiveCategory(null)
       setActiveLevel(null)
-    }, 300)
+    }, 500)
   }
 
   const handleCategoryEnter = (slug: string) => {
@@ -90,7 +90,7 @@ export default function Header({ menuItems }: HeaderProps) {
   const handleCategoryLeave = () => {
     categoryTimeoutRef.current = setTimeout(() => {
       setActiveCategory(null);
-    }, 300);
+    }, 500);
   };
 
   useEffect(() => {
@@ -159,12 +159,15 @@ export default function Header({ menuItems }: HeaderProps) {
             <Link href="/blog" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>Blog</Link>
             {showBlogMenu && (
               <ul
-                className="absolute left-1/2 -translate-x-1/2 mt-3 w-64 bg-white shadow-lg rounded-xl py-2 z-50 border border-stone-100 hidden md:block"
+                className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 bg-white shadow-lg rounded-xl py-2 z-50 border border-stone-100 hidden md:block"
                 onMouseEnter={() => {
                   if (timeoutRef.current) clearTimeout(timeoutRef.current);
                 }}
                 onMouseLeave={handleMouseLeave}
               >
+                {/* Bridge to prevent gap between Blog link and menu */}
+                <div className="absolute -top-3 left-0 right-0 h-3" />
+
                 {menuItems.map((category) => (
                   <li
                     key={category.slug}
@@ -179,7 +182,21 @@ export default function Header({ menuItems }: HeaderProps) {
                       </svg>
                     </Link>
                     {activeCategory === category.slug && (
-                      <ul className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-xl py-2 min-h-full border border-stone-100 ml-1">
+                      <ul
+                        className="absolute left-full top-0 w-64 bg-white shadow-lg rounded-xl py-2 min-h-full border border-stone-100 ml-1"
+                        onMouseEnter={() => {
+                          if (categoryTimeoutRef.current) clearTimeout(categoryTimeoutRef.current);
+                          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                          setActiveCategory(category.slug);
+                        }}
+                      >
+                        {/* 
+                          Vertical Safety Bridge: 
+                          Wide (-left-8 w-8) and tall (-top-24 -bottom-24) to 'catch' the mouse 
+                          when returning from a long third-level list.
+                        */}
+                        <div className="absolute -top-24 -left-8 w-8 -bottom-24 z-[-1]" />
+
                         {category.slug === 'guide-apprentissage' ? (
                           ['Débutant', 'Intermédiaire', 'Avancé'].map((level) => {
                             const postsForLevel = category.posts.filter(p => normalizeLevel(p.niveau) === level);
@@ -192,7 +209,18 @@ export default function Header({ menuItems }: HeaderProps) {
                                   )}
                                 </Link>
                                 {activeLevel === level && postsForLevel.length > 0 && (
-                                  <ul className="absolute left-full top-0 w-72 bg-white shadow-xl rounded-xl py-2 max-h-[80vh] overflow-y-auto z-50 border border-stone-100 ml-1 p-2 space-y-1">
+                                  <ul
+                                    className="absolute left-full top-0 w-72 bg-white shadow-xl rounded-xl py-2 max-h-[80vh] overflow-y-auto z-50 border border-stone-100 ml-1 p-2 space-y-1 custom-scrollbar"
+                                    onMouseEnter={() => {
+                                      if (categoryTimeoutRef.current) clearTimeout(categoryTimeoutRef.current);
+                                      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                                      setActiveLevel(level);
+                                      setActiveCategory(category.slug);
+                                    }}
+                                  >
+                                    {/* Vertical Safety Bridge: Catches mouse returning to Level 2 at any height */}
+                                    <div className="absolute -top-24 -left-8 w-8 -bottom-24 z-[-1]" />
+
                                     {postsForLevel.map(post => (
                                       <li key={post.slug}>
                                         <Link href={`/blog/${category.slug}/${post.slug}`} className="block px-3 py-2 hover:bg-amber-50 text-stone-700 text-sm rounded-lg transition-colors">
