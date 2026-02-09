@@ -51,7 +51,27 @@ Modifiez `/etc/nginx/nginx.conf` :
 ```nginx
 http {
     server_tokens off;
+    
+    # --- SECURITE DÉBUT ---
+    # Rate Limiting : Limite à 10 requêtes/seconde par IP pour l'API
+    limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
+    # --- SECURITE FIN ---
     ...
+}
+```
+
+### D. Appliquer le Rate Limiting au site
+Modifiez `/etc/nginx/sites-available/courstrompette` (ou `default`) :
+```nginx
+server {
+    ...
+    location / {
+        # Applique la limite (burst=20 autorise un pic, nodelay évite le ralentissement)
+        limit_req zone=mylimit burst=20 nodelay;
+        
+        proxy_pass http://localhost:3005;
+        ...
+    }
 }
 ```
 Puis rechargez : `systemctl reload nginx`
