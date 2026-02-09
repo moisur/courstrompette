@@ -5,37 +5,41 @@ import { useBooking } from "@/context/BookingContext";
 import { ArrowRight } from "lucide-react";
 
 
-// Home sections
+import dynamic from 'next/dynamic';
+
+// Above the fold - Static imports for LCP
 import {
   HeroSection,
   AboutMethodSection,
-  ProblemSection,
-  TeacherSection,
-  BiographySection,
-  StorySection,
-  WhyMethodSection,
-  MethodFeaturesSection,
-  TestimonialsSection,
-  GuaranteeSection,
-  DisappearSection,
-  FAQSection,
-  NotVirtuosoSection,
-  IntermediateSection,
-  MasterclassSection,
 } from '@/components/home';
 
-// Existing components
-import Method from './Method';
-import Mission from './Mission';
-import Puissance from './Puissance';
-import TrumpetPricingPage from './TrumpetPricingPage';
-import AccessoiresTrompette from './blog/AccessoireRecommandes';
-import Formulaire from './Formulaire';
+// Below the fold - Dynamic imports for bundle splitting
+const ProblemSection = dynamic(() => import('@/components/home').then(mod => mod.ProblemSection));
+const TeacherSection = dynamic(() => import('@/components/home').then(mod => mod.TeacherSection));
+const BiographySection = dynamic(() => import('@/components/home').then(mod => mod.BiographySection));
+const StorySection = dynamic(() => import('@/components/home').then(mod => mod.StorySection));
+const WhyMethodSection = dynamic(() => import('@/components/home').then(mod => mod.WhyMethodSection));
+const MethodFeaturesSection = dynamic(() => import('@/components/home').then(mod => mod.MethodFeaturesSection));
+const TestimonialsSection = dynamic(() => import('@/components/home').then(mod => mod.TestimonialsSection));
+const GuaranteeSection = dynamic(() => import('@/components/home').then(mod => mod.GuaranteeSection));
+const DisappearSection = dynamic(() => import('@/components/home').then(mod => mod.DisappearSection));
+const FAQSection = dynamic(() => import('@/components/home').then(mod => mod.FAQSection));
+const NotVirtuosoSection = dynamic(() => import('@/components/home').then(mod => mod.NotVirtuosoSection));
+const IntermediateSection = dynamic(() => import('@/components/home').then(mod => mod.IntermediateSection));
+const MasterclassSection = dynamic(() => import('@/components/home').then(mod => mod.MasterclassSection));
+
+// Other components - Dynamic
+const Method = dynamic(() => import('./Method'));
+const Mission = dynamic(() => import('./Mission'));
+const Puissance = dynamic(() => import('./Puissance'));
+const TrumpetPricingPage = dynamic(() => import('./TrumpetPricingPage'));
+const AccessoiresTrompette = dynamic(() => import('./blog/AccessoireRecommandes'));
+const Formulaire = dynamic(() => import('./Formulaire'));
+const LocalMap = dynamic(() => import('@/components/seo/LocalMap'), { ssr: false });
 
 // Shared components
 import { Popup } from '@/components/shared';
 import InlineCTA from '@/components/blog/InlineCTA';
-import LocalMap from '@/components/seo/LocalMap';
 
 export default function Cours({
   locationTitle,
