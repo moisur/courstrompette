@@ -77,7 +77,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             // Basic CSP to prevent basic XSS while allowing specific resources
             // Note: Needs to be tuned if external scripts are blocked
-            value: "default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.youtube.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://www.youtube.com;"
+            value: "upgrade-insecure-requests; default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.youtube.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://www.youtube.com;"
           }
         ],
       },

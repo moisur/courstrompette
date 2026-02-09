@@ -8,10 +8,10 @@ import PerformanceMetrics from './PerformanceMetrics'
 
 // Pre-registered music pieces
 const preRegisteredPieces = [
-  { 
-    title: "Simple C Major Scale", 
+  {
+    title: "Simple C Major Scale",
     xml: `<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+    <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "https://www.musicxml.org/dtds/partwise.dtd">
     <score-partwise version="3.1">
       <part-list>
         <score-part id="P1">
@@ -104,8 +104,8 @@ const preRegisteredPieces = [
       </part>
     </score-partwise>`
   },
-  { 
-    title: "Twinkle Twinkle Little Star", 
+  {
+    title: "Twinkle Twinkle Little Star",
     xml: `<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
     <score-partwise version="3.1">
@@ -232,21 +232,21 @@ export default function TrumpetTrainer() {
   }
 
   const handleNoteDetected = (detectedNote: string | null) => {
-    console.log('Note detected:', { 
-      detectedNote, 
-      isPlaying, 
-      expectedNote 
+    console.log('Note detected:', {
+      detectedNote,
+      isPlaying,
+      expectedNote
     })
 
     if (isPlaying && detectedNote) {
       setCurrentNote(detectedNote)
-      
+
       if (expectedNote) {
         const isCorrect = compareNotes(detectedNote, expectedNote)
-        console.log('Note comparison:', { 
-          detectedNote, 
-          expectedNote, 
-          isCorrect 
+        console.log('Note comparison:', {
+          detectedNote,
+          expectedNote,
+          isCorrect
         })
 
         setPerformance(prev => ({
@@ -295,20 +295,19 @@ export default function TrumpetTrainer() {
       <FileUpload onFileUpload={handleFileUpload} />
       {musicXML && (
         <>
-            <SheetMusic 
-            xmlContent={musicXML} 
-            currentNote={currentNote} 
+          <SheetMusic
+            xmlContent={musicXML}
+            currentNote={currentNote}
             onNoteChange={handleExpectedNoteChange}
-            isCorrect={expectedNote === currentNote} 
-            />
+            isCorrect={expectedNote === currentNote}
+          />
           <div className="flex justify-between items-center my-4">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className={`px-4 py-2 rounded-full font-bold ${
-                isPlaying
+              className={`px-4 py-2 rounded-full font-bold ${isPlaying
                   ? 'bg-red-500 hover:bg-red-600 text-white'
                   : 'bg-green-500 hover:bg-green-600 text-white'
-              }`}
+                }`}
             >
               {isPlaying ? 'Stop' : 'Start'}
             </button>
@@ -320,12 +319,12 @@ export default function TrumpetTrainer() {
             <p className="text-lg font-semibold">Detected Note: {currentNote}</p>
           </div>
           <div className="mt-4 bg-gray-100 p-2 rounded">
-        <p>Debug Info:</p>
-        <p>Is Playing: {isPlaying ? 'Yes' : 'No'}</p>
-        <p>Music XML: {musicXML ? 'Loaded' : 'Not Loaded'}</p>
-        <p>Expected Note: {expectedNote || 'None'}</p>
-        <p>Current Note: {currentNote || 'None'}</p>
-      </div>
+            <p>Debug Info:</p>
+            <p>Is Playing: {isPlaying ? 'Yes' : 'No'}</p>
+            <p>Music XML: {musicXML ? 'Loaded' : 'Not Loaded'}</p>
+            <p>Expected Note: {expectedNote || 'None'}</p>
+            <p>Current Note: {currentNote || 'None'}</p>
+          </div>
         </>
       )}
     </div>

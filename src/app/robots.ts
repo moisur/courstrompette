@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/api/',
         },
-        sitemap: 'https://courstrompetteparis.lecoledes1.com/sitemap.xml',
+        sitemap: 'https://courstrompette.fr/sitemap.xml',
     };
 }

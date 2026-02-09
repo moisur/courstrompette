@@ -43,7 +43,7 @@
           "value": "courstrompette.vercel.app"
         }
       ],
-      "destination": "https://courstrompetteparis.lecoledes1.com/$1",
+      "destination": "https://courstrompette.fr/$1",
       "permanent": true
     }
   ]

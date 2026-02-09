@@ -10,7 +10,7 @@ Ce skill fournit des outils pour vérifier la posture de sécurité de l'infrast
 ## Scripts
 
 ### `audit-headers.ps1`
-Vérifie la présence des en-têtes de sécurité HTTP recommandés (HSTS, CSP, X-Frame-Options, etc.) sur une URL donnée.
+Vérifie la présence des en-têtes de sécurité HTTP (HSTS, CSP, X-Frame-Options) et s'assure que les signatures techniques (`Server`, `X-Powered-By`, `x-nextjs-cache`) sont bien masquées. Utilise `curl.exe` pour une fiabilité maximale.
 
 **Usage:**
 ```powershell
