@@ -3,7 +3,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { motion } from 'framer-motion';
 import jc from '@/../public/jc.webp';
 
 const problems = [
@@ -38,12 +37,7 @@ export function ProblemSection({ locationName }: { locationName?: string }) {
 
                     {/* Content Left */}
                     <div className="lg:col-span-7">
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            className="mb-12"
-                        >
+                        <div className="mb-12 animate-fade-in-up">
                             <span className="text-amber-700 font-medium tracking-[0.2em] text-sm uppercase mb-4 block">
                                 Ca fait des mois que vous le savez
                             </span>
@@ -52,16 +46,14 @@ export function ProblemSection({ locationName }: { locationName?: string }) {
                                 <span className="italic text-stone-500">progresser {locationName && `à ${locationName}`} ...</span>
                             </h2>
                             <div className="w-20 h-1 bg-amber-600 rounded-full opacity-60" />
-                        </motion.div>
+                        </div>
 
                         <div className="grid gap-6">
                             {problems.map((problem, index) => (
-                                <motion.div
+                                <div
                                     key={index}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 }}
+                                    className="animate-fade-in-up"
+                                    style={{ animationDelay: `${index * 100}ms` }}
                                 >
                                     <Card className="group border border-amber-100 shadow-sm hover:shadow-2xl hover:shadow-amber-200/40 hover:border-amber-200 transition-all duration-500 bg-white rounded-2xl overflow-hidden">
                                         <CardContent className="p-8">
@@ -78,16 +70,13 @@ export function ProblemSection({ locationName }: { locationName?: string }) {
                                             </div>
                                         </CardContent>
                                     </Card>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
 
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.4 }}
-                            className="mt-12 flex items-center gap-4 p-6 bg-amber-50/50 rounded-2xl border border-amber-100/50"
+                        <div
+                            className="mt-12 flex items-center gap-4 p-6 bg-amber-50/50 rounded-2xl border border-amber-100/50 animate-fade-in-up"
+                            style={{ animationDelay: '400ms' }}
                         >
                             <div className="flex-shrink-0 w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-xl">
                                 🎺
@@ -98,18 +87,12 @@ export function ProblemSection({ locationName }: { locationName?: string }) {
                                     Sans la bonne méthode, on stagne, pire parfois, on se décourage. Mon objectif est de vous faire jouer votre premier morceau en <span className="font-medium italic text-amber-800">10 séances</span>.
                                 </p>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
 
                     {/* Image Right */}
                     <div className="lg:col-span-5 relative">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8 }}
-                            className="relative"
-                        >
+                        <div className="relative animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                             {/* Decorative frames */}
                             <div className="absolute -inset-4 border border-stone-200 rounded-[2.5rem] -z-10" />
                             <div className="absolute inset-4 border border-amber-200/30 rounded-[1.5rem] translate-x-4 translate-y-4 -z-10" />
@@ -133,7 +116,7 @@ export function ProblemSection({ locationName }: { locationName?: string }) {
                                     <p className="text-amber-700 text-xs font-medium mt-2 uppercase tracking-widest">— Jean-Christophe</p>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
 
                 </div>

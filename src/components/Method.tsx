@@ -3,7 +3,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Rocket, Brain, Users, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const methods = [
   {
@@ -43,48 +42,35 @@ export default function Method() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
           <div className="max-w-2xl">
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-amber-700 font-medium tracking-[0.2em] text-sm uppercase mb-4 block"
-            >
+            <span className="text-amber-700 font-medium tracking-[0.2em] text-sm uppercase mb-4 block animate-fade-in-up">
               Avec les vrais secrets, 100 % des élèves progressent
-            </motion.span>
-            <motion.h2
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-6xl font-serif text-stone-900 leading-[1.1]"
+            </span>
+            <h2
+              className="text-4xl md:text-6xl font-serif text-stone-900 leading-[1.1] animate-fade-in-up"
+              style={{ animationDelay: '100ms' }}
             >
               Apprendre la trompette <br />
               <span className="italic text-stone-500">c&apos;est facile !</span>
-            </motion.h2>
+            </h2>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 10 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="hidden md:block pb-2"
+          <div
+            className="hidden md:block pb-2 animate-fade-in-up"
+            style={{ animationDelay: '200ms' }}
           >
             <p className="text-stone-500 max-w-xs text-lg leading-relaxed border-l-2 border-amber-200 pl-6">
               La méthode Z2G c&apos;est des <span className="text-stone-900 font-medium italic">centaines</span> d&apos;élèves facilement qui progressent chaque année.
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Dynamic Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
           {methods.map((method, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15 }}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${index * 150}ms` }}
             >
               <Card className="h-full border border-amber-100 bg-white hover:border-amber-300 hover:shadow-2xl hover:shadow-amber-200/50 transition-all duration-500 group rounded-[2rem] overflow-hidden">
                 <CardContent className="p-8 md:p-10 flex flex-col h-full relative">
@@ -118,22 +104,19 @@ export default function Method() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Call to action text below grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-          className="mt-20 text-center"
+        <div
+          className="mt-20 text-center animate-fade-in-up"
+          style={{ animationDelay: '600ms' }}
         >
           <p className="text-stone-400 text-sm tracking-widest uppercase">
             Basé à Paris • Coaching Personnalisé • Succès Garanti
           </p>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -13,7 +13,6 @@ import {
   BookOpen,
   Sparkles
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const aspects = [
   { icon: Music2, label: 'Rythme', description: 'Maîtriser le tempo et la pulsation', delay: 0 },
@@ -37,58 +36,42 @@ export default function Mission() {
 
         {/* En-tête */}
         <div className="text-center mb-24">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-amber-700 font-medium tracking-[0.3em] text-sm uppercase mb-4 block"
-          >
+          <span className="text-amber-700 font-medium tracking-[0.3em] text-sm uppercase mb-4 block animate-fade-in-up">
             Ma Mission
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight mb-8"
+          </span>
+          <h2
+            className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight mb-8 animate-fade-in-up"
+            style={{ animationDelay: '100ms' }}
           >
             Vous accompagner à jouer <br />
             <span className="italic text-stone-500">de la trompette</span>
-          </motion.h2>
+          </h2>
 
-          <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            whileInView={{ opacity: 1, scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="w-24 h-1 bg-amber-600 mx-auto rounded-full opacity-60 mb-12"
+          <div
+            className="w-24 h-1 bg-amber-600 mx-auto rounded-full opacity-60 mb-12 animate-fade-in-up"
+            style={{ animationDelay: '200ms' }}
           />
 
           {/* Promesse */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="max-w-2xl mx-auto bg-stone-50 p-10 rounded-[2.5rem] border border-stone-100 shadow-sm"
+          <div
+            className="max-w-2xl mx-auto bg-stone-50 p-10 rounded-[2.5rem] border border-stone-100 shadow-sm animate-fade-in-up"
+            style={{ animationDelay: '300ms' }}
           >
             <p className="text-stone-500 mb-2 uppercase tracking-widest text-xs font-medium">La promesse ultime</p>
             <p className="text-2xl md:text-3xl font-serif text-stone-900 leading-relaxed">
               Jouer vos premiers morceaux en <br />
               <span className="text-amber-700 italic font-medium underline underline-offset-8 decoration-amber-300">seulement 10 séances</span>
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Aspects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {aspects.map((aspect, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 + aspect.delay }}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${100 + aspect.delay * 1000}ms` }}
             >
               <Card className="group h-full border border-amber-100 bg-white hover:-translate-y-2 hover:border-amber-300 hover:shadow-2xl hover:shadow-amber-200/50 transition-all duration-500 rounded-[2rem] overflow-hidden cursor-default">
                 <CardContent className="p-8 flex flex-col items-center text-center">
@@ -113,7 +96,7 @@ export default function Mission() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
