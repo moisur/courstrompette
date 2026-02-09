@@ -68,7 +68,7 @@ niveau: "Intermédiaire"
     Qui suis-je ? (Pas un prof de conservatoire classique)
   </h2>
   <div class="flex flex-col md:flex-row gap-6 items-center">
-    <img src="/jc.webp" alt="JC Trompette à Paris" class="w-full md:w-1/3 rounded-lg shadow-lg" />
+    <img src="/jc.webp" alt="JC Trompette à Paris" width="600" height="800" loading="lazy" class="w-full md:w-1/3 rounded-lg shadow-lg" />
     <div class="text-gray-700 text-sm">
       <p class="mb-2">
         Je suis JC. J'ai joué dans les rues, les clubs, les festivals. J'ai fait le Tour de France à vélo avec ma trompette.

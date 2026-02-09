@@ -26,25 +26,25 @@ niveau: "Intermédiaire"
   <div class="border rounded-lg p-4 shadow-sm bg-white">
     <h3 class="font-bold text-lg mb-2">Embouchure</h3>
     <p class="text-sm text-gray-700 mb-3">Pièce en métal placée contre les lèvres pour produire le son. Il existe différentes tailles et formes d'embouchures, adaptées aux lèvres et au niveau du trompettiste.</p>
-    <img src="/embouchure.webp" alt="Une embouchure de trompette" class="rounded-lg w-full h-auto" />
+    <img src="/embouchure.webp" alt="Une embouchure de trompette" width="600" height="400" loading="lazy" class="rounded-lg w-full h-auto" />
   </div>
 
   <div class="border rounded-lg p-4 shadow-sm bg-white">
     <h3 class="font-bold text-lg mb-2">Valves</h3>
     <p class="text-sm text-gray-700 mb-3">Les trois valves de la trompette permettent de modifier la longueur du tube et donc la hauteur des notes. En pressant une ou plusieurs valves, vous changez la hauteur du son.</p>
-    <img src="/valves.webp" alt="Les valves d'une trompette" class="rounded-lg w-full h-auto" />
+    <img src="/valves.webp" alt="Les valves d'une trompette" width="600" height="400" loading="lazy" class="rounded-lg w-full h-auto" />
   </div>
 
   <div class="border rounded-lg p-4 shadow-sm bg-white">
     <h3 class="font-bold text-lg mb-2">Corps de la trompette</h3>
     <p class="text-sm text-gray-700 mb-3">Le tube principal de la trompette, qui est parcouru par l'air. Il existe différentes longueurs de corps de trompette, ce qui influence la hauteur du son.</p>
-    <img src="/corps.webp" alt="Le corps d'une trompette" class="rounded-lg w-full h-auto" />
+    <img src="/corps.webp" alt="Le corps d'une trompette" width="600" height="400" loading="lazy" class="rounded-lg w-full h-auto" />
   </div>
 
   <div class="border rounded-lg p-4 shadow-sm bg-white">
     <h3 class="font-bold text-lg mb-2">Pavillon</h3>
     <p class="text-sm text-gray-700 mb-3">L'extrémité évasée de la trompette, qui amplifie le son. La forme du pavillon influence le timbre du son.</p>
-    <img src="/pavillon.webp" alt="Le pavillon d'une trompette" class="rounded-lg w-full h-auto" />
+    <img src="/pavillon.webp" alt="Le pavillon d'une trompette" width="600" height="400" loading="lazy" class="rounded-lg w-full h-auto" />
   </div>
 </div>
 

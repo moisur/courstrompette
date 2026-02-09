@@ -131,7 +131,7 @@ export default function LocationPage({ params }: Props) {
                     </div>
                 </section>
 
-                <NeighborhoodsGrid />
+                <NeighborhoodsGrid locationName={location.name} />
             </div>
         </main>
     );

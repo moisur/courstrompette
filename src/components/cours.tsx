@@ -115,8 +115,8 @@ export default function Cours({
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50 pointer-events-none"></div>
 
           <h2 className="text-2xl md:text-3xl font-serif text-stone-900 leading-tight relative z-10">
-            Vous en avez marre de stagner ? <br className="hidden md:block" />
-            <span className="italic text-amber-600">Vous êtes au bon endroit.</span>
+            Vous cherchez à progresser à la trompette ? <br className="hidden md:block" />
+            <span className="italic text-amber-600">Vous êtes exactement là où il faut.</span>
           </h2>
 
           <div className="space-y-6 relative z-10">
@@ -194,8 +194,8 @@ export default function Cours({
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50 pointer-events-none"></div>
 
           <h2 className="text-2xl md:text-3xl font-serif text-stone-900 leading-tight relative z-10">
-            Vous en avez marre de stagner ? <br className="hidden md:block" />
-            <span className="italic text-amber-600">Vous êtes au bon endroit.</span>
+            Prêt à passer à l&apos;action ? <br className="hidden md:block" />
+            <span className="italic text-amber-600">Débloquons votre potentiel ensemble.</span>
           </h2>
 
           <div className="space-y-6 relative z-10">

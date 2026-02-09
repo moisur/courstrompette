@@ -22,7 +22,8 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
                     className="object-cover"
                     priority
                     sizes="100vw"
-                    quality={85}
+                    quality={90}
+                    loading="eager"
                 />
             </div>
 

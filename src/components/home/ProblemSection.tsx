@@ -121,7 +121,6 @@ export function ProblemSection() {
                                     className="w-full h-auto object-cover hover:scale-105 transition-transform duration-700"
                                     width={600}
                                     height={800}
-                                    priority
                                     sizes="(max-width: 768px) calc(100vw - 48px), 600px"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-stone-900/10 to-transparent opacity-60" />
