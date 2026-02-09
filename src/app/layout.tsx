@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 import { BookingModal } from "@/components/BookingModal";
 import JsonLd from "@/components/seo/JsonLd";
 import dynamic from 'next/dynamic';
-import { Analytics } from "@vercel/analytics/react";
 import { BookingProvider } from "@/context/BookingContext";
 
 const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
@@ -51,7 +50,6 @@ export default function RootLayout({
           <Header menuItems={getBlogMenuData()} />
           {children}
           <Footer />
-          <Analytics />
           <BookingModal />
           <Chatbot />
         </BookingProvider>

@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { useForm, ValidationError } from '@formspree/react';
-import { ConfettiButton } from "@/components/magicui/confetti";
+import { Button } from "@/components/ui/button";
+import confetti from "canvas-confetti";
 import { CheckCircle2 } from "lucide-react";
 
 interface FormulaireProps {
@@ -11,6 +12,18 @@ interface FormulaireProps {
 
 const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
   const [state, handleSubmit] = useForm("xdkngnbl");
+
+  // Déclencher les paillettes uniquement en cas de succès
+  React.useEffect(() => {
+    if (state.succeeded) {
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#D97706', '#F59E0B', '#78350F']
+      });
+    }
+  }, [state.succeeded]);
 
   // Message de succès stylisé
   if (state.succeeded) {
@@ -113,13 +126,13 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
       </div>
 
       <div className="pt-2">
-        <ConfettiButton
+        <Button
           type="submit"
           className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold py-3 px-4 rounded-xl border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transform transition hover:-translate-y-1"
           disabled={state.submitting}
         >
           {state.submitting ? "Envoi en cours..." : "Réserver Mon Cours Gratuit"}
-        </ConfettiButton>
+        </Button>
         <p className="text-xs text-center text-stone-400 mt-4">
           Aucun engagement requis. Vos données restent confidentielles.
         </p>
