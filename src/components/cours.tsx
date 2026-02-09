@@ -8,25 +8,23 @@ import { ArrowRight } from "lucide-react";
 import dynamic from 'next/dynamic';
 
 // Above the fold - Static imports for LCP
-import {
-  HeroSection,
-  AboutMethodSection,
-} from '@/components/home';
+import { HeroSection } from '@/components/home/HeroSection';
+import { AboutMethodSection } from '@/components/home/AboutMethodSection';
 
-// Below the fold - Dynamic imports for bundle splitting
-const ProblemSection = dynamic(() => import('@/components/home').then(mod => mod.ProblemSection));
-const TeacherSection = dynamic(() => import('@/components/home').then(mod => mod.TeacherSection));
-const BiographySection = dynamic(() => import('@/components/home').then(mod => mod.BiographySection));
-const StorySection = dynamic(() => import('@/components/home').then(mod => mod.StorySection));
-const WhyMethodSection = dynamic(() => import('@/components/home').then(mod => mod.WhyMethodSection));
-const MethodFeaturesSection = dynamic(() => import('@/components/home').then(mod => mod.MethodFeaturesSection));
-const TestimonialsSection = dynamic(() => import('@/components/home').then(mod => mod.TestimonialsSection));
-const GuaranteeSection = dynamic(() => import('@/components/home').then(mod => mod.GuaranteeSection));
-const DisappearSection = dynamic(() => import('@/components/home').then(mod => mod.DisappearSection));
-const FAQSection = dynamic(() => import('@/components/home').then(mod => mod.FAQSection));
-const NotVirtuosoSection = dynamic(() => import('@/components/home').then(mod => mod.NotVirtuosoSection));
-const IntermediateSection = dynamic(() => import('@/components/home').then(mod => mod.IntermediateSection));
-const MasterclassSection = dynamic(() => import('@/components/home').then(mod => mod.MasterclassSection));
+// Below the fold - Dynamic imports from INDIVIDUAL files for true code splitting
+const ProblemSection = dynamic(() => import('@/components/home/ProblemSection').then(mod => mod.ProblemSection));
+const TeacherSection = dynamic(() => import('@/components/home/TeacherSection').then(mod => mod.TeacherSection));
+const BiographySection = dynamic(() => import('@/components/home/BiographySection').then(mod => mod.BiographySection));
+const StorySection = dynamic(() => import('@/components/home/StorySection').then(mod => mod.StorySection));
+const WhyMethodSection = dynamic(() => import('@/components/home/WhyMethodSection').then(mod => mod.WhyMethodSection));
+const MethodFeaturesSection = dynamic(() => import('@/components/home/MethodFeaturesSection').then(mod => mod.MethodFeaturesSection));
+const TestimonialsSection = dynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
+const GuaranteeSection = dynamic(() => import('@/components/home/GuaranteeSection').then(mod => mod.GuaranteeSection));
+const DisappearSection = dynamic(() => import('@/components/home/DisappearSection').then(mod => mod.DisappearSection));
+const FAQSection = dynamic(() => import('@/components/home/FAQSection').then(mod => mod.FAQSection));
+const NotVirtuosoSection = dynamic(() => import('@/components/home/NotVirtuosoSection').then(mod => mod.NotVirtuosoSection));
+const IntermediateSection = dynamic(() => import('@/components/home/IntermediateSection').then(mod => mod.IntermediateSection));
+const MasterclassSection = dynamic(() => import('@/components/home/MasterclassSection').then(mod => mod.MasterclassSection));
 
 // Other components - Dynamic
 const Method = dynamic(() => import('./Method'));
