@@ -224,6 +224,7 @@ export default function Chatbot() {
         <div className="mb-4 bg-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-xl border border-stone-100 max-w-[220px] relative">
           <button
             onClick={() => setIsInvitationDismissed(true)}
+            aria-label="Fermer l'invitation"
             className="absolute -top-2 -right-2 w-8 h-8 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-900 hover:border-stone-900 shadow-sm z-20"
           >
             <X className="w-4 h-4" />
@@ -246,6 +247,7 @@ export default function Chatbot() {
           >
             <Button
               onClick={() => setIsOpen(true)}
+              aria-label="Ouvrir le chat"
               className="relative rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all"
             >
               <MessageCircle className="w-7 h-7 sm:w-8 sm:h-8" />

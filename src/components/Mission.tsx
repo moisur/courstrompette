@@ -105,9 +105,9 @@ export default function Mission() {
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/0 via-white/40 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 z-20 pointer-events-none" />
                   </div>
 
-                  <h4 className="text-xl font-serif text-stone-900 mb-3 group-hover:text-amber-800 transition-colors">
+                  <h3 className="text-xl font-serif text-stone-900 mb-3 group-hover:text-amber-800 transition-colors">
                     {aspect.label}
-                  </h4>
+                  </h3>
                   <p className="text-stone-500 font-light leading-relaxed">
                     {aspect.description}
                   </p>
