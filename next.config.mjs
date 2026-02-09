@@ -67,17 +67,19 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin'
           },
           {
             key: 'X-Permitted-Cross-Domain-Policies',
             value: 'none'
           },
           {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()'
+          },
+          {
             key: 'Content-Security-Policy',
-            // Basic CSP to prevent basic XSS while allowing specific resources
-            // Note: Needs to be tuned if external scripts are blocked
-            value: "upgrade-insecure-requests; default-src 'self'; img-src 'self' https: data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.youtube.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://www.youtube.com;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.youtube.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-src 'self' https://www.youtube.com; img-src 'self' https: data:; connect-src 'self' https://formspree.io; worker-src 'self' blob:;"
           }
         ],
       },
