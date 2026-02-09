@@ -2,7 +2,7 @@
 
 import { Shield, Sparkles, ArrowRight } from 'lucide-react';
 
-export function GuaranteeSection() {
+export function GuaranteeSection({ locationName }: { locationName?: string }) {
     return (
         <section id="guarantee" className="py-12 md:py-24 bg-stone-900 relative overflow-hidden">
             {/* Background Decorations */}
@@ -24,7 +24,7 @@ export function GuaranteeSection() {
                 </div>
 
                 <h2 className="text-4xl md:text-5xl font-serif text-white mb-8 leading-tight">
-                    Ma Garantie <br className="md:hidden" />
+                    Ma Garantie {locationName && `à ${locationName}`} <br className="md:hidden" />
                     <span className="italic text-amber-100">&quot;Satisfaction ou Remboursé&quot;</span>
                 </h2>
 

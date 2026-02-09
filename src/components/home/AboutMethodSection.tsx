@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 
-export function AboutMethodSection() {
+export function AboutMethodSection({ locationName }: { locationName?: string }) {
     return (
         <section id="about" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Decorative Background Elements */}
@@ -18,7 +18,7 @@ export function AboutMethodSection() {
                         Jouer de la trompette sans galère
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                        La méthode Z2G <span className="italic text-amber-600">révolutionne</span> l&apos;apprentissage
+                        La méthode Z2G <span className="italic text-amber-600">révolutionne</span> l&apos;apprentissage {locationName && `à ${locationName}`}
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto opacity-30" />
                 </div>

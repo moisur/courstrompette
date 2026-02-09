@@ -24,7 +24,7 @@ const features = [
     }
 ];
 
-export function MethodFeaturesSection() {
+export function MethodFeaturesSection({ locationName }: { locationName?: string }) {
     return (
         <section id="method-features" className="py-12 md:py-24 bg-stone-50 relative overflow-hidden">
             {/* Ambient Background & Decorative Curves */}
@@ -58,7 +58,7 @@ export function MethodFeaturesSection() {
                         Les Piliers de la Réussite
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight text-center">
-                        Votre passeport vers l'<span className="italic text-amber-600">excellence</span>
+                        Votre passeport vers l&apos;<span className="italic text-amber-600">excellence</span> {locationName && `à ${locationName}`}
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto opacity-20" />
                     <p className="text-xl text-stone-600 max-w-3xl mx-auto font-light leading-relaxed">

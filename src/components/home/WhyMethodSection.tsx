@@ -12,7 +12,7 @@ const benefits = [
     "L'assurance de ne pas développer de mauvaises habitudes"
 ];
 
-export function WhyMethodSection() {
+export function WhyMethodSection({ locationName }: { locationName?: string }) {
     return (
         <section id="why-method" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Decorative Background Elements */}
@@ -27,7 +27,7 @@ export function WhyMethodSection() {
                         La méthode Zone de Génie
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                        Pourquoi choisir la <span className="italic text-amber-600">méthode Z2G</span>
+                        Pourquoi choisir la <span className="italic text-amber-600">méthode Z2G</span> {locationName && `à ${locationName}`}
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 mx-auto rounded-full opacity-30 mt-6 md:mt-8" />
                 </div>

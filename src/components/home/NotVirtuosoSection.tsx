@@ -3,7 +3,7 @@
 import { Check, Quote, CircleHelp, CloudRain, ShieldAlert } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
-export function NotVirtuosoSection() {
+export function NotVirtuosoSection({ locationName }: { locationName?: string }) {
     return (
         <section className="py-12 md:py-24 bg-white text-stone-900 relative overflow-hidden">
             {/* Decorative Background Elements */}
@@ -18,7 +18,7 @@ export function NotVirtuosoSection() {
                         Au début, même Miles Davis était nul.
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 mb-6 leading-tight">
-                        Ne cherchez pas un Virtuose.<br />
+                        Ne cherchez pas un Virtuose {locationName && `à ${locationName}`}.<br />
                         <span className="text-stone-400 italic">Cherchez un Pédagogue.</span>
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 mx-auto rounded-full opacity-30"></div>

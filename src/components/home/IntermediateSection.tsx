@@ -28,7 +28,7 @@ const comparisons = [
     },
 ];
 
-export function IntermediateSection() {
+export function IntermediateSection({ locationName }: { locationName?: string }) {
     return (
         <section id="intermediates" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Soft decorative background element */}
@@ -42,7 +42,7 @@ export function IntermediateSection() {
                         Niveau Intermédiaire (3-5 ans)
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 tracking-tight leading-tight">
-                        Élevez vos standards. <br />
+                        Élevez vos standards {locationName && `à ${locationName}`}. <br />
                         <span className="italic text-amber-600 font-light">Oubliez les comptines.</span>
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto opacity-20 mb-8" />

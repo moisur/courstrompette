@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Quote } from 'lucide-react';
 import questionImage from '@/../public/1.webp';
 
-export function TeacherSection() {
+export function TeacherSection({ locationName }: { locationName?: string }) {
     return (
         <section id="teacher" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Soft decorative background halos */}
@@ -20,7 +20,7 @@ export function TeacherSection() {
                         Le Défi de l'Apprentissage
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                        Trouver un bon professeur <br />
+                        Trouver un bon professeur {locationName && `à ${locationName}`} <br />
                         <span className="italic text-amber-600">est plus rare qu&apos;on ne le pense</span>
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto opacity-20" />

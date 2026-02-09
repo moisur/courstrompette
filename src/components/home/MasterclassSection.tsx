@@ -33,7 +33,7 @@ const details = [
     { icon: Video, label: 'Bonus Audit', value: 'Audit vidéo personnalisé inclus' },
 ];
 
-export function MasterclassSection() {
+export function MasterclassSection({ locationName }: { locationName?: string }) {
     return (
         <section id="masterclass" className="py-12 md:py-24 bg-stone-900 relative overflow-hidden">
             {/* Background Decorations */}
@@ -49,7 +49,7 @@ export function MasterclassSection() {
                         Masterclass Exclusive
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-white mb-6 leading-tight">
-                        Le Diagnostic <span className="italic text-amber-100">Z2G</span>
+                        Le Diagnostic <span className="italic text-amber-100">Z2G</span> {locationName && `à ${locationName}`}
                     </h2>
                     <div className="w-24 h-1.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto rounded-full mb-8 opacity-80" />
                     <p className="text-xl md:text-2xl text-stone-300 max-w-3xl mx-auto leading-relaxed font-light">

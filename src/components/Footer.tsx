@@ -61,7 +61,7 @@ const ContactSection: React.FC = () => {
               © {new Date().getFullYear()} JC Trompette. Tous droits réservés.
             </p>
             <p className="text-stone-600 text-xs">
-              Cours de trompette à Paris 11ème
+              <a href="/paris" className="hover:text-amber-500 transition-colors">Cours de trompette à Paris</a>
             </p>
           </div>
         </div>

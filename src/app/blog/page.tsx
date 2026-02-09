@@ -7,10 +7,13 @@ import Breadcrumb from '@/components/Breadcrumb';
 import BlogCTA from '@/components/BlogCTA';
 import { Card, CardContent } from '@/components/ui/card';
 
-export const metadata = {
-  title: 'Blog de la Trompette : Conseils, Astuces et Histoire | Jean Christophe Yervant',
-  description: 'Découvrez nos articles de blog sur la trompette par Jean Christophe Yervant. Conseils pour débutants, entretien, histoire et biographies des plus grands trompettistes.',
-};
+export async function generateMetadata({ searchParams }: { searchParams: { level?: string } }) {
+  const levelPrefix = searchParams.level ? `Niveau ${searchParams.level} : ` : '';
+  return {
+    title: `${levelPrefix}Blog de la Trompette : Conseils, Astuces et Histoire | Jean Christophe Yervant`,
+    description: `Découvrez nos articles de blog sur la trompette par Jean Christophe Yervant${searchParams.level ? ` pour le niveau ${searchParams.level}` : ''}. Conseils pour débutants, entretien, histoire et biographies des plus grands trompettistes.`,
+  };
+}
 
 function groupPostsByCategory(posts: any[]) {
   return posts.reduce((groups, post) => {

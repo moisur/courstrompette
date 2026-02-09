@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import profMat from '@/../public/2.webp';
 
-export function StorySection() {
+export function StorySection({ locationName }: { locationName?: string }) {
     return (
         <section id="story" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Decorative Background Elements */}
@@ -41,7 +41,7 @@ export function StorySection() {
                                 L'Histoire
                             </span>
                             <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                                Comment est née la <span className="italic text-amber-600">méthode Z2G</span>
+                                Comment est née la <span className="italic text-amber-600">méthode Z2G</span> {locationName && `à ${locationName}`}
                             </h2>
                             <div className="w-24 h-1.5 bg-amber-600 rounded-full opacity-30" />
                         </div>

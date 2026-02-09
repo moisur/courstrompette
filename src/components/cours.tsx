@@ -101,13 +101,13 @@ export default function Cours({
       )}
 
       {/* About the Method */}
-      <AboutMethodSection />
+      <AboutMethodSection locationName={locationName} />
 
       {/* Method Component (existing) */}
       <Method />
 
       {/* Problem Section */}
-      <ProblemSection />
+      <ProblemSection locationName={locationName} />
       {/* Custom CTA: Before Masterclass */}
       <div className="container mx-auto px-6 max-w-4xl my-8 md:my-12">
         <div className="bg-white border border-stone-100 rounded-[2rem] p-6 md:p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden space-y-6">
@@ -141,25 +141,25 @@ export default function Cours({
         </div>
       </div>
       {/* Teacher Section */}
-      <TeacherSection />
+      <TeacherSection locationName={locationName} />
 
       {/* Biography Section */}
-      <BiographySection />
+      <BiographySection locationName={locationName} />
 
       {/* NEW: Not Virtuoso Section - Key differentiator */}
-      <NotVirtuosoSection />
+      <NotVirtuosoSection locationName={locationName} />
 
       {/* Story Section */}
-      <StorySection />
+      <StorySection locationName={locationName} />
 
       {/* Mission Component (existing) */}
       <Mission />
 
       {/* Why Method Section */}
-      <WhyMethodSection />
+      <WhyMethodSection locationName={locationName} />
 
       {/* Method Features Section */}
-      <MethodFeaturesSection />
+      <MethodFeaturesSection locationName={locationName} />
 
       {/* Testimonials Section */}
       <TestimonialsSection />
@@ -173,16 +173,16 @@ export default function Cours({
       </div>
 
       {/* NEW: Intermediate Section - For 3-5 years experience */}
-      <IntermediateSection />
+      <IntermediateSection locationName={locationName} />
 
       {/* Guarantee Section */}
-      <GuaranteeSection />
+      <GuaranteeSection locationName={locationName} />
 
       {/* Puissance Component (existing) */}
       <Puissance />
 
       {/* Disappear Section */}
-      <DisappearSection />
+      <DisappearSection locationName={locationName} />
 
       {/* Pricing */}
       <TrumpetPricingPage />
@@ -221,7 +221,7 @@ export default function Cours({
       </div>
 
       {/* NEW: Masterclass Section */}
-      <MasterclassSection />
+      <MasterclassSection locationName={locationName} />
 
       {/* Local Map Signal (Dynamic) */}
       {locationName && <LocalMap locationName={locationName} zipCode={zipCode} />}

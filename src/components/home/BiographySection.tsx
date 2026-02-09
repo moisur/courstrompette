@@ -24,7 +24,7 @@ const credentials = [
     }
 ];
 
-export function BiographySection() {
+export function BiographySection({ locationName }: { locationName?: string }) {
     return (
         <section id="biography" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Soft decorative background halos */}
@@ -41,7 +41,7 @@ export function BiographySection() {
                                 L'Histoire du Mentor
                             </span>
                             <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                                Qui est <span className="italic text-amber-600">JC</span> ?
+                                Qui est <span className="italic text-amber-600">JC</span> {locationName && `à ${locationName}`} ?
                             </h2>
                             <div className="w-24 h-1.5 bg-amber-600 rounded-full opacity-30" />
                         </div>

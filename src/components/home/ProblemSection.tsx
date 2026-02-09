@@ -27,7 +27,7 @@ const problems = [
     }
 ];
 
-export function ProblemSection() {
+export function ProblemSection({ locationName }: { locationName?: string }) {
     return (
         <section id="problem" className="py-16 md:py-32 bg-stone-50/50 relative overflow-hidden">
             {/* Background decoration */}
@@ -49,7 +49,7 @@ export function ProblemSection() {
                             </span>
                             <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight mb-6">
                                 Vous pratiquez sans <br />
-                                <span className="italic text-stone-500">progresser ...</span>
+                                <span className="italic text-stone-500">progresser {locationName && `à ${locationName}`} ...</span>
                             </h2>
                             <div className="w-20 h-1 bg-amber-600 rounded-full opacity-60" />
                         </motion.div>
