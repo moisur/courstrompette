@@ -1,5 +1,4 @@
 import React from 'react';
-import { Analytics } from '@vercel/analytics/react';
 import GoogleReviewsDisplay from '@/components/reviews/GoogleReviewsDisplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Quote } from 'lucide-react';
@@ -77,8 +76,6 @@ export default function BlogLayout({ children }: BlogLayoutProps) {
           </div>
         </div>
       </section>
-
-      <Analytics />
     </>
   );
 }
