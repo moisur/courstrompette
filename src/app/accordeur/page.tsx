@@ -25,6 +25,7 @@ const DISPLAY_DEADBAND_CENTS = 3
 const VOLUME_METER_THRESHOLDS = [0.008, 0.016, 0.032, 0.064, 0.1]
 const HIGH_PASS_CUTOFF = 110
 const LOW_PASS_CUTOFF = 2200
+type AudioSampleBuffer = Parameters<AnalyserNode['getFloatTimeDomainData']>[0]
 
 interface InstrumentProfile {
   transpositionSemitones: number
@@ -50,7 +51,7 @@ const INSTRUMENTS: Record<string, InstrumentProfile> = {
   },
 }
 
-function applyDetectionWindow(input: Float32Array, output: Float32Array): Float32Array {
+function applyDetectionWindow(input: AudioSampleBuffer, output: AudioSampleBuffer): AudioSampleBuffer {
   if (input.length === 0 || output.length !== input.length) {
     return output
   }
@@ -73,7 +74,7 @@ function applyDetectionWindow(input: Float32Array, output: Float32Array): Float3
   return output
 }
 
-function calculateRms(data: Float32Array): number {
+function calculateRms(data: AudioSampleBuffer): number {
   if (data.length === 0) {
     return 0
   }
@@ -151,9 +152,9 @@ export default function Tuner() {
   const isListeningRef = useRef(false)
   const pitchFrameRef = useRef<number | null>(null)
   const waveformFrameRef = useRef<number | null>(null)
-  const rawDataRef = useRef<Float32Array | null>(null)
-  const detectorInputRef = useRef<Float32Array | null>(null)
-  const visualDataRef = useRef<Float32Array | null>(null)
+  const rawDataRef = useRef<AudioSampleBuffer | null>(null)
+  const detectorInputRef = useRef<AudioSampleBuffer | null>(null)
+  const visualDataRef = useRef<AudioSampleBuffer | null>(null)
   const pitchDetectorRef = useRef<PitchDetector<Float32Array> | null>(null)
   const smoothedVolumeRef = useRef(0)
   const stableFrequencyRef = useRef<number | null>(null)
@@ -214,7 +215,7 @@ export default function Tuner() {
 
   const drawAudioData = useCallback((
     canvas: HTMLCanvasElement | null, 
-    dataArray: Float32Array, 
+    dataArray: AudioSampleBuffer, 
     color: string = "rgb(0, 255, 0)"
   ) => {
     if (!canvas) return;
