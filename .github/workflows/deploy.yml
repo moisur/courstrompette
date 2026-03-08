@@ -19,5 +19,6 @@ jobs:
             cd /var/www/courstrompette
             git pull origin master
             npm install
+            rm -rf .next
             npm run build
-            pm2 restart courstrompette || pm2 start npm --name "courstrompette" -- start
+            pm2 restart courstrompette --update-env || pm2 start npm --name "courstrompette" -- start
