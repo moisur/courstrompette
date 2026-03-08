@@ -21,4 +21,5 @@ jobs:
             npm install
             rm -rf .next
             npm run build
-            pm2 restart courstrompette --update-env || pm2 start npm --name "courstrompette" -- start
+            pm2 delete courstrompette || true
+            pm2 start npm --name "courstrompette" -- start -- -p 3005
