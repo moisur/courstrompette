@@ -21,5 +21,6 @@ jobs:
             npm install
             rm -rf .next
             npm run build
+            pm2 delete trompette || true
             pm2 delete courstrompette || true
-            pm2 start npm --name "courstrompette" -- start -- -p 3005
+            PORT=3005 pm2 start npm --name "courstrompette" -- start
