@@ -26,6 +26,15 @@ export interface PostData {
     content: string;
 }
 
+export interface PostEntry {
+    params: {
+        category: string;
+        slug: string;
+    };
+    date?: string;
+    lastModified: Date;
+}
+
 export function getPostData(category: string, slug: string): PostData {
     const fullPath = path.join(postsDirectory, category, `${slug}.md`);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -41,28 +50,48 @@ export function getPostData(category: string, slug: string): PostData {
     };
 }
 
-export function getAllPostSlugs() {
+export function getAllCategories() {
     const categories = fs.readdirSync(postsDirectory);
-    let paths: { params: { category: string; slug: string } }[] = [];
+    return categories.filter((category) => {
+        const categoryPath = path.join(postsDirectory, category);
+        return fs.statSync(categoryPath).isDirectory();
+    });
+}
+
+export function getAllPostEntries(): PostEntry[] {
+    const categories = getAllCategories();
+    let entries: PostEntry[] = [];
 
     categories.forEach((category) => {
         const categoryPath = path.join(postsDirectory, category);
-        if (fs.statSync(categoryPath).isDirectory()) {
-            const fileNames = fs.readdirSync(categoryPath);
-            fileNames.forEach((fileName) => {
-                if (fileName.endsWith('.md')) {
-                    paths.push({
-                        params: {
-                            category,
-                            slug: fileName.replace(/\.md$/, ''),
-                        },
-                    });
-                }
+        const fileNames = fs.readdirSync(categoryPath);
+
+        fileNames.forEach((fileName) => {
+            if (!fileName.endsWith('.md')) {
+                return;
+            }
+
+            const fullPath = path.join(categoryPath, fileName);
+            const fileContents = fs.readFileSync(fullPath, 'utf8');
+            const { data } = matter(fileContents);
+            const stats = fs.statSync(fullPath);
+
+            entries.push({
+                params: {
+                    category,
+                    slug: fileName.replace(/\.md$/, ''),
+                },
+                date: typeof data.date === 'string' ? data.date : undefined,
+                lastModified: stats.mtime,
             });
-        }
+        });
     });
 
-    return paths;
+    return entries;
+}
+
+export function getAllPostSlugs() {
+    return getAllPostEntries().map(({ params }) => ({ params }));
 }
 
 export function getSortedPostsData() {

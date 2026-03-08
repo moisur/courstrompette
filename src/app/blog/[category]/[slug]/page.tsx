@@ -28,7 +28,11 @@ export async function generateMetadata({ params }: Props) {
     return {
       title: postData.frontmatter.title,
       description: postData.frontmatter.description || postData.frontmatter.title,
+      alternates: {
+        canonical: `/blog/${params.category}/${params.slug}`,
+      },
       openGraph: {
+        url: `/blog/${params.category}/${params.slug}`,
         images: [postData.frontmatter.image],
       },
     };

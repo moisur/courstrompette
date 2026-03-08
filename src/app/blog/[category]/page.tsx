@@ -15,10 +15,18 @@ export async function generateMetadata({ params, searchParams }: { params: { cat
         .join(' ');
 
     const levelPrefix = searchParams.level ? `Niveau ${searchParams.level} : ` : '';
+    const canonicalPath = `/blog/${params.category}`;
 
     return {
         title: `${levelPrefix}${categoryName} : Conseils et Cours de Trompette | Jean Christophe Yervant`,
         description: `Tous les articles sur "${categoryName}"${searchParams.level ? ` pour le niveau ${searchParams.level}` : ''} - Retrouvez les conseils d'expert de Jean Christophe Yervant pour progresser à la trompette.`,
+        alternates: {
+            canonical: canonicalPath,
+        },
+        robots: searchParams.level ? {
+            index: false,
+            follow: true,
+        } : undefined,
     };
 }
 

@@ -1,18 +1,38 @@
 import { MetadataRoute } from 'next';
-import { getAllPostSlugs } from '@/lib/markdown';
+import { getAllCategories, getAllPostEntries } from '@/lib/markdown';
 import { locations } from '@/data/locations';
 
 const BASE_URL = 'https://courstrompette.fr';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const posts = getAllPostSlugs();
+    const posts = getAllPostEntries();
+    const categories = getAllCategories();
+    const latestPostUpdate = posts.reduce(
+        (latest, post) => post.lastModified > latest ? post.lastModified : latest,
+        new Date('2024-01-01')
+    );
 
     const blogPosts = posts.map((post) => ({
         url: `${BASE_URL}/blog/${post.params.category}/${post.params.slug}`,
-        lastModified: new Date(),
+        lastModified: post.lastModified,
         changeFrequency: 'weekly' as const,
         priority: 0.7,
     }));
+
+    const categoryPages = categories.map((category) => {
+        const categoryPosts = posts.filter((post) => post.params.category === category);
+        const categoryLastModified = categoryPosts.reduce(
+            (latest, post) => post.lastModified > latest ? post.lastModified : latest,
+            latestPostUpdate
+        );
+
+        return {
+            url: `${BASE_URL}/blog/${category}`,
+            lastModified: categoryLastModified,
+            changeFrequency: 'weekly' as const,
+            priority: 0.75,
+        };
+    });
 
     const parisPages = locations.map((location) => ({
         url: `${BASE_URL}/paris/${location.slug}`,
@@ -24,16 +44,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return [
         {
             url: BASE_URL,
-            lastModified: new Date(),
+            lastModified: latestPostUpdate,
             changeFrequency: 'monthly',
             priority: 1,
         },
         {
             url: `${BASE_URL}/blog`,
-            lastModified: new Date(),
+            lastModified: latestPostUpdate,
             changeFrequency: 'weekly',
             priority: 0.8,
         },
+        ...categoryPages,
         ...blogPosts,
         ...parisPages,
     ];

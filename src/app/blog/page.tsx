@@ -12,6 +12,9 @@ export async function generateMetadata({ searchParams }: { searchParams: { level
   return {
     title: `${levelPrefix}Blog de la Trompette : Conseils, Astuces et Histoire | Jean Christophe Yervant`,
     description: `Découvrez nos articles de blog sur la trompette par Jean Christophe Yervant${searchParams.level ? ` pour le niveau ${searchParams.level}` : ''}. Conseils pour débutants, entretien, histoire et biographies des plus grands trompettistes.`,
+    alternates: {
+      canonical: '/blog',
+    },
   };
 }
 
