@@ -4,12 +4,11 @@ import { useCallback, useRef, useState } from 'react'
 import { PitchDetector } from 'pitchy'
 import {
     getInstrumentProfile,
-    pickClosestHarmonic,
     applyDetectionWindow,
     calculateRms,
     getNoteData,
     median,
-    centsBetween,
+    frequencyToMidi,
     type InstrumentProfile,
 } from '../lib/noteUtils'
 import { PitchStateMachine, type PitchFrame, type TunerStateInfo, type Confidence } from '../lib/pitchStateMachine'
@@ -17,8 +16,8 @@ import { PitchStateMachine, type PitchFrame, type TunerStateInfo, type Confidenc
 // ── Constantes DSP ──────────────────────────────────────────────────
 const HIGH_PASS_CUTOFF = 110
 const LOW_PASS_CUTOFF = 2200
-const DETECTOR_CLARITY_THRESHOLD = 0.78
-const HOLD_CLARITY_THRESHOLD = 0.62
+const DETECTOR_CLARITY_THRESHOLD = 0.85
+const HOLD_CLARITY_THRESHOLD = 0.75
 const MIN_DETECTABLE_VOLUME = 0.006
 const PITCH_SMOOTHING_FACTOR = 0.25
 const VOLUME_SMOOTHING_FACTOR = 0.2
@@ -26,6 +25,9 @@ const HISTORY_LENGTH = 5
 const MAX_CENTS_JUMP_WITHOUT_CONFIRM = 65
 const NOTE_SWITCH_CONFIRM_FRAMES = 3
 const DISPLAY_DEADBAND_CENTS = 2
+const OCTAVE_JUMP_SEMITONES_MIN = 11.5
+const OCTAVE_JUMP_SEMITONES_MAX = 12.5
+const OCTAVE_REJECTION_CLARITY = 0.95
 
 export interface PitchEngineCallbacks {
     onFrame: (frame: PitchFrame, stateInfo: TunerStateInfo) => void
@@ -113,40 +115,51 @@ export function usePitchEngine(instrument: string, callbacks: PitchEngineCallbac
         // Pitch detection
         const [detectedFreq, clarity] = pitchDetector.findPitch(detectorInput, sampleRate)
 
-        // Frequency range check + harmonic correction
+        // Frequency range check (no harmonic "correction" — pitchy MPM already finds fundamental)
         const inRange = detectedFreq >= profile.minConcertFrequency && detectedFreq <= profile.maxConcertFrequency
-        const correctedFreq = inRange
-            ? pickClosestHarmonic(detectedFreq, stableFrequencyRef.current, profile)
-            : 0
+        let acceptedFreq = inRange ? detectedFreq : 0
 
-        // Determine clarity threshold (lower if we already have a note)
+        // Direct octave rejection: if we have a stable note and the new detection
+        // is ~12 semitones away, it's almost certainly an octave error from MPM.
+        // Only accept it if clarity is very high (>0.95).
+        if (acceptedFreq > 0 && stableFrequencyRef.current !== null) {
+            const stableMidi = frequencyToMidi(stableFrequencyRef.current)
+            const detectedMidi = frequencyToMidi(acceptedFreq)
+            const semitoneDiff = Math.abs(detectedMidi - stableMidi)
+            if (semitoneDiff >= OCTAVE_JUMP_SEMITONES_MIN && semitoneDiff <= OCTAVE_JUMP_SEMITONES_MAX && clarity < OCTAVE_REJECTION_CLARITY) {
+                // Reject octave jump — keep stable frequency
+                acceptedFreq = stableFrequencyRef.current
+            }
+        }
+
+        // Determine clarity threshold (slightly lower if we already have a note)
         const clarityThreshold = stableFrequencyRef.current === null
             ? DETECTOR_CLARITY_THRESHOLD
             : HOLD_CLARITY_THRESHOLD
 
-        const isReliable = correctedFreq > 0 && smoothedRms >= MIN_DETECTABLE_VOLUME && clarity >= clarityThreshold
+        const isReliable = acceptedFreq > 0 && smoothedRms >= MIN_DETECTABLE_VOLUME && clarity >= clarityThreshold
 
         let smoothedFrequency = 0
         let confidence: Confidence = 'none'
 
         if (isReliable) {
             const stableFreq = stableFrequencyRef.current
-            const centsJump = stableFreq === null ? 0 : Math.abs(centsBetween(correctedFreq, stableFreq))
+            const centsJump = stableFreq === null ? 0 : Math.abs(1200 * Math.log2(acceptedFreq / stableFreq))
 
-            let acceptedFreq = correctedFreq
+            let finalFreq = acceptedFreq
 
             // Note switch confirmation (hysteresis)
             if (stableFreq !== null && centsJump > MAX_CENTS_JUMP_WITHOUT_CONFIRM) {
                 const pending = pendingFrequencyRef.current
-                const samePending = pending !== null && Math.abs(centsBetween(correctedFreq, pending)) < 35
+                const samePending = pending !== null && Math.abs(1200 * Math.log2(acceptedFreq / pending)) < 35
 
-                pendingFrequencyRef.current = correctedFreq
+                pendingFrequencyRef.current = acceptedFreq
                 pendingFramesRef.current = samePending ? pendingFramesRef.current + 1 : 1
 
                 if (pendingFramesRef.current < NOTE_SWITCH_CONFIRM_FRAMES) {
-                    acceptedFreq = stableFreq
+                    finalFreq = stableFreq
                 } else {
-                    frequencyHistoryRef.current = [correctedFreq]
+                    frequencyHistoryRef.current = [acceptedFreq]
                     pendingFrequencyRef.current = null
                     pendingFramesRef.current = 0
                 }
@@ -156,7 +169,7 @@ export function usePitchEngine(instrument: string, callbacks: PitchEngineCallbac
             }
 
             // History + median
-            frequencyHistoryRef.current.push(acceptedFreq)
+            frequencyHistoryRef.current.push(finalFreq)
             if (frequencyHistoryRef.current.length > HISTORY_LENGTH) {
                 frequencyHistoryRef.current.shift()
             }
@@ -175,7 +188,7 @@ export function usePitchEngine(instrument: string, callbacks: PitchEngineCallbac
             stableFrequencyRef.current = smoothedFrequency
 
             // Composite confidence
-            if (clarity >= 0.85 && smoothedRms >= 0.015) {
+            if (clarity >= 0.88 && smoothedRms >= 0.015) {
                 confidence = 'high'
             } else if (clarity >= clarityThreshold && smoothedRms >= MIN_DETECTABLE_VOLUME) {
                 confidence = 'medium'
@@ -206,7 +219,7 @@ export function usePitchEngine(instrument: string, callbacks: PitchEngineCallbac
         const frame: PitchFrame = {
             timestamp: performance.now(),
             rawFrequency: detectedFreq > 0 ? detectedFreq : null,
-            correctedFrequency: correctedFreq,
+            correctedFrequency: acceptedFreq,
             smoothedFrequency,
             clarity,
             rmsFiltered: smoothedRms,

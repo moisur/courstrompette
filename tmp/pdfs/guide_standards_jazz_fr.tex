@@ -1,0 +1,340 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=1.7cm]{geometry}
+\usepackage[french]{babel}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{array}
+
+\definecolor{ink}{HTML}{181818}
+\definecolor{muted}{HTML}{5C5C5C}
+\definecolor{accent}{HTML}{C7922E}
+\definecolor{panel}{HTML}{F5E8C7}
+\definecolor{dark}{HTML}{141414}
+\definecolor{soft}{HTML}{F7F3EA}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+\setlist[itemize]{leftmargin=1.1cm,itemsep=0.35em,topsep=0.4em}
+\setlist[enumerate]{leftmargin=1.1cm,itemsep=0.45em,topsep=0.4em}
+
+\newcommand{\guideTitle}{Apprendre les standards de jazz intelligemment}
+
+\newcommand{\sectionbreakpage}{
+  \newpage
+}
+
+\newcommand{\stepheader}[3]{
+  {\fontsize{42}{46}\selectfont\bfseries\textcolor{accent}{#1}}
+  \hspace{0.5em}
+  \begin{minipage}[t]{0.8\linewidth}
+    {\Huge\bfseries #2}
+
+    {\Large\textcolor{muted}{#3}}
+  \end{minipage}
+  \vspace{0.8em}
+}
+
+\newcommand{\notebox}[2]{
+  \vspace{0.6em}
+  \noindent\fcolorbox{accent}{panel}{
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{
+      {\large\bfseries\textcolor{accent}{#1}}
+
+      #2
+    }
+  }
+  \vspace{0.4em}
+}
+
+\begin{document}
+\color{ink}
+
+\begin{titlepage}
+\pagecolor{dark}
+\color{white}
+\thispagestyle{empty}
+
+\vspace*{1.5cm}
+{\fontsize{21}{24}\selectfont\bfseries APPRENDRE}
+
+\vspace{0.15cm}
+{\fontsize{30}{33}\selectfont\bfseries LES STANDARDS}
+
+\vspace{0.1cm}
+{\fontsize{30}{33}\selectfont\bfseries DE JAZZ}
+
+\vspace{0.1cm}
+{\fontsize{21}{24}\selectfont\bfseries INTELLIGEMMENT}
+
+\vfill
+
+{\fontsize{34}{38}\selectfont\bfseries Le guide express}
+
+\vspace{0.2cm}
+{\fontsize{26}{30}\selectfont\bfseries en 5 etapes}
+
+\vspace{0.5cm}
+{\Large pour apprendre les morceaux}
+
+\vspace{0.15cm}
+{\Large de jazz comme un pro}
+
+\vfill
+
+{\Large Brent Vaartstra}
+
+\vspace{0.8cm}
+{\normalsize Version francaise adaptee a partir du guide fourni}
+\end{titlepage}
+
+\nopagecolor
+\color{ink}
+\setcounter{page}{1}
+
+{\huge\bfseries Je m'appelle Brent Vaartstra}
+
+\vspace{0.5em}
+
+Je suis un musicien de jazz professionnel base a New York, auteur et podcasteur.
+Mais on me connait surtout comme le musicien derriere le site internationalement reconnu
+\textit{learnjazzstandards.com}. Au fil des annees, j'ai aide des milliers de musiciens qui
+se heurtent exactement aux difficultes que nous allons aborder ici.
+
+La bonne nouvelle, c'est que vous n'etes pas seul, et qu'il existe des solutions concretes
+a tous ces problemes.
+
+Je constate souvent que la racine du probleme se trouve dans le processus d'apprentissage.
+Beaucoup de musiciens n'apprennent tout simplement pas les standards de jazz de la meilleure
+maniere. C'est precisement pour cela que je vous propose une methode simple.
+
+Dans ce guide, je vais vous montrer un processus en 5 etapes pour apprendre les standards
+de jazz intelligemment. Si vous suivez ces etapes, vous connaitrez, jouerez et comprendrez
+les standards bien mieux.
+
+\notebox{Vous vous reconnaissez peut-etre ici}{
+  \begin{itemize}
+    \item Vous ne pouvez pas jouer un standard sans regarder la partition.
+    \item Vous apprenez des standards, puis vous les oubliez rapidement.
+    \item Vous vous perdez souvent dans la forme quand vous les jouez.
+    \item Vous trouvez l'improvisation difficile parce que vous ne comprenez pas vraiment le morceau.
+  \end{itemize}
+}
+
+Si vous avez deja ressenti l'une de ces frustrations, je comprends parfaitement. J'y suis
+passe moi aussi, et cela peut etre tres decourageant.
+
+\sectionbreakpage
+
+{\huge\bfseries Apprendre a l'oreille vs. apprendre avec la partition}
+
+\vspace{0.5em}
+
+Quand il s'agit d'apprendre les standards de jazz correctement, la facon de s'y prendre
+est cruciale. Le "comment" peut sembler secondaire, mais il ne l'est pas.
+
+La solution la plus facile, c'est d'acheter une partition, de lire la melodie et les accords,
+de memoriser tant bien que mal, puis de considerer que le travail est fait. C'est une voie
+rapide et tres gratifiante sur le moment, mais ce n'est pas la meilleure maniere d'apprendre
+le langage du jazz, ni la musique en general.
+
+Souvenez-vous de ceci: le jazz est un langage. Et l'un des elements les plus importants dans
+l'apprentissage d'un langage, c'est l'imitation. On entend quelque chose, puis on le reproduit.
+N'importe quelle personne bilingue vous dira qu'elle est devenue fluide en s'entourant de
+locuteurs natifs, en ecoutant, en dechiffrant, puis en repondant.
+
+Le jazz n'a jamais ete une musique pensee d'abord pour etre apprise sur la page. Dans les annees
+1940, a l'epoque du bebop, les musiciens se retrouvaient dans les clubs, s'ecoutaient les uns
+les autres, et apprenaient sur le stand, en repetition, et en ecoutant les disques.
+
+Cela ne signifie pas qu'ils ne savaient pas lire la musique. Mais apprendre a l'oreille restait
+la methode principale. C'est un point essentiel: le jazz est avant tout une musique apprise
+par l'ecoute. Si vous voulez devenir un excellent improvisateur, vous devez suivre cette trace.
+
+Apprendre a l'oreille n'est pas toujours la solution la plus simple, surtout si vous n'y etes pas
+habitue. Au debut, cela peut meme sembler difficile. Mais c'est de loin la meilleure approche,
+et plus vous la pratiquez, plus elle devient naturelle.
+
+La partition n'est pas l'ennemi pour autant. Elle peut jouer un role utile dans votre education
+jazz. La lecture fait aussi partie de l'apprentissage d'un langage. Elle peut vous aider a
+conceptualiser et a analyser ce que vous entendez.
+
+Elle peut egalement servir a verifier le travail de votre oreille. Si vous avez appris un standard
+a l'oreille, vous pouvez ensuite jeter un oeil a un accord incertain, ou a un fragment de melodie
+qui vous semble ambigu.
+
+Vous vous dites peut-etre: "D'accord, apprendre a l'oreille est plus efficace. Mais comment faire
+concretement ?" C'est la qu'intervient mon processus LIST.
+
+\sectionbreakpage
+
+{\huge\bfseries Le processus LIST}
+
+\vspace{0.5em}
+
+Si vous etes comme moi, vous aimez les methodes claires, organisees, et etape par etape.
+Une bonne checklist permet d'aller jusqu'au bout d'un apprentissage sans rien laisser de cote.
+
+Voici donc mon petit acronyme pour apprendre les standards de jazz, et plus largement le langage
+du jazz lui-meme: \textbf{LIST}.
+
+\vspace{1.2em}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{>{\centering\arraybackslash}m{0.2\linewidth} >{\centering\arraybackslash}m{0.2\linewidth} >{\centering\arraybackslash}m{0.2\linewidth} >{\centering\arraybackslash}m{0.2\linewidth}}
+{\Huge\bfseries\textcolor{accent}{L}} & {\Huge\bfseries\textcolor{accent}{I}} & {\Huge\bfseries\textcolor{accent}{S}} & {\Huge\bfseries\textcolor{accent}{T}} \\
+{\large\bfseries Listen} & {\large\bfseries Internalize} & {\large\bfseries Sing} & {\large\bfseries Transfer} \\
+{\normalsize Ecouter} & {\normalsize Interioriser} & {\normalsize Chanter} & {\normalsize Transferer}
+\end{tabular}
+\end{center}
+
+\vspace{1em}
+
+Cette sequence vous oblige a commencer par l'ecoute, a faire entrer la musique dans votre oreille,
+puis dans votre voix, avant de la faire passer sur votre instrument. C'est ce qui rend
+l'apprentissage beaucoup plus solide.
+
+\sectionbreakpage
+
+\stepheader{L}{Listen}{Ecouter}
+
+La premiere etape est tres simple: ecoutez le standard. Cela peut sembler evident, mais beaucoup
+d'etudiants se precipitent sur leur instrument alors qu'ils ont a peine ecoute le morceau.
+
+La chose la plus importante a faire lorsque vous apprenez un standard, c'est de poser votre
+instrument et d'ecouter. Trouvez autant d'enregistrements que possible du morceau que vous
+voulez apprendre et parcourez-les. Vous devez d'abord faire connaissance avec la chanson.
+Si vous sautez cette phase, vous partez deja du mauvais pied.
+
+Ce n'est qu'apres avoir repere plusieurs versions et commence a vraiment les ecouter que vous
+devez passer a l'etape suivante.
+
+\notebox{ASTUCE PRO \#1 - Apprenez les paroles}{
+  Apprendre les paroles aide enormement a interioriser une melodie. Dans le cas de nombreux
+  standards de jazz, les textes sont poetiques, memorables, et racontent l'essence meme du morceau.
+}
+
+\sectionbreakpage
+
+\stepheader{I}{Internalize}{Interioriser}
+
+Cette etape implique encore plus d'ecoute, mais une ecoute differente: une ecoute intentionnelle.
+
+Imaginez que vous soyez assis dans votre salon devant un film. Si le film vous captive, vous pouvez
+rester concentre pendant deux heures ou plus. C'est impressionnant quand on y pense.
+
+Et si vous traitiez la musique de la meme maniere ? En general, il est deja excellent d'ecouter
+la musique en lui accordant toute votre attention, sans distraction. Mais c'est particulierement
+important lorsque vous essayez d'apprendre un nouveau standard.
+
+Si vous lui consacrez une attention reelle, le morceau commencera a s'interioriser. Il s'ancrera
+petit a petit dans votre subconscient, et il vous deviendra familier bien avant que vous le jouiez.
+
+\sectionbreakpage
+
+\stepheader{S}{Sing}{Chanter}
+
+Cette etape est vraiment importante. Chanter est un moyen tres puissant de verifier que vous avez
+reellement interiorise ce que vous entendez. Non, vous n'avez pas besoin d'etre un grand chanteur,
+et oui, vous pouvez aussi fredonner ou siffler si vous preferez.
+
+L'application principale du chant concerne la melodie. Assurez-vous de pouvoir chanter la melodie
+du standard, a la fois avec l'enregistrement et seul, avant de la travailler sur votre instrument.
+
+Le chant retire en quelque sorte 50\% du travail. Il prouve que vous avez deja integre l'information.
+Il ne reste plus qu'a la transferer vers votre instrument.
+
+Si vous voulez aller plus loin, essayez de chanter aussi les notes de basse. Cela vous aidera a
+commencer a entendre l'harmonie et la progression d'accords du standard. Ecoutez la basse sur vos
+enregistrements et voyez si vous pouvez chanter les fondamentales. C'est une astuce plus avancee,
+mais elle vous aidera enormement pour l'etape suivante.
+
+\notebox{ASTUCE PRO \#2 - Trouver la version de base de la melodie}{
+  Une remarque qui revient souvent est la suivante: "Quelle est la bonne melodie, si les jazzmen
+  prennent tant de libertes ?" Souvenez-vous de ceci: Frank Sinatra est votre ami. Il chante tres
+  souvent les melodies de facon droite. Si le morceau est moins classique, cherchez l'artiste ou
+  le compositeur qui l'a interprete en premier. Il y a de fortes chances qu'il joue la melodie
+  au plus proche de son intention d'origine.
+}
+
+\sectionbreakpage
+
+\stepheader{T}{Transfer}{Transferer}
+
+Il est maintenant temps de reprendre votre instrument. Jusqu'ici, vous n'auriez pas du vraiment
+y toucher. A ce stade, vous devriez deja bien connaitre le morceau, connaitre la melodie, et
+avoir au moins une premiere idee des accords selon votre niveau actuel.
+
+\begin{enumerate}
+  \item \textbf{Transferer la melodie.} Commencez a jouer la melodie sur votre instrument. Cela
+  devrait surtout consister a retrouver sous vos doigts ce que vous savez deja chanter.
+  \item \textbf{Apprendre les accords.} C'est la partie la plus exigeante lorsqu'on apprend a
+  l'oreille, mais faites de votre mieux. Il est extremement utile d'avoir une bonne comprehension
+  du fonctionnement de l'harmonie jazz. L'idee est de combiner votre connaissance des progressions
+  d'accords avec votre oreille afin d'identifier la qualite des accords - majeur, mineur,
+  dominant, etc. - et leur fonction dans la progression.
+\end{enumerate}
+
+\notebox{ASTUCE PRO \#3 - Ecoutez les notes de basse}{
+  Comme dans l'etape "Chanter", le mouvement de basse est capital. Si vous identifiez par exemple
+  que le bassiste joue un Mi bemol de concert sur le premier accord, il ne vous reste qu'a trouver
+  la qualite de cet accord. Puis vous ecoutez la basse de l'accord suivant. Si la note devient
+  un Do de concert, vous pouvez deja commencer a reconnaitre le mouvement harmonique.
+
+  Si l'apprentissage des progressions a l'oreille est tout nouveau pour vous et que vous bloquez,
+  ce n'est pas grave. C'est alors un bon moment pour regarder la partition. Mais faites-le en
+  l'etudiant avec l'enregistrement, en arretant et relancant si necessaire, afin de continuer a
+  relier ce que vous voyez a ce que vous entendez.
+}
+
+\sectionbreakpage
+
+\stepheader{S}{Study}{Etudier}
+
+J'aime souvent ajouter une lettre supplementaire au processus LIST et le transformer en \textbf{LISTS}.
+Si vous voulez vraiment entrer dans le morceau et le comprendre, vous devez l'etudier.
+
+Analysez les progressions d'accords pour voir ce qui s'y passe reellement, puis utilisez des outils
+concrets du jazz pour commencer a improviser dessus.
+
+L'analyse des standards avec les degres en chiffres romains peut vous aider a comprendre la fonction
+des accords dans une progression. Lorsque vous commencez a decomposer les choses et a les
+conceptualiser, tout devient plus clair. Si vous comprenez la theorie, improviser devient beaucoup
+plus naturel.
+
+Ensuite, cartographiez les notes d'accord, les guide tones, et les gammes utiles. Cela vous aidera
+a identifier des choix de notes pertinents pour votre improvisation, au lieu d'avoir l'impression
+d'avancer au hasard.
+
+Enfin, apprenez un etude ou un solo de jazz pour assimiler du "langage jazz", autrement dit pour
+imiter la maniere dont les grands musiciens "parlent". Puis allez jouer, improvisez, et mettez
+tout cela en pratique.
+
+\vspace{0.8em}
+\rule{\linewidth}{0.6pt}
+\vspace{0.8em}
+
+{\Large\bfseries A propos de l'auteur}
+
+\vspace{0.35em}
+
+Brent Vaartstra est un guitariste de jazz professionnel et un pedagogue base a New York.
+Il est le createur du blog et du podcast \textit{learnjazzstandards.com}, dont la mission est de
+rendre l'apprentissage du jazz plus simple et plus plaisant pour tous les instrumentistes, quel
+que soit leur niveau.
+
+\vspace{1em}
+
+{\Large\bfseries Avant de partir...}
+
+\vspace{0.35em}
+
+Pensez a jeter un oeil au programme \textit{LJS Inner Circle}. Plus de 1\,000 musiciens, sur des
+instruments tres varies, s'y retrouvent pour faire progresser leur jeu jazz de maniere concrete.
+
+Vous pouvez aussi vous abonner au \textit{Learn Jazz Standards Podcast} sur votre application
+preferee. Un nouvel episode sort chaque semaine avec des lecons, conseils et strategies pour
+vous aider a devenir un meilleur musicien de jazz, quel que soit votre instrument.
+
+\end{document}

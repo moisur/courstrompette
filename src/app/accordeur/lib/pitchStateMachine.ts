@@ -118,9 +118,9 @@ export class PitchStateMachine {
                         this.lockStableFrames = Math.max(0, this.lockStableFrames - 1)
                     }
                 } else if (hasPitch && isUsable) {
-                    // Low confidence but still have pitch — keep tracking with grace period
+                    // Low confidence but still have pitch — keep note/octave, update cents only
                     this.weakFrames++
-                    this.updateNote(frame) // Still update with low confidence data
+                    this.updateCentsOnly(frame)
                     if (this.weakFrames > LOST_GRACE_FRAMES) {
                         this.transition('LOST')
                     }
@@ -139,9 +139,9 @@ export class PitchStateMachine {
                     this.weakFrames = 0
                     this.updateNote(frame)
                 } else if (hasPitch && isUsable) {
-                    // Grace period — keep showing last good data
+                    // Grace period — keep showing last good note/octave, only update cents
                     this.weakFrames++
-                    this.updateNote(frame)
+                    this.updateCentsOnly(frame)
                     if (this.weakFrames > LOST_GRACE_FRAMES * 2) {
                         this.transition('TRACKING')
                     }
@@ -171,6 +171,18 @@ export class PitchStateMachine {
         if (frame.smoothedFrequency > 0) {
             this.lastNoteName = frame.noteName
             this.lastOctave = frame.octave
+            this.lastCents = frame.cents
+            this.lastFrequency = frame.smoothedFrequency
+            this.lastConfidence = frame.confidence
+        }
+    }
+
+    /**
+     * Update only cents/frequency/confidence but keep the last reliable note name and octave.
+     * Used for low-confidence frames to prevent octave flicker.
+     */
+    private updateCentsOnly(frame: PitchFrame): void {
+        if (frame.smoothedFrequency > 0) {
             this.lastCents = frame.cents
             this.lastFrequency = frame.smoothedFrequency
             this.lastConfidence = frame.confidence

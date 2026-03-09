@@ -14,12 +14,12 @@ export const INSTRUMENTS: Record<string, InstrumentProfile> = {
         maxConcertFrequency: 1175,
     },
     'Trumpet in Bb': {
-        transpositionSemitones: -2,
+        transpositionSemitones: 2,
         minConcertFrequency: 145,
         maxConcertFrequency: 1175,
     },
     'Alto Saxophone in Eb': {
-        transpositionSemitones: 3,
+        transpositionSemitones: -3,
         minConcertFrequency: 138,
         maxConcertFrequency: 1047,
     },

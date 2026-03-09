@@ -1,10 +1,10 @@
 'use client'
 
-import { useCallback, useRef, useState, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mic, MicOff } from 'lucide-react'
+import { Mic, MicOff, Play, Pause, Square } from 'lucide-react'
 import { usePitchEngine } from './hooks/usePitchEngine'
 import { usePitchTimeline } from './hooks/usePitchTimeline'
 import { INSTRUMENTS } from './lib/noteUtils'
@@ -12,7 +12,7 @@ import type { PitchFrame, TunerStateInfo, TunerState, Confidence } from './lib/p
 import PitchTimeline from './components/PitchTimeline'
 import TunerStatus from './components/TunerStatus'
 
-// ── Helpers visuels ─────────────────────────────────────────────────
+// ── Helpers visuels d'origine ──────────────────────────────────────────
 
 function getGaugeColor(state: TunerState, cents: number, confidence: Confidence): string {
   if (state === 'IDLE' || state === 'LOST') return '#94a3b8'
@@ -33,7 +33,7 @@ function getGaugeRotation(cents: number, hasNote: boolean): number {
 // ── Composant principal ─────────────────────────────────────────────
 
 export default function Tuner() {
-  const [instrument, setInstrument] = useState('Concert Pitch')
+  const [instrument, setInstrument] = useState('Trumpet in Bb')
 
   // State from the pitch engine
   const [tunerInfo, setTunerInfo] = useState<TunerStateInfo>({
@@ -66,11 +66,6 @@ export default function Tuner() {
     }
   }, [stopListening])
 
-  // Reset timeline when instrument changes
-  useEffect(() => {
-    timeline.reset()
-  }, [instrument, timeline])
-
   const hasNote = tunerInfo.noteName !== null && tunerInfo.noteName !== '--'
   const rotation = getGaugeRotation(tunerInfo.cents, hasNote)
   const color = getGaugeColor(tunerInfo.state, tunerInfo.cents, tunerInfo.confidence)
@@ -95,14 +90,17 @@ export default function Tuner() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
-      {/* Instrument selector — full width above */}
-      <div className="mb-6 max-w-xs relative z-0">
-        <Select value={instrument} onValueChange={setInstrument}>
-          <SelectTrigger className="w-full">
+    <div className="w-full max-w-6xl mx-auto px-4 pt-28 pb-8 md:pt-32">
+      {/* Instrument selector */}
+      <div className="mb-6 max-w-xs relative z-[60]">
+        <Select value={instrument} onValueChange={(val) => {
+          setInstrument(val)
+          timeline.reset()
+        }}>
+          <SelectTrigger className="w-full bg-background/95">
             <SelectValue placeholder="Sélectionnez un instrument" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[110]">
             {Object.keys(INSTRUMENTS).map((inst) => (
               <SelectItem key={inst} value={inst}>
                 {inst}
@@ -117,7 +115,7 @@ export default function Tuner() {
 
         {/* LEFT — Tuner */}
         <Card className="w-full lg:w-[360px] lg:flex-shrink-0 p-6 bg-background">
-          {/* Gauge SVG */}
+          {/* Gauge SVG original */}
           <div className="relative aspect-square max-w-[320px] mx-auto">
             <svg viewBox="0 0 200 200" className="w-full h-full">
               <defs>
@@ -196,46 +194,73 @@ export default function Tuner() {
             </div>
           )}
 
-          {/* Start/Stop button */}
-          <div className="mt-6">
-            <Button
-              size="lg"
-              variant={isListening ? "destructive" : "default"}
-              className="w-full"
-              onClick={handleToggle}
-            >
-              {isListening ? (
-                <>
-                  <MicOff className="mr-2 h-4 w-4" />
-                  Arrêter
-                </>
-              ) : (
-                <>
-                  <Mic className="mr-2 h-4 w-4" />
-                  Démarrer
-                </>
-              )}
-            </Button>
+          {/* Controls */}
+          <div className="mt-6 flex flex-col gap-3">
+            {!isListening ? (
+              <Button
+                size="lg"
+                className="w-full text-lg h-14"
+                onClick={handleToggle}
+              >
+                <Mic className="mr-2 h-5 w-5" />
+                Démarrer l&apos;accordeur
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  size="lg"
+                  variant={timeline.isPaused ? "default" : "secondary"}
+                  className="flex-1 h-12"
+                  onClick={timeline.togglePause}
+                >
+                  {timeline.isPaused ? (
+                    <><Play className="mr-2 h-4 w-4" /> Reprendre</>
+                  ) : (
+                    <><Pause className="mr-2 h-4 w-4" /> Pause</>
+                  )}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="destructive"
+                  className="flex-1 h-12"
+                  onClick={handleToggle}
+                >
+                  <Square className="mr-2 h-4 w-4" /> Stop
+                </Button>
+              </div>
+            )}
           </div>
         </Card>
 
         {/* RIGHT — Timeline */}
-        <Card className="w-full lg:flex-1 min-h-[400px] p-4 bg-background flex flex-col">
-          <div className="text-sm font-medium text-muted-foreground mb-2">
-            Historique de justesse
-          </div>
-          <div className="flex-1 min-h-[350px]">
-            <PitchTimeline
-              getPoints={timeline.getPoints}
-              durationMs={timeline.durationMs}
-              isListening={isListening}
-            />
-          </div>
-          {!isListening && (
-            <div className="flex items-center justify-center h-full text-muted-foreground text-sm min-h-[350px]">
-              Démarrez l&apos;accordeur pour voir l&apos;historique
+        <Card className="w-full lg:flex-1 min-h-[500px] p-6 bg-background flex flex-col">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="space-y-1">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Historique Temps Réel</h3>
+              <p className="text-xs text-muted-foreground/60">Trace complète de la session (Fa#3 — Mi6)</p>
             </div>
-          )}
+            <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-wider">
+              <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-green-500" /> Juste</span>
+              <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-yellow-500" /> Proche</span>
+              <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red-500" /> Faux</span>
+              <span className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-slate-400" /> Faible</span>
+            </div>
+          </div>
+          <div className="flex-1 relative bg-slate-950/20 rounded-xl border border-slate-200/5 overflow-hidden">
+            {isListening ? (
+              <PitchTimeline
+                getPoints={timeline.getPoints}
+                durationMs={timeline.durationMs}
+                isListening={isListening}
+                startTime={timeline.startTime}
+                isPaused={timeline.isPaused}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 text-sm">
+                Démarrez l&apos;accordeur pour voir l&apos;historique
+              </div>
+            )}
+          </div>
         </Card>
       </div>
     </div>

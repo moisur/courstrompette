@@ -8,51 +8,38 @@ interface PitchTimelineProps {
     getPoints: () => TimelinePoint[]
     durationMs: number
     isListening: boolean
+    startTime: number | null
+    isPaused: boolean
 }
 
-// Plage fixe pour trompette (Fa#3 à Contre Do6)
-const CENTER_MIDI = 69 // A4
-const SEMITONES_VISIBLE = 32 // Couvre de MIDI 53 (F3) à MIDI 85 (C#6)
-const MIN_MIDI = CENTER_MIDI - SEMITONES_VISIBLE / 2
-const MAX_MIDI = CENTER_MIDI + SEMITONES_VISIBLE / 2
-const TOLERANCE_TIGHT = 5   // ±5 cents: green band
-const TOLERANCE_WIDE = 10   // ±10 cents: yellow band
+// Fixed range for trumpet: Concert E3 (MIDI 52) to Concert D6 (MIDI 86)
+// +1 semitone padding each side
+const MIN_MIDI = 51
+const MAX_MIDI = 87
 
-// Colors
 const BG_COLOR = '#0f172a'
-const GRID_COLOR = 'rgba(148, 163, 184, 0.15)'
-const GRID_LABEL_COLOR = 'rgba(148, 163, 184, 0.6)'
-const NOTE_LINE_COLOR = 'rgba(148, 163, 184, 0.25)'
-const BAND_GREEN = 'rgba(74, 222, 128, 0.08)'
-const BAND_YELLOW = 'rgba(251, 191, 36, 0.06)'
-const TRACE_GREEN = '#4ade80'
-const TRACE_YELLOW = '#fbbf24'
-const TRACE_RED = '#ef4444'
-const TRACE_GRAY = '#64748b'
-const TIME_LABEL_COLOR = 'rgba(148, 163, 184, 0.4)'
-
-function midiToFreq(midi: number): number {
-    return A4 * Math.pow(2, (midi - 69) / 12)
-}
 
 function freqToMidi(freq: number): number {
     return 69 + 12 * Math.log2(freq / A4)
 }
 
-function midiToNoteName(midi: number): string {
-    const idx = ((midi % 12) + 12) % 12
-    return NOTES_FR[idx]
+function getTrumpetNoteName(concertMidi: number): string {
+    const trumpetMidi = Math.round(concertMidi) + 2 // Bb transposition
+    const noteIndex = ((trumpetMidi % 12) + 12) % 12
+    const noteName = NOTES_FR[noteIndex]
+    const octave = Math.floor(trumpetMidi / 12) - 1
+    return `${noteName}${octave}`
 }
 
 function getTraceColor(confidence: string, cents: number): string {
-    if (confidence === 'none' || confidence === 'low') return TRACE_GRAY
+    if (confidence === 'none' || confidence === 'low') return '#94a3b8' // slate-400
     const abs = Math.abs(cents)
-    if (abs <= TOLERANCE_TIGHT) return TRACE_GREEN
-    if (abs <= TOLERANCE_WIDE) return TRACE_YELLOW
-    return TRACE_RED
+    if (abs <= 10) return '#22c55e'  // green-500
+    if (abs <= 20) return '#eab308'  // yellow-500
+    return '#ef4444'                  // red-500
 }
 
-export default function PitchTimeline({ getPoints, durationMs, isListening }: PitchTimelineProps) {
+export default function PitchTimeline({ getPoints, durationMs, isListening, startTime, isPaused }: PitchTimelineProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const animFrameRef = useRef<number | null>(null)
 
@@ -76,7 +63,7 @@ export default function PitchTimeline({ getPoints, durationMs, isListening }: Pi
         const cw = rect.width
         const ch = rect.height
 
-        const LEFT_MARGIN = 44
+        const LEFT_MARGIN = 52
         const RIGHT_MARGIN = 8
         const TOP_MARGIN = 8
         const BOTTOM_MARGIN = 22
@@ -87,91 +74,79 @@ export default function PitchTimeline({ getPoints, durationMs, isListening }: Pi
         ctx.fillStyle = BG_COLOR
         ctx.fillRect(0, 0, cw, ch)
 
-        const centerMidi = CENTER_MIDI
-        const minMidi = MIN_MIDI
-        const maxMidi = MAX_MIDI
-
-        // Y mapping: MIDI note → pixel
-        const midiToY = (midi: number): number => {
-            const ratio = (maxMidi - midi) / (maxMidi - minMidi)
-            return TOP_MARGIN + ratio * plotH
-        }
-
-        // Draw tolerance bands + note grid lines
-        ctx.font = '10px Inter, system-ui, sans-serif'
-        ctx.textAlign = 'right'
-        ctx.textBaseline = 'middle'
-
-        for (let midi = Math.ceil(minMidi); midi <= Math.floor(maxMidi); midi++) {
-            const y = midiToY(midi)
-
-            // Yellow band (±10 cents = ±10/100 of a semitone)
-            const yTop10 = midiToY(midi + 0.10)
-            const yBot10 = midiToY(midi - 0.10)
-            ctx.fillStyle = BAND_YELLOW
-            ctx.fillRect(LEFT_MARGIN, yTop10, plotW, yBot10 - yTop10)
-
-            // Green band (±5 cents)
-            const yTop5 = midiToY(midi + 0.05)
-            const yBot5 = midiToY(midi - 0.05)
-            ctx.fillStyle = BAND_GREEN
-            ctx.fillRect(LEFT_MARGIN, yTop5, plotW, yBot5 - yTop5)
-
-            // Note line
-            ctx.strokeStyle = NOTE_LINE_COLOR
-            ctx.lineWidth = 0.5
-            ctx.beginPath()
-            ctx.moveTo(LEFT_MARGIN, y)
-            ctx.lineTo(cw - RIGHT_MARGIN, y)
-            ctx.stroke()
-
-            // Note label
-            const name = midiToNoteName(midi)
-            const oct = Math.floor(midi / 12) - 1
-            ctx.fillStyle = GRID_LABEL_COLOR
-            ctx.fillText(`${name}${oct}`, LEFT_MARGIN - 4, y)
-        }
-
-        // Time axis
-        const now = performance.now()
-        const tMin = now - durationMs
-        const tMax = now
-
-        const xForTime = (t: number): number => {
-            const ratio = (t - tMin) / (tMax - tMin)
-            return LEFT_MARGIN + ratio * plotW
-        }
-
-        // Time grid (every 1 second)
-        ctx.strokeStyle = GRID_COLOR
-        ctx.lineWidth = 0.5
-        ctx.font = '9px Inter, system-ui, sans-serif'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'top'
-        ctx.fillStyle = TIME_LABEL_COLOR
-
-        for (let s = 1; s <= Math.floor(durationMs / 1000); s++) {
-            const t = tMax - s * 1000
-            const x = xForTime(t)
-            ctx.beginPath()
-            ctx.moveTo(x, TOP_MARGIN)
-            ctx.lineTo(x, TOP_MARGIN + plotH)
-            ctx.stroke()
-            ctx.fillText(`-${s}s`, x, TOP_MARGIN + plotH + 4)
-        }
-
-        // Draw pitch trace
-        const points = getPoints()
-        if (points.length < 2) {
+        if (!startTime) {
             if (isListening) {
                 animFrameRef.current = requestAnimationFrame(draw)
             }
             return
         }
 
-        ctx.lineWidth = 2.5
-        ctx.lineCap = 'round'
+        const now = isPaused ? performance.now() : performance.now()
+        const duration = Math.max(5000, now - startTime)
+
+        // Y mapping: MIDI note → pixel
+        const midiToY = (midi: number): number => {
+            return TOP_MARGIN + plotH - ((midi - MIN_MIDI) / (MAX_MIDI - MIN_MIDI)) * plotH
+        }
+
+        // Draw horizontal grid lines (semitones)
+        ctx.textAlign = 'right'
+        ctx.textBaseline = 'middle'
+
+        for (let m = MIN_MIDI; m <= MAX_MIDI; m++) {
+            const y = midiToY(m)
+
+            // Highlight Do notes (Trumpet Do = Concert Bb = MIDI 58, 70, 82)
+            const trumpetMidi = m + 2
+            const isTrumpetDo = trumpetMidi % 12 === 0
+
+            ctx.lineWidth = isTrumpetDo ? 1.5 : 0.5
+            ctx.strokeStyle = isTrumpetDo ? '#334155' : '#1e293b'
+
+            ctx.beginPath()
+            ctx.moveTo(LEFT_MARGIN, y)
+            ctx.lineTo(cw - RIGHT_MARGIN, y)
+            ctx.stroke()
+
+            // Note label
+            ctx.fillStyle = isTrumpetDo ? '#cbd5e1' : '#475569'
+            ctx.font = isTrumpetDo ? 'bold 11px Inter, system-ui, sans-serif' : '9px Inter, system-ui, sans-serif'
+            ctx.fillText(getTrumpetNoteName(m), LEFT_MARGIN - 5, y)
+        }
+
+        // Time axis: X mapping
+        const xForTime = (t: number): number => {
+            return LEFT_MARGIN + ((t - startTime) / duration) * plotW
+        }
+
+        // Time grid lines (every second)
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)'
+        ctx.lineWidth = 0.5
+        ctx.font = '9px Inter, system-ui, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'top'
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)'
+
+        const totalSeconds = Math.ceil(duration / 1000)
+        const gridStep = totalSeconds > 30 ? 5 : totalSeconds > 10 ? 2 : 1
+        for (let s = 0; s <= totalSeconds; s += gridStep) {
+            const t = startTime + s * 1000
+            const x = xForTime(t)
+            if (x >= LEFT_MARGIN && x <= cw - RIGHT_MARGIN) {
+                ctx.beginPath()
+                ctx.moveTo(x, TOP_MARGIN)
+                ctx.lineTo(x, TOP_MARGIN + plotH)
+                ctx.stroke()
+                ctx.fillText(`${s}s`, x, TOP_MARGIN + plotH + 4)
+            }
+        }
+
+        // Draw pitch trace
+        const points = getPoints()
+
+        ctx.lineWidth = 2
         ctx.lineJoin = 'round'
+        ctx.lineCap = 'round'
 
         // Clip to plot area
         ctx.save()
@@ -179,23 +154,25 @@ export default function PitchTimeline({ getPoints, durationMs, isListening }: Pi
         ctx.rect(LEFT_MARGIN, TOP_MARGIN, plotW, plotH)
         ctx.clip()
 
-        let prevX: number | null = null
-        let prevY: number | null = null
-        let prevColor: string | null = null
+        let isDrawing = false
+        let prevX = 0
+        let prevY = 0
 
         for (let i = 0; i < points.length; i++) {
             const pt = points[i]
+
             if (!pt.freq || pt.confidence === 'none') {
-                prevX = null
-                prevY = null
-                prevColor = null
+                isDrawing = false
                 continue
             }
 
-            const midi = freqToMidi(pt.freq) + pt.cents / 100 // incorporate cents offset for accuracy
+            const midi = freqToMidi(pt.freq)
             const x = xForTime(pt.t)
-            const y = midiToY(freqToMidi(pt.freq))
+            const y = midiToY(midi)
+
+            // Color based on confidence and tuning
             const color = getTraceColor(pt.confidence, pt.cents)
+            ctx.strokeStyle = color
 
             // Dashed for low confidence
             if (pt.confidence === 'low') {
@@ -203,43 +180,49 @@ export default function PitchTimeline({ getPoints, durationMs, isListening }: Pi
                 ctx.lineWidth = 1.5
             } else {
                 ctx.setLineDash([])
-                ctx.lineWidth = 2.5
+                ctx.lineWidth = 2
             }
 
-            if (prevX !== null && prevY !== null) {
-                ctx.strokeStyle = color
+            if (!isDrawing) {
+                prevX = x
+                prevY = y
+                isDrawing = true
+            } else {
                 ctx.beginPath()
                 ctx.moveTo(prevX, prevY)
                 ctx.lineTo(x, y)
                 ctx.stroke()
+                prevX = x
+                prevY = y
             }
 
-            // Draw dot for current point
+            // Draw dot
             ctx.fillStyle = color
             ctx.beginPath()
-            ctx.arc(x, y, pt.confidence === 'high' ? 2.5 : 1.5, 0, Math.PI * 2)
+            ctx.arc(x, y, pt.confidence === 'high' ? 2 : 1.2, 0, Math.PI * 2)
             ctx.fill()
-
-            prevX = x
-            prevY = y
-            prevColor = color
         }
 
         ctx.restore()
         ctx.setLineDash([])
 
         // "Now" indicator line
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(cw - RIGHT_MARGIN, TOP_MARGIN)
-        ctx.lineTo(cw - RIGHT_MARGIN, TOP_MARGIN + plotH)
-        ctx.stroke()
+        const nowX = xForTime(now)
+        if (nowX >= LEFT_MARGIN && nowX <= cw - RIGHT_MARGIN) {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+            ctx.lineWidth = 1
+            ctx.setLineDash([4, 4])
+            ctx.beginPath()
+            ctx.moveTo(nowX, TOP_MARGIN)
+            ctx.lineTo(nowX, TOP_MARGIN + plotH)
+            ctx.stroke()
+            ctx.setLineDash([])
+        }
 
         if (isListening) {
             animFrameRef.current = requestAnimationFrame(draw)
         }
-    }, [getPoints, durationMs, isListening])
+    }, [getPoints, isListening, startTime, isPaused])
 
     useEffect(() => {
         if (isListening) {
@@ -259,11 +242,9 @@ export default function PitchTimeline({ getPoints, durationMs, isListening }: Pi
             style={{
                 width: '100%',
                 height: '100%',
-                minHeight: '300px',
+                minHeight: '400px',
                 borderRadius: '12px',
-                display: isListening ? 'block' : 'none',
-                position: 'relative',
-                zIndex: 0,
+                display: 'block',
             }}
         />
     )
