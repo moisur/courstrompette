@@ -117,7 +117,7 @@ export default function Tuner() {
         <Card className="w-full lg:w-[360px] lg:flex-shrink-0 p-6 bg-background">
           {/* Gauge SVG original */}
           <div className="relative aspect-square max-w-[320px] mx-auto">
-            <svg viewBox="0 0 200 200" className="w-full h-full">
+            <svg viewBox="0 0 200 200" className="w-full h-full relative z-10">
               <defs>
                 <linearGradient id="tunerGradient" x1="0%" y1="0%" x2="100%">
                   <stop offset="0%" stopColor="#ef4444" />
@@ -176,6 +176,15 @@ export default function Tuner() {
                   {tunerInfo.frequency.toFixed(1)} Hz
                 </div>
               )}
+            </div>
+
+            {/* Logo repositioned with absolute positioning and full opacity */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-24 pointer-events-none z-0">
+              <img
+                src={instrument.toLowerCase().includes('sax') ? '/trompette/sax.png' : '/trompette/trompette.png'}
+                alt={instrument}
+                className="w-full object-contain"
+              />
             </div>
           </div>
 
