@@ -250,10 +250,10 @@ export default function Tuner() {
             {isListening ? (
               <PitchTimeline
                 getPoints={timeline.getPoints}
-                durationMs={timeline.durationMs}
                 isListening={isListening}
                 startTime={timeline.startTime}
                 isPaused={timeline.isPaused}
+                pauseTime={timeline.pauseTime}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 text-sm">

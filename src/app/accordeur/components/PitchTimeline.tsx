@@ -6,10 +6,10 @@ import { NOTES_FR, A4 } from '../lib/noteUtils'
 
 interface PitchTimelineProps {
     getPoints: () => TimelinePoint[]
-    durationMs: number
     isListening: boolean
     startTime: number | null
     isPaused: boolean
+    pauseTime: number | null
 }
 
 // Fixed range for trumpet: Concert E3 (MIDI 52) to Concert D6 (MIDI 86)
@@ -39,7 +39,7 @@ function getTraceColor(confidence: string, cents: number): string {
     return '#ef4444'                  // red-500
 }
 
-export default function PitchTimeline({ getPoints, durationMs, isListening, startTime, isPaused }: PitchTimelineProps) {
+export default function PitchTimeline({ getPoints, isListening, startTime, isPaused, pauseTime }: PitchTimelineProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const animFrameRef = useRef<number | null>(null)
 
@@ -81,7 +81,7 @@ export default function PitchTimeline({ getPoints, durationMs, isListening, star
             return
         }
 
-        const now = isPaused ? performance.now() : performance.now()
+        const now = isPaused ? (pauseTime ?? performance.now()) : performance.now()
         const duration = Math.max(5000, now - startTime)
 
         // Y mapping: MIDI note → pixel
@@ -222,7 +222,7 @@ export default function PitchTimeline({ getPoints, durationMs, isListening, star
         if (isListening) {
             animFrameRef.current = requestAnimationFrame(draw)
         }
-    }, [getPoints, isListening, startTime, isPaused])
+    }, [getPoints, isListening, startTime, isPaused, pauseTime])
 
     useEffect(() => {
         if (isListening) {

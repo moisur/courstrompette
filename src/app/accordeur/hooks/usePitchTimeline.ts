@@ -22,7 +22,7 @@ export function usePitchTimeline() {
     const lastSampleTimeRef = useRef(0)
     const [startTime, setStartTime] = useState<number | null>(null)
     const [isPaused, setIsPaused] = useState(false)
-    const pauseTimeRef = useRef<number | null>(null)
+    const [pauseTime, setPauseTime] = useState<number | null>(null)
 
     const push = useCallback((frame: PitchFrame) => {
         if (isPaused) return
@@ -60,29 +60,29 @@ export function usePitchTimeline() {
         const now = performance.now()
         if (isPaused) {
             // Resuming
-            if (pauseTimeRef.current !== null && startTime !== null) {
-                const pauseDuration = now - pauseTimeRef.current
+            if (pauseTime !== null && startTime !== null) {
+                const pauseDuration = now - pauseTime
                 setStartTime(prev => prev !== null ? prev + pauseDuration : prev)
                 bufferRef.current = bufferRef.current.map(p => ({
                     ...p,
                     t: p.t + pauseDuration
                 }))
             }
-            pauseTimeRef.current = null
+            setPauseTime(null)
             setIsPaused(false)
         } else {
             // Pausing
-            pauseTimeRef.current = now
+            setPauseTime(now)
             setIsPaused(true)
         }
-    }, [isPaused, startTime])
+    }, [isPaused, startTime, pauseTime])
 
     const reset = useCallback(() => {
         bufferRef.current = []
         lastSampleTimeRef.current = 0
         setStartTime(null)
         setIsPaused(false)
-        pauseTimeRef.current = null
+        setPauseTime(null)
     }, [])
 
     return useMemo(() => ({
@@ -92,6 +92,7 @@ export function usePitchTimeline() {
         togglePause,
         startTime,
         isPaused,
+        pauseTime,
         durationMs: 0, // No longer used in fixed-window sense
-    }), [push, getPoints, reset, togglePause, startTime, isPaused])
+    }), [push, getPoints, reset, togglePause, startTime, isPaused, pauseTime])
 }
