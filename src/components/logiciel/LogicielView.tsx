@@ -1,4 +1,5 @@
 "use client"
+import { SOULFUL_BOP_PHRASES } from './soulfulBopPhrases';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -300,7 +301,7 @@ const REPERTOIRE_SONGS: { [key: string]: ExerciseNote[] } = {
   ]
 };
 
-const SONGS_EXERCISES = [...Object.keys(EXERCISE_PATTERNS), ...Object.keys(REPERTOIRE_SONGS)];
+const SONGS_EXERCISES = [...Object.keys(EXERCISE_PATTERNS), ...Object.keys(REPERTOIRE_SONGS), ...Object.keys(SOULFUL_BOP_PHRASES)];
 
 const MIDI_FILES = [
   "Fur Elise.mid"
@@ -318,7 +319,7 @@ const getFingeringText = (pistonString: string): string => {
   return pistonString.split('').map((p, i) => (p === '1' ? (i + 1).toString() : '')).filter(Boolean).join('');
 };
 
-const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; exerciseType: string }> = ({ notes, activeNoteIndex, exerciseType }) => {
+const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; exerciseType: string; showFingerings: boolean }> = ({ notes, activeNoteIndex, exerciseType, showFingerings }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousHighlightRef = useRef<string | null>(null);
 
@@ -330,8 +331,11 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
 
     // --- 0. CONFIGURATION ---
     const isClarke = exerciseType.includes("Clarke");
-    const measuresPerLine = isClarke ? 5 : 2;
-    const totalWidth = isClarke ? 1600 : 900;
+    const isClarkeEtude3 = exerciseType === 'Clarke Étude III';
+    // Pour l'Étude 3 (que des doubles croches), on force 2 mesures par ligne max
+    const measuresPerLine = isClarkeEtude3 ? 2 : isClarke ? 5 : 2;
+    // On augmente drastiquement la largeur totale pour l'Étude 3
+    const totalWidth = isClarkeEtude3 ? 2400 : isClarke ? 1600 : 900;
 
     // 1. PRÉPARATION DES DONNÉES
     type NoteWithIndex = ExerciseNote & { originalIndex?: number };
@@ -403,9 +407,11 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
           duration: isRest ? `${note.duration}r` : note.duration, auto_stem: true
         });
         if (accidental && !isRest) vexNote.addModifier(new VF.Accidental(accidental), 0);
-        const fingering = isRest ? null : PISTONS[note.key];
-        if (fingering) {
-          vexNote.addModifier(new VF.Annotation(getFingeringText(fingering)).setFont('Arial', 8, 'bold').setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM), 0);
+        if (showFingerings) {
+          const fingering = isRest ? null : PISTONS[note.key];
+          if (fingering) {
+            vexNote.addModifier(new VF.Annotation(getFingeringText(fingering)).setFont('Arial', 8, 'bold').setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM), 0);
+          }
         }
         (vexNote as any).originalIndex = note.originalIndex;
         return vexNote;
@@ -456,7 +462,7 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
         el.querySelectorAll('*').forEach((child: any) => { child.style.transition = 'fill 0.1s ease-out'; });
       }
     });
-  }, [notes, exerciseType]);
+  }, [notes, exerciseType, showFingerings]);
 
   // EFFECT 2: SURLIGNAGE (inchangé)
   useEffect(() => {
@@ -528,6 +534,7 @@ const ScalePractice: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [selectedInstrument, setSelectedInstrument] = useState('Trompette (Sib)');
+  const [showFingerings, setShowFingerings] = useState(true);
   const [selectedMidi, setSelectedMidi] = useState<string>('');
   const [midiNotes, setMidiNotes] = useState<ExerciseNote[]>([]);
   const [midiTranspose, setMidiTranspose] = useState(0);
@@ -575,50 +582,65 @@ const ScalePractice: React.FC = () => {
   }, []);
 
   const generateScale = useMemo((): ExerciseNote[] => {
+    let notes: ExerciseNote[];
+
     if (exerciseType === 'Fichier MIDI' && midiNotes.length > 0) {
-      return midiNotes.map(n => {
+      notes = midiNotes.map(n => {
         const octave = parseInt(n.key.match(/\d+/)?.[0] || '4', 10);
         const noteName = n.key.replace(/\d+/, '');
-        // Handle both sharps and flats for index lookup
         const CHROMATIC_MAP: { [key: string]: number } = {
           'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4, 'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
         };
         const noteIndex = CHROMATIC_MAP[noteName] ?? 0;
-        const transposedIndex = (noteIndex + midiTranspose + 120) % 12; // Add 120 to ensure positive result before modulo
+        const transposedIndex = (noteIndex + midiTranspose + 120) % 12;
         const octaveShift = Math.floor((noteIndex + midiTranspose) / 12);
         return {
           key: `${CHROMATIC_NOTES[transposedIndex]}${octave + octaveShift}`,
           duration: n.duration
         };
       });
+    } else if (REPERTOIRE_SONGS[exerciseType]) {
+      notes = [...REPERTOIRE_SONGS[exerciseType]];
+    } else if (SOULFUL_BOP_PHRASES[exerciseType]) {
+      notes = [...SOULFUL_BOP_PHRASES[exerciseType]];
+    } else {
+      const exerciseGenerator = EXERCISE_PATTERNS[exerciseType];
+      if (exerciseType === 'Flexibilité - Niveau 1') {
+        notes = exerciseGenerator() as ExerciseNote[];
+      } else {
+        const rootIndex = CHROMATIC_NOTES.indexOf(rootNote);
+        const chromaticScale = Array.from({ length: 24 }, (_, i) => {
+          const noteIndex = (rootIndex + i) % 12;
+          const octaveShift = Math.floor((rootIndex + i) / 12);
+          return `${CHROMATIC_NOTES[noteIndex]}${startOctave + octaveShift}`;
+        });
+        const pattern = SCALE_PATTERNS[scaleType];
+        const scaleNotes = pattern.map(interval => chromaticScale[interval]);
+        const result = exerciseGenerator(scaleNotes);
+        if (result.length > 0 && typeof result[0] === 'object') {
+          notes = result as ExerciseNote[];
+        } else {
+          notes = (result as string[]).map(key => ({ key, duration: 'q' }));
+        }
+      }
     }
 
-    if (REPERTOIRE_SONGS[exerciseType]) {
-      return REPERTOIRE_SONGS[exerciseType];
+    // --- PAD : compléter la dernière mesure avec des silences ---
+    // Cela garantit que l'audio attend les pauses visibles dans VexFlow
+    const totalBeats = notes.reduce((sum, n) => sum + (BEAT_VALUES[n.duration] || 0), 0);
+    let remaining = (Math.ceil(totalBeats / 4) * 4) - totalBeats;
+    if (remaining >= 0.24) {
+      const padded = [...notes];
+      while (remaining >= 0.24) {
+        if (remaining >= 3.99) { padded.push({ key: 'B4/r', duration: 'w' }); remaining -= 4; }
+        else if (remaining >= 1.99) { padded.push({ key: 'B4/r', duration: 'h' }); remaining -= 2; }
+        else if (remaining >= 0.99) { padded.push({ key: 'B4/r', duration: 'q' }); remaining -= 1; }
+        else if (remaining >= 0.49) { padded.push({ key: 'B4/r', duration: '8' }); remaining -= 0.5; }
+        else { padded.push({ key: 'B4/r', duration: '16' }); remaining -= 0.25; }
+      }
+      return padded;
     }
-
-    const exerciseGenerator = EXERCISE_PATTERNS[exerciseType];
-    if (exerciseType === 'Flexibilité - Niveau 1') {
-      return exerciseGenerator() as ExerciseNote[];
-    }
-
-    const rootIndex = CHROMATIC_NOTES.indexOf(rootNote);
-    const chromaticScale = Array.from({ length: 24 }, (_, i) => {
-      const noteIndex = (rootIndex + i) % 12;
-      const octaveShift = Math.floor((rootIndex + i) / 12);
-      return `${CHROMATIC_NOTES[noteIndex]}${startOctave + octaveShift}`;
-    });
-
-    const pattern = SCALE_PATTERNS[scaleType];
-    const scaleNotes = pattern.map(interval => chromaticScale[interval]);
-    const result = exerciseGenerator(scaleNotes);
-
-    // If it's already an array of ExerciseNote, return it directly
-    if (result.length > 0 && typeof result[0] === 'object') {
-      return result as ExerciseNote[];
-    }
-    // Otherwise it's an array of strings, map to ExerciseNote with default duration
-    return (result as string[]).map(key => ({ key, duration: 'q' }));
+    return notes;
   }, [rootNote, scaleType, startOctave, exerciseType, midiNotes, midiTranspose]);
 
   const noteToFrequency = useCallback((noteKey: string): number => {
@@ -641,6 +663,11 @@ const ScalePractice: React.FC = () => {
     setActiveNoteIndex(0);
     setDisplayBeat(1);
     setDisplayMeasure(1);
+
+    // Si le testeur de vitesse est activé, on remet le tempo à la valeur de départ
+    if (accelConfigRef.current.active) {
+      setTempo(accelConfigRef.current.start);
+    }
 
     // On réinitialise l'index dans le scheduler
     if (schedulerRef.current) {
@@ -867,7 +894,7 @@ const ScalePractice: React.FC = () => {
     }
   };
 
-  const isExerciseDisabled = exerciseType === 'Flexibilité - Niveau 1' || !!REPERTOIRE_SONGS[exerciseType] || exerciseType === 'Fichier MIDI';
+  const isExerciseDisabled = exerciseType === 'Flexibilité - Niveau 1' || !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || exerciseType === 'Fichier MIDI';
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 md:px-8">
@@ -1140,6 +1167,9 @@ const ScalePractice: React.FC = () => {
                       <optgroup label="Répertoire Populaire">
                         {Object.keys(REPERTOIRE_SONGS).map(type => <option key={type} value={type}>{type}</option>)}
                       </optgroup>
+                      <optgroup label="🎺 Soulful Bop Jazz">
+                        {Object.keys(SOULFUL_BOP_PHRASES).map(type => <option key={type} value={type}>{type}</option>)}
+                      </optgroup>
                     </select>
                   </div>
 
@@ -1194,6 +1224,22 @@ const ScalePractice: React.FC = () => {
                 </div>
 
                 <div className="pt-5 border-t border-slate-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doigtés</Label>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowFingerings(!showFingerings)}
+                      className={cn(
+                        "h-7 px-3 text-[10px] font-bold uppercase tracking-widest rounded-lg border transition-all",
+                        showFingerings
+                          ? "bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100"
+                          : "bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100"
+                      )}
+                    >
+                      {showFingerings ? 'Affichés' : 'Masqués'}
+                    </Button>
+                  </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Instrument</Label>
                     <div className="flex gap-4 items-center bg-slate-50 p-1.5 pr-4 rounded-xl border border-slate-200">
@@ -1254,6 +1300,7 @@ const ScalePractice: React.FC = () => {
             notes={generateScale}
             activeNoteIndex={activeNoteIndex}
             exerciseType={exerciseType}
+            showFingerings={showFingerings}
           />
           {/* Favorites & Footer Controls */}
           {favorites.length > 0 && (

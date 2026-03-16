@@ -130,6 +130,7 @@ export default function CreatePost() {
                     >
                         <option value="guide-apprentissage">Guide d&apos;Apprentissage</option>
                         <option value="biographies-trompettistes">Biographie Trompettiste</option>
+                        <option value="outils-jazz">Outils Jazz</option>
                         {/* Add more categories as needed */}
                     </select>
                 </div>

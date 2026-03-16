@@ -34,7 +34,7 @@ export default function BlogPage() {
   const groupedPosts = groupPostsByCategory(allPosts);
   const categories = Object.keys(groupedPosts);
 
-  const orderedCategories = ['guide-apprentissage', 'biographies-trompettistes'].filter(c => categories.includes(c));
+  const orderedCategories = ['guide-apprentissage', 'biographies-trompettistes', 'outils-jazz'].filter(c => categories.includes(c));
   categories.forEach(c => {
     if (!orderedCategories.includes(c)) orderedCategories.push(c);
   });

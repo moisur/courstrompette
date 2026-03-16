@@ -9,6 +9,7 @@ export const categoryNames: { [key: string]: string } = {
     'biographies-trompettistes': "Biographies de trompettistes célèbres",
     'avis': "Avis & Comparatifs",
     'temoignages': "Témoignages élèves",
+    'outils-jazz': "Outils Jazz",
 };
 
 
@@ -150,4 +151,5 @@ export function getBlogMenuData() {
         })),
     }));
 }
+
 
