@@ -5,15 +5,25 @@ import { OpenSheetMusicDisplay as OSMD } from 'opensheetmusicdisplay'
 
 interface SheetMusicProps {
   xmlContent: string
-  currentNote: string | null
-  onNoteChange: (note: string) => void
-  isCorrect: boolean | null
+  currentNote?: string | null
+  onNoteChange?: (note: string) => void
+  isCorrect?: boolean | null
+  readOnly?: boolean
+  className?: string
 }
 
-export default function SheetMusic({ xmlContent, currentNote, onNoteChange, isCorrect }: SheetMusicProps) {
+export default function SheetMusic({
+  xmlContent,
+  currentNote = null,
+  onNoteChange,
+  isCorrect = null,
+  readOnly = false,
+  className,
+}: SheetMusicProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const osmdRef = useRef<OSMD | null>(null)
   const [currentNoteIndex, setCurrentNoteIndex] = useState(0)
+  const isInteractive = !readOnly && typeof onNoteChange === 'function'
 
   const highlightNote = useCallback((note: any, isCorrect: boolean | null) => {
     if (osmdRef.current && osmdRef.current.GraphicSheet) {
@@ -41,6 +51,8 @@ export default function SheetMusic({ xmlContent, currentNote, onNoteChange, isCo
   }, [])
 
   const highlightFirstNote = useCallback(() => {
+    if (!isInteractive || !onNoteChange) return
+
     if (osmdRef.current && osmdRef.current.Sheet) {
       const firstMeasure = osmdRef.current.Sheet.SourceMeasures[0]
       if (firstMeasure && firstMeasure.VerticalSourceStaffEntryContainers.length > 0) {
@@ -68,9 +80,11 @@ export default function SheetMusic({ xmlContent, currentNote, onNoteChange, isCo
         }
       }
     }
-  }, [highlightNote, getNoteNameWithOctave, onNoteChange])
+  }, [getNoteNameWithOctave, highlightNote, isInteractive, onNoteChange])
 
   const highlightCurrentNote = useCallback(() => {
+    if (!isInteractive || !onNoteChange) return
+
     if (osmdRef.current && osmdRef.current.Sheet) {
       const allNotes = osmdRef.current.Sheet.SourceMeasures.flatMap((measure: any) => 
         measure.VerticalSourceStaffEntryContainers.flatMap((container: any) => {
@@ -86,28 +100,52 @@ export default function SheetMusic({ xmlContent, currentNote, onNoteChange, isCo
         onNoteChange(getNoteNameWithOctave(nextNote))
       }
     }
-  }, [currentNoteIndex, highlightNote, getNoteNameWithOctave, onNoteChange, isCorrect])
+  }, [currentNoteIndex, getNoteNameWithOctave, highlightNote, isCorrect, isInteractive, onNoteChange])
 
   useEffect(() => {
-    if (divRef.current) {
-      osmdRef.current = new OSMD(divRef.current, {
-        autoResize: true,
-        drawTitle: true,
-        drawSubtitle: true,
-      })
-      osmdRef.current.load(xmlContent).then(() => {
+    setCurrentNoteIndex(0)
+  }, [xmlContent])
+
+  useEffect(() => {
+    if (!divRef.current) return
+
+    let cancelled = false
+    const container = divRef.current
+    container.innerHTML = ''
+
+    osmdRef.current = new OSMD(container, {
+      autoResize: true,
+      drawTitle: true,
+      drawSubtitle: true,
+    })
+
+    osmdRef.current.load(xmlContent)
+      .then(() => {
+        if (cancelled) return
         osmdRef.current?.render()
-        highlightFirstNote()
+        if (isInteractive) {
+          highlightFirstNote()
+        }
       })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error('Failed to render sheet music:', error)
+        }
+      })
+
+    return () => {
+      cancelled = true
+      osmdRef.current = null
+      container.innerHTML = ''
     }
-  }, [xmlContent, highlightFirstNote])
+  }, [highlightFirstNote, isInteractive, xmlContent])
 
   useEffect(() => {
-    if (osmdRef.current && currentNote) {
+    if (isInteractive && osmdRef.current && currentNote) {
       highlightCurrentNote()
     }
-  }, [currentNote, isCorrect, highlightCurrentNote])
+  }, [currentNote, highlightCurrentNote, isCorrect, isInteractive])
 
-  return <div ref={divRef} className="w-full h-64 overflow-auto" />
+  return <div ref={divRef} className={['w-full h-64 overflow-auto', className].filter(Boolean).join(' ')} />
 }
 

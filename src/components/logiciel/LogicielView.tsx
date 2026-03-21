@@ -1,12 +1,13 @@
 "use client"
 import { SOULFUL_BOP_PHRASES } from './soulfulBopPhrases';
+import IrealChordViewer from './IrealChordViewer';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { Pause, Play, Save, Volume2, VolumeX, FileMusic, Activity, LayoutDashboard, Settings2, Music2, Rocket, Gauge, Flag, Zap, Repeat, Target } from 'lucide-react';
+import { Pause, Play, Save, Volume2, VolumeX, FileMusic, Activity, LayoutDashboard, Settings2, Music2, Rocket, Gauge, Flag, Zap, Repeat, Target, BookOpen } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -91,6 +92,28 @@ const getNoteBelow = (note: string) => {
   return `${CHROMATIC_NOTES[idx]}${octave}`;
 };
 
+const getNoteAbove = (note: string) => {
+  const noteBase = normalizeNote(note.replace(/[0-9]/, ''));
+  const octave = parseInt(note.match(/[0-9]/)?.[0] || '4', 10);
+  let idx = CHROMATIC_NOTES.indexOf(noteBase);
+  idx++;
+  if (idx > 11) {
+    idx = 0;
+    return `${CHROMATIC_NOTES[idx]}${octave + 1}`;
+  }
+  return `${CHROMATIC_NOTES[idx]}${octave}`;
+};
+
+const getNoteByInterval = (note: string, semitones: number) => {
+  const noteBase = normalizeNote(note.replace(/[0-9]/, ''));
+  const octave = parseInt(note.match(/[0-9]/)?.[0] || '4', 10);
+  const idx = CHROMATIC_NOTES.indexOf(noteBase);
+  const newIdx = idx + semitones;
+  const octShift = Math.floor(newIdx / 12);
+  const modIdx = ((newIdx % 12) + 12) % 12;
+  return `${CHROMATIC_NOTES[modIdx]}${octave + octShift}`;
+};
+
 const getScaleForRoot = (root: string) => {
   const rootBase = normalizeNote(root.replace(/[0-9]/, ''));
   const rootIdx = CHROMATIC_NOTES.indexOf(rootBase);
@@ -127,6 +150,73 @@ const EXERCISE_PATTERNS: ExercisePattern = {
   },
   'Arpège': (scale) => [scale![0], scale![2], scale![4], scale![7]],
   'Arpège avec septième': (scale) => [scale![0], scale![2], scale![4], scale![6], scale![7]],
+  'Enclosure (Jazz)': (scale) => {
+    // Classique : ½ ton au-dessus → ½ ton en-dessous → note cible
+    const result: ExerciseNote[] = [];
+    scale!.forEach(target => {
+      result.push({ key: getNoteAbove(target), duration: '8' });
+      result.push({ key: getNoteBelow(target), duration: '8' });
+      result.push({ key: target, duration: 'q' });
+    });
+    return result;
+  },
+  'Enclosure inversée': (scale) => {
+    // Inversée : ½ ton en-dessous → ½ ton au-dessus → note cible
+    const result: ExerciseNote[] = [];
+    scale!.forEach(target => {
+      result.push({ key: getNoteBelow(target), duration: '8' });
+      result.push({ key: getNoteAbove(target), duration: '8' });
+      result.push({ key: target, duration: 'q' });
+    });
+    return result;
+  },
+  'Enclosure double chromatique': (scale) => {
+    // Double chromatique : 2 ½ tons au-dessus → 1 au-dessus → 1 en-dessous → cible
+    const result: ExerciseNote[] = [];
+    scale!.forEach(target => {
+      result.push({ key: getNoteByInterval(target, 2), duration: '8' });
+      result.push({ key: getNoteAbove(target), duration: '8' });
+      result.push({ key: getNoteBelow(target), duration: '8' });
+      result.push({ key: target, duration: '8' });
+    });
+    return result;
+  },
+  'Enclosure diatonique': (scale) => {
+    // Diatonique : note diatonique au-dessus → note diatonique en-dessous → cible
+    // Utilise les notes de la gamme plutôt que des ½ tons chromatiques
+    const result: ExerciseNote[] = [];
+    scale!.forEach((target, i) => {
+      const above = i + 1 < scale!.length ? scale![i + 1] : getNoteAbove(target);
+      const below = i > 0 ? scale![i - 1] : getNoteBelow(target);
+      result.push({ key: above, duration: '8' });
+      result.push({ key: below, duration: '8' });
+      result.push({ key: target, duration: 'q' });
+    });
+    return result;
+  },
+  'Enclosure 4 notes': (scale) => {
+    // 4 notes : au-dessus → cible → en-dessous → cible (résolution double)
+    const result: ExerciseNote[] = [];
+    scale!.forEach(target => {
+      result.push({ key: getNoteAbove(target), duration: '8' });
+      result.push({ key: target, duration: '8' });
+      result.push({ key: getNoteBelow(target), duration: '8' });
+      result.push({ key: target, duration: '8' });
+    });
+    return result;
+  },
+  'Enclosure sur 1-3-5-7': (scale) => {
+    // Enclosures ciblant uniquement les notes d'accord (1, 3, 5, 7)
+    // Plus musical pour l'improvisation jazz
+    const targets = [scale![0], scale![2], scale![4], scale![6]]; // 1, 3, 5, 7
+    const result: ExerciseNote[] = [];
+    targets.forEach(target => {
+      result.push({ key: getNoteAbove(target), duration: '8' });
+      result.push({ key: getNoteBelow(target), duration: '8' });
+      result.push({ key: target, duration: 'h' }); // Tenir plus longtemps sur les notes d'accord
+    });
+    return result;
+  },
   'Flexibilité - Niveau 1': () => {
     const phrases = [
       ['C4', 'G4', 'C5', 'E5', 'C5', 'G4', 'C4'],
@@ -523,6 +613,7 @@ const ToneGenerator: React.FC<{ note: ExerciseNote; isPlaying: boolean; volume: 
 };
 
 const ScalePractice: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'exercises' | 'ireal'>('exercises');
   const [rootNote, setRootNote] = useState('C');
   const [scaleType, setScaleType] = useState('Majeure');
   const [exerciseType, setExerciseType] = useState('Gamme simple');
@@ -699,6 +790,9 @@ const ScalePractice: React.FC = () => {
   // --- KEYBOARD SHORTCUTS ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore text inputs so we don't accidentally trigger playback when searching
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '')) return;
+
       if (e.code === 'Space') {
         e.preventDefault(); // Empêche le scroll
         togglePlay();
@@ -911,6 +1005,42 @@ const ScalePractice: React.FC = () => {
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Assistant Pratique Virtuel</p>
         </div>
 
+        {/* Tab Bar */}
+        <div className="flex items-center gap-2 bg-white rounded-2xl p-1.5 border border-slate-200 shadow-sm">
+          <button
+            onClick={() => setActiveTab('exercises')}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+              activeTab === 'exercises'
+                ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
+                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+            )}
+          >
+            <Music2 className="w-4 h-4" />
+            Exercices
+          </button>
+          <button
+            onClick={() => setActiveTab('ireal')}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+              activeTab === 'ireal'
+                ? "bg-orange-500 text-white shadow-lg shadow-orange-200"
+                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+            )}
+          >
+            <BookOpen className="w-4 h-4" />
+            iReal Pro
+          </button>
+        </div>
+
+        {activeTab === 'ireal' ? (
+          <Card className="bg-white border-slate-200 shadow-xl overflow-hidden rounded-2xl relative">
+            <CardContent className="p-6 md:p-8">
+              <IrealChordViewer />
+            </CardContent>
+          </Card>
+        ) : (
+        <>
         <Card className="bg-white border-slate-200 shadow-xl overflow-hidden rounded-2xl relative">
           <CardContent className="p-6 md:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1340,6 +1470,7 @@ const ScalePractice: React.FC = () => {
             </Button>
           </div>
         </div>
+        </>)}
       </div>
     </div>
   );

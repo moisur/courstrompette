@@ -9,6 +9,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import BlogSidebar from '@/components/blog/BlogSidebar';
 import MarkdownContent from '@/components/blog/MarkdownContent';
 import JsonLd from '@/components/seo/JsonLd';
+import { estimateReadingTimeMinutes } from '@/lib/post-config';
 
 interface Props {
   params: {
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: Props) {
         images: [postData.frontmatter.image],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'Article non trouvé',
     };
@@ -46,6 +47,7 @@ export async function generateMetadata({ params }: Props) {
 export default function Post({ params }: Props) {
   try {
     const postData = getPostData(params.category, params.slug);
+    const readingTimeMinutes = estimateReadingTimeMinutes(postData.content);
     const categoryName = params.category.replace(/-/g, ' ').split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
@@ -173,7 +175,7 @@ export default function Post({ params }: Props) {
                       <div className="bg-stone-100 p-2 rounded-full mr-3">
                         <ClockIcon className="w-5 h-5 text-stone-600" />
                       </div>
-                      <span>~5 min de lecture</span>
+                      <span>~{readingTimeMinutes} min de lecture</span>
                     </div>
                   </div>
                 </header>
@@ -208,7 +210,7 @@ export default function Post({ params }: Props) {
         </div>
       </div>
     );
-  } catch (error) {
+  } catch {
     notFound();
   }
 }
