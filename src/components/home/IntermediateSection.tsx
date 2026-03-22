@@ -85,7 +85,7 @@ export function IntermediateSection({ locationName }: { locationName?: string })
                                 {/* Le "Maintenant" - Éclatant */}
                                 <div className="w-full">
                                     <span className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] mb-3 block">
-                                        Méthode Z2G
+                                        Méthode JC
                                     </span>
                                     <p className="text-stone-900 font-serif text-2xl leading-snug">
                                         {item.detailGood}

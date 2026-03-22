@@ -18,7 +18,7 @@ export function AboutMethodSection({ locationName }: { locationName?: string }) 
                         Jouer de la trompette sans galère
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                        La méthode Z2G <span className="italic text-amber-600">révolutionne</span> l&apos;apprentissage {locationName && `à ${locationName}`}
+                        La méthode JC<span className="italic text-amber-600"> révolutionne</span> l&apos;apprentissage {locationName && `à ${locationName}`}
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto opacity-30" />
                 </div>
@@ -65,7 +65,7 @@ export function AboutMethodSection({ locationName }: { locationName?: string }) 
                                     Ça paraît ambitieux ? Pourtant, c&apos;est la réalité de mes élèves.
                                 </p>
                                 <p>
-                                    La méthode Zone de Génie n&apos;est pas un programme miracle — c&apos;est une <strong className="text-stone-900 font-medium">approche millimétrée</strong> où rien n'est laissé au hasard, on élimine 100% des erreurs des débutants, pour vous faire gagner des années de frustration.
+                                    La méthode JC n&apos;est pas un programme miracle — c&apos;est une <strong className="text-stone-900 font-medium">approche millimétrée</strong> où rien n'est laissé au hasard, on élimine 100% des erreurs des débutants, pour vous faire gagner des années de frustration.
                                 </p>
 
                                 <Card className="bg-stone-50 border-none shadow-inner p-6 rounded-2xl">

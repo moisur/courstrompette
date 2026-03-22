@@ -64,7 +64,7 @@ export function BiographySection({ locationName }: { locationName?: string }) {
                         {/* Status/Badge */}
                         <div className="absolute -bottom-6 right-0 md:-right-6 bg-white border-2 border-stone-900 px-6 py-4 rounded-2xl shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] z-20">
                             <p className="text-xl font-serif text-stone-900">JC Yervant</p>
-                            <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Fondateur Z2G</p>
+                            <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Fondateur JC</p>
                         </div>
                     </div>
 

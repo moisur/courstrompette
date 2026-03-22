@@ -5,7 +5,7 @@ import testimonialImg from '@/../public/testimonials-light.webp';
 
 const testimonials = [
     {
-        quote: "Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode Z2G a changé ma vie !",
+        quote: "Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode JCa changé ma vie !",
         name: "Sophie L.",
         age: "28 ans",
         result: "De débutante à scène en 6 mois",

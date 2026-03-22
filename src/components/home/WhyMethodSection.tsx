@@ -24,10 +24,10 @@ export function WhyMethodSection({ locationName }: { locationName?: string }) {
                 {/* En-tête */}
                 <div className="text-center mb-20">
                     <span className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full tracking-widest uppercase mb-6">
-                        La méthode Zone de Génie
+                        La méthode JC
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                        Pourquoi choisir la <span className="italic text-amber-600">méthode Z2G</span> {locationName && `à ${locationName}`}
+                        Pourquoi choisir la <span className="italic text-amber-600">méthode JC</span> {locationName && `à ${locationName}`}
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 mx-auto rounded-full opacity-30 mt-6 md:mt-8" />
                 </div>
@@ -39,7 +39,7 @@ export function WhyMethodSection({ locationName }: { locationName?: string }) {
                         <div className="relative rounded-[2.5rem] overflow-hidden border-2 border-stone-900 shadow-[8px_8px_0px_0px_rgba(251,191,36,1)] transition-transform duration-500 group-hover:-translate-y-1">
                             <Image
                                 src={pkoi}
-                                alt="Pourquoi choisir la méthode Z2G"
+                                alt="Pourquoi choisir la méthode JC"
                                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                                 width={600}
                                 height={750}
@@ -82,7 +82,7 @@ export function WhyMethodSection({ locationName }: { locationName?: string }) {
 
                         <div className="pt-2">
                             <p className="text-xl font-serif text-stone-900">
-                                La méthode Zone de Génie <span className="bg-amber-100 px-2 decoration-amber-400 decoration-2 underline-offset-4 font-bold">garanti</span> l'apprentissage de la trompette.
+                                La méthode JC <span className="bg-amber-100 px-2 decoration-amber-400 decoration-2 underline-offset-4 font-bold">garanti</span> l'apprentissage de la trompette.
                             </p>
                         </div>
                     </div>

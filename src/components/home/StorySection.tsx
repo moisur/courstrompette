@@ -17,7 +17,7 @@ export function StorySection({ locationName }: { locationName?: string }) {
                         <div className="relative rounded-[2.5rem] overflow-hidden border-2 border-stone-900 shadow-[8px_8px_0px_0px_rgba(251,191,36,1)] transition-transform duration-500 group-hover:-translate-y-1">
                             <Image
                                 src={profMat}
-                                alt="L'histoire de la méthode Z2G"
+                                alt="L'histoire de la méthode JC"
                                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                                 width={600}
                                 height={750}
@@ -41,7 +41,7 @@ export function StorySection({ locationName }: { locationName?: string }) {
                                 L'Histoire
                             </span>
                             <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                                Comment est née la <span className="italic text-amber-600">méthode Z2G</span> {locationName && `à ${locationName}`}
+                                Comment est née la <span className="italic text-amber-600">méthode JC</span> {locationName && `à ${locationName}`}
                             </h2>
                             <div className="w-24 h-1.5 bg-amber-600 rounded-full opacity-30" />
                         </div>
@@ -67,7 +67,7 @@ export function StorySection({ locationName }: { locationName?: string }) {
                             </p>
 
                             <p className="font-medium text-stone-900 pt-2">
-                                J'ai donc décidé de partager la méthode Z2G au plus grand nombre.
+                                J'ai donc décidé de partager la méthode JCau plus grand nombre.
                             </p>
                         </div>
                     </div>

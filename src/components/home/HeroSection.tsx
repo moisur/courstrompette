@@ -12,12 +12,13 @@ interface HeroSectionProps {
 
 export function HeroSection({ title, subtitle }: HeroSectionProps) {
     const { openModal } = useBooking();
+
     return (
         <header className="relative min-h-screen flex items-center justify-center text-white text-center px-6 pt-16">
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/Cours-trompette-paris.webp"
-                    alt="Cours de trompette à Paris"
+                    alt={"Cours de trompette à Paris"}
                     fill
                     className="object-cover"
                     priority
@@ -33,20 +34,27 @@ export function HeroSection({ title, subtitle }: HeroSectionProps) {
             <div className="relative z-20 max-w-4xl">
                 {/* Badge subtil */}
                 <span className="inline-block mb-6 text-amber-400 text-sm font-medium tracking-widest uppercase">
-                    Cours de trompette à Paris
+                    LE COURS DE TROMPETTE PENSÉ POUR LES PARISIENS
                 </span>
 
                 <h1 className="text-3xl md:text-6xl font-serif font-light mb-6 leading-tight">
                     {title || (
                         <>
-                            Jouez votre premier morceau <br />
-                            <span className="font-semibold text-amber-100">en 10 séances</span>
-                        </>
+                            Jouez votre premier morceau 
+                            <br />
+                            <span className="font-semibold text-amber-100">
+                               en 10 séances. 
+                            </span> 
+                            <span className="text-xl">
+                            
+                            <br />(Même si vous détestez le solfège).
+                            </span>
+                        </> 
                     )}
                 </h1>
 
                 <p className="text-lg md:text-xl text-stone-300 mb-10 font-light max-w-2xl mx-auto leading-relaxed">
-                    {subtitle || "Débutants ou amateurs, découvrez une méthode pédagogique unique qui transforme l'apprentissage de la trompette."}
+                    {subtitle || "Oubliez les méthodes de conservatoire interminables et les voisins qui tapent au mur. Découvrez la méthode JC : une approche basée sur le plaisir immédiat et le feeling. À Paris ou en visio."}
                 </p>
 
                 <button

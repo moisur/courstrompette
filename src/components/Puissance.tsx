@@ -22,7 +22,7 @@ export default function Puissance() {
         {/* En-tête */}
         <div className="text-center mb-20">
           <span className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full tracking-widest uppercase mb-6">
-            La Méthode Z2G
+            La Méthode JC
           </span>
           <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
             La puissance de ce que <span className="italic text-amber-600">je vous offre</span>
@@ -41,7 +41,7 @@ export default function Puissance() {
                     <Zap className="w-8 h-8 text-amber-600" />
                   </div>
                   <h3 className="text-3xl font-serif text-stone-900">
-                    L'Excellence Z2G
+                    L'Excellence JC
                   </h3>
                 </div>
 

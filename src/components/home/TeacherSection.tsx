@@ -76,7 +76,7 @@ export function TeacherSection({ locationName }: { locationName?: string }) {
 
                         <div className="pt-4 flex flex-col gap-6">
                             <p className="text-stone-700 leading-relaxed font-medium">
-                                C&apos;est cette frustration qui est la genèse de la <span className="text-amber-700 underline decoration-amber-500/30 decoration-2 underline-offset-4">méthode Zone de Génie</span>.
+                                C&apos;est cette frustration qui est la genèse de la <span className="text-amber-700 underline decoration-amber-500/30 decoration-2 underline-offset-4">méthode JC</span>.
                             </p>
 
                             <div className="flex items-center gap-4 text-stone-400 text-sm tracking-wide">
