@@ -1,38 +1,45 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Header from "@/components/Header";
-import { getBlogMenuData } from "@/lib/markdown";
-import Footer from "@/components/Footer";
-import { BookingModal } from "@/components/BookingModal";
-import JsonLd from "@/components/seo/JsonLd";
-import dynamic from 'next/dynamic';
-import { BookingProvider } from "@/context/BookingContext";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 
-const Chatbot = dynamic(() => import("@/components/Chatbot"), { ssr: false });
+import AppShell from '@/components/AppShell';
+import JsonLd from '@/components/seo/JsonLd';
+import { BookingProvider } from '@/context/BookingContext';
+import { getBlogMenuData } from '@/lib/markdown';
 
-const inter = Inter({ subsets: ["latin"] });
+import './globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://courstrompette.fr/'),
-  title: "Cours de Trompette en ligne ou à domicile",
-  description: "Découvrez nos cours de Trompette pour apprendre à jouer de la trompette à votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.",
-  keywords: ["cours de trompette", "trompette paris", "apprendre la trompette", "méthode Z2G", "professeur de trompette", "Jean Christophe Yervant"],
+  title: 'Cours de Trompette en ligne ou a domicile',
+  description:
+    'Decouvrez nos cours de Trompette pour apprendre a jouer de la trompette a votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.',
+  keywords: [
+    'cours de trompette',
+    'trompette paris',
+    'apprendre la trompette',
+    'methode JC',
+    'professeur de trompette',
+    'Jean Christophe Yervant',
+  ],
   openGraph: {
-    title: "Cours de Trompette en ligne ou à domicile",
-    description: "Découvrez nos cours de Trompette pour apprendre à jouer de la trompette à votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.",
-    url: "https://courstrompette.fr/",
-    siteName: "Cours de Trompette",
-    locale: "fr_FR",
-    type: "website",
+    title: 'Cours de Trompette en ligne ou a domicile',
+    description:
+      'Decouvrez nos cours de Trompette pour apprendre a jouer de la trompette a votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.',
+    url: 'https://courstrompette.fr/',
+    siteName: 'Cours de Trompette',
+    locale: 'fr_FR',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Cours de Trompette en ligne ou à domicile",
-    description: "Découvrez nos cours de Trompette pour apprendre à jouer de la trompette à votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.",
+    card: 'summary_large_image',
+    title: 'Cours de Trompette en ligne ou a domicile',
+    description:
+      'Decouvrez nos cours de Trompette pour apprendre a jouer de la trompette a votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.',
   },
   verification: {
-    google: "jBElafHqU3eAux7x5QbUblWVpm3kVEjzME6ZKlXzglU",
+    google: 'jBElafHqU3eAux7x5QbUblWVpm3kVEjzME6ZKlXzglU',
   },
 };
 
@@ -45,13 +52,8 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <BookingProvider>
-
           <JsonLd />
-          <Header menuItems={getBlogMenuData()} />
-          {children}
-          <Footer />
-          <BookingModal />
-          <Chatbot />
+          <AppShell menuItems={getBlogMenuData()}>{children}</AppShell>
         </BookingProvider>
       </body>
     </html>

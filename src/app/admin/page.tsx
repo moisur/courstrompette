@@ -29,8 +29,8 @@ export default async function AdminDashboardPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">CRM</p>
             <h2 className="text-3xl font-semibold tracking-tight text-stone-900">Base Postgres leads + eleves</h2>
             <p className="text-sm leading-7 text-stone-600">
-              Les demandes du formulaire et les eleves sont maintenant pensÃ©s pour etre suivis
-              depuis l admin sur une vraie base PostgreSQL.
+              Les demandes du formulaire et les eleves sont maintenant suivis depuis l admin sur
+              une vraie base PostgreSQL.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -82,7 +82,9 @@ export default async function AdminDashboardPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="text-base font-semibold text-stone-900">{lead.name}</p>
-                      <p className="text-sm text-stone-500">{lead.email} - {lead.phone}</p>
+                      <p className="text-sm text-stone-500">
+                        {lead.email} - {lead.phone}
+                      </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-600">
@@ -93,9 +95,7 @@ export default async function AdminDashboardPage() {
                       </span>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-stone-600">
-                    {lead.message || 'Aucun message laisse.'}
-                  </p>
+                  <p className="mt-3 text-sm leading-6 text-stone-600">{lead.message || 'Aucun message laisse.'}</p>
                   <p className="mt-3 text-xs text-stone-400">{dateFormatter.format(new Date(lead.createdAt))}</p>
                 </div>
               ))}
@@ -112,7 +112,9 @@ export default async function AdminDashboardPage() {
               {latestStudents.map((student: StudentRecord) => (
                 <div key={student.id} className="rounded-2xl border border-stone-200 px-4 py-4">
                   <p className="font-semibold text-stone-900">{student.name}</p>
-                  <p className="mt-1 text-sm text-stone-500">{student.email || 'Sans email'} - {student.phone}</p>
+                  <p className="mt-1 text-sm text-stone-500">
+                    {student.email || 'Sans email'} - {student.phone}
+                  </p>
                   <p className="mt-2 text-xs text-stone-400">
                     Ajoute le {dateFormatter.format(new Date(student.createdAt))}
                   </p>
