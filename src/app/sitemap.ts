@@ -3,6 +3,23 @@ import { getAllCategories, getAllPostEntries } from '@/lib/markdown';
 import { locations } from '@/data/locations';
 
 const BASE_URL = 'https://courstrompette.fr';
+const STATIC_PAGES = [
+    {
+        url: `${BASE_URL}/paris`,
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+    },
+    {
+        url: `${BASE_URL}/logiciel`,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+    },
+    {
+        url: `${BASE_URL}/pianoenligne`,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+    },
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const posts = getAllPostEntries();
@@ -54,6 +71,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'weekly',
             priority: 0.8,
         },
+        ...STATIC_PAGES.map((page) => ({
+            ...page,
+            lastModified: latestPostUpdate,
+        })),
         ...categoryPages,
         ...blogPosts,
         ...parisPages,

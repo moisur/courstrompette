@@ -1204,7 +1204,7 @@ export default function IrealChordViewerNext() {
 
   if (selectedSong) {
     return (
-      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4 pb-52 md:pb-44">
         <div className="flex w-full items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <Button
             variant="outline"
@@ -1300,8 +1300,10 @@ export default function IrealChordViewerNext() {
           ) : null}
         </section>
 
-        <section className="sticky top-4 z-50 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 p-4 shadow-lg">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[70] px-4">
+          <div className="pointer-events-auto mx-auto max-w-6xl overflow-x-auto pb-2">
+            <section className="min-w-[720px] w-full rounded-2xl border border-slate-700/70 bg-gradient-to-r from-slate-900 to-slate-800 p-4 shadow-2xl">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-2">
               <Button
                 onClick={togglePlayback}
@@ -1372,8 +1374,10 @@ export default function IrealChordViewerNext() {
                 </div>
               </div>
             </div>
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
 
         {canUseSheetModes ? (
           <TrackControls

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { locations, LocationData, getNearLocations } from '@/data/locations';
 import Cours from "@/components/cours";
 import { HeroSection, TestimonialsSection, FAQSection } from '@/components/home';
@@ -39,6 +39,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title,
         description,
+        alternates: {
+            canonical: `/paris/${location.slug}`,
+        },
         openGraph: {
             title,
             description,
@@ -53,6 +56,10 @@ export default function LocationPage({ params }: Props) {
 
     if (!location) {
         notFound();
+    }
+
+    if (params.slug !== location.slug) {
+        permanentRedirect(`/paris/${location.slug}`);
     }
 
     // Near locations for interlinking

@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { MessageCircle, Send, X, User, Bot } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import { useBooking } from "@/context/BookingContext"
 
 type Message = {
@@ -124,7 +125,10 @@ const botResponses = {
   }
 }
 
+const HIDDEN_CHATBOT_ROUTES = ['/accordeur', '/logiciel', '/pianoenligne']
+
 export default function Chatbot() {
+  const pathname = usePathname()
   const { isOpen: isBookingModalOpen } = useBooking();
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
@@ -212,7 +216,11 @@ export default function Chatbot() {
   }
 
   // Cacher le chatbot quand le modal de réservation est ouvert
-  if (isBookingModalOpen) {
+  const isHiddenOnCurrentRoute = HIDDEN_CHATBOT_ROUTES.some(
+    (route) => pathname === route || pathname?.startsWith(`${route}/`)
+  )
+
+  if (isBookingModalOpen || isHiddenOnCurrentRoute) {
     return null;
   }
 
