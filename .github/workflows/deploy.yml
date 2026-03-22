@@ -17,10 +17,19 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY_TROMPETTE }}
           script: |
             cd /var/www/courstrompette
+
+            if [ ! -f .env.production ]; then
+              echo ".env.production missing in /var/www/courstrompette" >&2
+              exit 1
+            fi
+
+            set -a
+            . ./.env.production
+            set +a
+
             git pull origin master
             npm install
             rm -rf .next
             npm run build
-            pm2 delete trompette || true
-            pm2 delete courstrompette || true
-            PORT=3005 pm2 start npm --name "courstrompette" -- start
+            pm2 startOrReload ecosystem.config.cjs --update-env
+            pm2 save

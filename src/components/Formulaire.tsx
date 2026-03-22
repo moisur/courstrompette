@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { useForm, ValidationError } from '@formspree/react';
 import { Button } from "@/components/ui/button";
 import confetti from "canvas-confetti";
 import { CheckCircle2 } from "lucide-react";
@@ -11,22 +10,65 @@ interface FormulaireProps {
 }
 
 const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
-  const [state, handleSubmit] = useForm("xdkngnbl");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSucceeded, setIsSucceeded] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
-  // Déclencher les paillettes uniquement en cas de succès
   React.useEffect(() => {
-    if (state.succeeded) {
+    if (isSucceeded) {
       confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#D97706', '#F59E0B', '#78350F']
+        colors: ['#D97706', '#F59E0B', '#78350F'],
       });
     }
-  }, [state.succeeded]);
+  }, [isSucceeded]);
 
-  // Message de succès stylisé
-  if (state.succeeded) {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const payload = {
+      name: String(formData.get('name') ?? '').trim(),
+      email: String(formData.get('email') ?? '').trim(),
+      phone: String(formData.get('phone') ?? '').trim(),
+      experience: String(formData.get('experience') ?? '').trim(),
+      message: String(formData.get('message') ?? '').trim(),
+      company: String(formData.get('company') ?? '').trim(),
+    };
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = (await response.json().catch(() => null)) as { message?: string } | null;
+
+      if (!response.ok) {
+        throw new Error(result?.message || 'Impossible d envoyer le message.');
+      }
+
+      form.reset();
+      setIsSucceeded(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Impossible d envoyer le message.';
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isSucceeded) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-10 animate-in fade-in zoom-in duration-500">
         <div className="bg-amber-50 p-4 rounded-full mb-4">
@@ -45,8 +87,18 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
 
   const Content = (
     <form className="max-w-lg mx-auto w-full space-y-3" onSubmit={handleSubmit}>
+      <div className="hidden" aria-hidden="true">
+        <label htmlFor="company">Entreprise</label>
+        <input
+          type="text"
+          id="company"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          className="hidden"
+        />
+      </div>
 
-      {/* Nom */}
       <div>
         <label htmlFor="name" className={labelStyles}>Nom complet</label>
         <input
@@ -57,10 +109,8 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
           className={inputStyles}
           required
         />
-        <ValidationError prefix="Name" field="name" errors={state.errors} className="text-red-500 text-sm mt-1" />
       </div>
 
-      {/* Email & Téléphone */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="email" className={labelStyles}>Email</label>
@@ -72,7 +122,6 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
             className={inputStyles}
             required
           />
-          <ValidationError prefix="Email" field="email" errors={state.errors} className="text-red-500 text-sm mt-1" />
         </div>
 
         <div>
@@ -85,11 +134,9 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
             className={inputStyles}
             required
           />
-          <ValidationError prefix="Phone" field="phone" errors={state.errors} className="text-red-500 text-sm mt-1" />
         </div>
       </div>
 
-      {/* Expérience */}
       <div>
         <label htmlFor="experience" className={labelStyles}>Niveau d&apos;expérience</label>
         <div className="relative">
@@ -109,10 +156,8 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
             <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
           </div>
         </div>
-        <ValidationError prefix="Experience" field="experience" errors={state.errors} className="text-red-500 text-sm mt-1" />
       </div>
 
-      {/* Message */}
       <div>
         <label htmlFor="message" className={labelStyles}>Message (optionnel)</label>
         <textarea
@@ -122,17 +167,21 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
           placeholder="J&apos;aimerais savoir si..."
           className={`${inputStyles} resize-none`}
         />
-        <ValidationError prefix="Message" field="message" errors={state.errors} className="text-red-500 text-sm mt-1" />
       </div>
 
       <div className="pt-2">
         <Button
           type="submit"
           className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold py-3 px-4 rounded-xl border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transform transition hover:-translate-y-1"
-          disabled={state.submitting}
+          disabled={isSubmitting}
         >
-          {state.submitting ? "Envoi en cours..." : "Réserver Mon Cours Gratuit"}
+          {isSubmitting ? "Envoi en cours..." : "Réserver Mon Cours Gratuit"}
         </Button>
+
+        {submitError ? (
+          <p className="text-sm text-red-600 text-center mt-3">{submitError}</p>
+        ) : null}
+
         <p className="text-xs text-center text-stone-400 mt-4">
           Aucun engagement requis. Vos données restent confidentielles.
         </p>
@@ -148,8 +197,6 @@ const Formulaire: React.FC<FormulaireProps> = ({ isModal }) => {
     <section id="booking" className="py-24 bg-white">
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="bg-stone-50 rounded-3xl border border-stone-100 p-8 md:p-12">
-
-          {/* En-tête */}
           <div className="text-center mb-10">
             <span className="text-amber-700 font-medium tracking-widest text-sm uppercase">
               Réservation
