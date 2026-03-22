@@ -2,6 +2,8 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+import { EXPERIENCE_LABELS, createLead, updateLeadMailStatus } from '@/lib/crm';
+
 type ContactPayload = {
   name: string;
   email: string;
@@ -14,11 +16,12 @@ type ContactPayload = {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
-const EXPERIENCE_LABELS: Record<string, string> = {
-  beginner: 'Debutant total',
-  intermediate: 'Intermediaire',
-  advanced: 'Avance',
-};
+const BRAND_NAME = 'JC Trompette';
+const PHONE_DISPLAY = '06 63 73 89 02';
+const PHONE_E164 = '+33663738902';
+const WHATSAPP_URL = `https://wa.me/33663738902?text=${encodeURIComponent(
+  'Bonjour JC Trompette, je viens de recevoir votre email. Je suis disponible pour organiser mon cours.',
+)}`;
 
 declare global {
   var __contactRateLimitStore: Map<string, number[]> | undefined;
@@ -182,27 +185,48 @@ function buildConfirmationTextBody(payload: ContactPayload) {
   return [
     `Hello ${payload.name},`,
     '',
-    'J ai bien recu vos informations pour le cours de trompette.',
-    'Merci pour votre demande.',
+    'Votre demande de cours de trompette est bien recue.',
     '',
-    'Dites-moi simplement quand je peux vous contacter par telephone pour organiser votre prochain cours.',
+    'Merci pour votre message. Dites-moi simplement quand je peux vous contacter par telephone pour organiser le prochain cours.',
+    '',
+    `WhatsApp direct : ${WHATSAPP_URL}`,
+    `Telephone : ${PHONE_DISPLAY}`,
     '',
     'A tres vite,',
-    'Courstrompette',
+    BRAND_NAME,
+    PHONE_DISPLAY,
   ].join('\n');
 }
 
 function buildConfirmationHtmlBody(payload: ContactPayload) {
   return `
-    <div style="font-family: Georgia, serif; color: #1c1917; line-height: 1.6;">
-      <p style="font-size: 18px; margin-bottom: 16px;">Hello ${escapeHtml(payload.name)},</p>
-      <p>J ai bien recu vos informations pour le cours de trompette.</p>
-      <p>Merci pour votre demande.</p>
-      <p>
-        Dites-moi simplement quand je peux vous contacter par telephone
-        pour organiser votre prochain cours.
-      </p>
-      <p style="margin-top: 24px;">A tres vite,<br />Courstrompette</p>
+    <div style="margin:0; padding:32px 16px; background:#f5f5f4; font-family: Arial, Helvetica, sans-serif; color:#1c1917;">
+      <div style="max-width:640px; margin:0 auto; background:#ffffff; border:1px solid #e7e5e4; border-radius:24px; overflow:hidden; box-shadow:0 12px 40px rgba(28,25,23,0.08);">
+        <div style="padding:20px 24px; background:linear-gradient(135deg, #d97706, #f59e0b); color:#ffffff;">
+          <div style="font-size:12px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.85; margin-bottom:8px;">${BRAND_NAME}</div>
+          <h1 style="margin:0; font-size:30px; line-height:1.2; font-family: Georgia, serif;">Cours de trompette</h1>
+        </div>
+        <div style="padding:32px 24px;">
+          <p style="margin:0 0 16px; font-size:24px; line-height:1.3; font-family: Georgia, serif;">Hello ${escapeHtml(payload.name)},</p>
+          <p style="margin:0 0 14px; font-size:16px; line-height:1.7; color:#44403c;">
+            J ai bien recu votre demande. Merci pour votre message.
+          </p>
+          <p style="margin:0 0 20px; font-size:16px; line-height:1.7; color:#44403c;">
+            Pour organiser votre prochain cours, dites-moi simplement quand je peux vous contacter par telephone.
+          </p>
+          <div style="margin:28px 0 20px;">
+            <a href="${WHATSAPP_URL}" style="display:inline-block; padding:14px 20px; border-radius:999px; background:#25d366; color:#ffffff; text-decoration:none; font-weight:700; margin-right:10px; margin-bottom:10px;">Ecrire sur WhatsApp</a>
+            <a href="tel:${PHONE_E164}" style="display:inline-block; padding:14px 20px; border-radius:999px; background:#fff7ed; color:#c2410c; text-decoration:none; font-weight:700; border:1px solid #fdba74; margin-bottom:10px;">Appeler le ${PHONE_DISPLAY}</a>
+          </div>
+          <div style="margin-top:24px; padding:18px 20px; background:#fffbeb; border:1px solid #fde68a; border-radius:18px;">
+            <p style="margin:0 0 6px; font-size:14px; color:#92400e; text-transform:uppercase; letter-spacing:0.08em; font-weight:700;">Contact direct</p>
+            <p style="margin:0; font-size:18px; font-weight:700; color:#78350f;">${BRAND_NAME} - ${PHONE_DISPLAY}</p>
+          </div>
+          <p style="margin:24px 0 0; font-size:16px; line-height:1.7; color:#44403c;">
+            A tres vite,<br />${BRAND_NAME}
+          </p>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -235,6 +259,21 @@ export async function POST(request: Request) {
     );
   }
 
+  let lead;
+
+  try {
+    lead = await createLead({
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone,
+      experience: payload.experience,
+      message: payload.message,
+    });
+  } catch (error) {
+    console.error('Error saving contact lead:', error);
+    return NextResponse.json({ message: 'Impossible d enregistrer la demande.' }, { status: 500 });
+  }
+
   try {
     const smtpUser = requireEnv('SMTP_USER');
     const to = process.env.CONTACT_TO || smtpUser;
@@ -254,14 +293,24 @@ export async function POST(request: Request) {
         from,
         to: payload.email,
         replyTo: to,
-        subject: `Hello ${payload.name}, j ai bien recu votre demande`,
+        subject: 'Cours de trompette - votre demande est bien recue',
         text: buildConfirmationTextBody(payload),
         html: buildConfirmationHtmlBody(payload),
       }),
     ]);
 
+    void updateLeadMailStatus(lead.id, 'sent').catch((updateError) => {
+      console.error('Error updating lead mail status to sent:', updateError);
+    });
+
     return NextResponse.json({ message: 'Message envoye.' }, { status: 200 });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown email error';
+
+    void updateLeadMailStatus(lead.id, 'failed', errorMessage).catch((updateError) => {
+      console.error('Error updating lead mail status to failed:', updateError);
+    });
+
     console.error('Error sending contact email:', error);
 
     return NextResponse.json(
