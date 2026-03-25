@@ -141,7 +141,7 @@ export function NotVirtuosoSection({ locationName }: { locationName?: string }) 
                 <div className="text-center mt-20 max-w-3xl mx-auto">
                     <p className="text-stone-600 italic text-xl md:text-2xl font-serif leading-relaxed">
                         "Le talent s'admire. La technique s'enseigne. <br />
-                        La méthode JCc'est de la <span className="text-stone-900 font-bold bg-amber-100 px-2 decoration-amber-400 decoration-2 underline-offset-4">mécanique de précision</span>."
+                        La méthode JC c'est de la <span className="text-stone-900 font-bold bg-amber-100 px-2 decoration-amber-400 decoration-2 underline-offset-4">mécanique de précision</span>."
                     </p>
                 </div>
 

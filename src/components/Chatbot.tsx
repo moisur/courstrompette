@@ -20,19 +20,19 @@ type Message = {
 
 const introMessages = [
   "👋 Bonjour ! Je suis l'assistant virtuel de JC.",
-  "Apprenez à jouer de la trompette facilement grâce à la méthode Z2G !"
+  "Apprenez à jouer de la trompette facilement grâce à la méthode JC !"
 ]
 
 const initialOptions = [
-  "En savoir plus sur la méthode Z2G",
+  "En savoir plus sur la méthode JC",
   "Tarifs des cours",
   "Réserver un cours gratuit",
   "Témoignages d'élèves"
 ]
 
 const botResponses = {
-  "en savoir plus sur la méthode z2g": {
-    content: "La méthode Z2G (Zone de Génie) est une approche unique qui vous permet de jouer votre premier morceau en seulement 10 séances ! Voici les points clés :",
+  "en savoir plus sur la méthode JC": {
+    content: "La méthode JC(JC) est une approche unique qui vous permet de jouer votre premier morceau en seulement 10 séances ! Voici les points clés :",
     options: [
       "Apprentissage progressif",
       "Clarté mentale",
@@ -42,15 +42,15 @@ const botResponses = {
   },
   "apprentissage progressif": {
     content: "Notre approche vous propulse de débutant à musicien accompli en un temps record. Vous apprendrez le rythme, la pose du son, la maîtrise des graves et des aigus, et bien plus encore !",
-    options: ["En savoir plus sur la méthode Z2G", "Réserver un cours gratuit", "Retour au menu principal"]
+    options: ["En savoir plus sur la méthode JC", "Réserver un cours gratuit", "Retour au menu principal"]
   },
   "clarté mentale": {
     content: "Découvrez les secrets pour transformer le trac en super-pouvoir et jouer avec une confiance inébranlable. Nous travaillons sur l'équilibre entre détente et énergie pour produire un son parfait.",
-    options: ["En savoir plus sur la méthode Z2G", "Réserver un cours gratuit", "Retour au menu principal"]
+    options: ["En savoir plus sur la méthode JC", "Réserver un cours gratuit", "Retour au menu principal"]
   },
   "techniques uniques": {
     content: "Apprenez des techniques uniques comme ne pas écouter votre propre son, ignorer le feedback, et jouer sans partitions. Ces astuces vous feront progresser 3 fois plus vite qu'avec les méthodes traditionnelles.",
-    options: ["En savoir plus sur la méthode Z2G", "Réserver un cours gratuit", "Retour au menu principal"]
+    options: ["En savoir plus sur la méthode JC", "Réserver un cours gratuit", "Retour au menu principal"]
   },
   "tarifs des cours": {
     content: "Voici nos tarifs pour les cours de trompette :",
@@ -63,7 +63,7 @@ const botResponses = {
     ]
   },
   "cours à l'unité": {
-    content: "Le prix d'une séance individuelle est de 40€. C'est idéal si vous voulez essayer la méthode Z2G ou si vous préférez une flexibilité maximale.",
+    content: "Le prix d'une séance individuelle est de 40€. C'est idéal si vous voulez essayer la méthode JC ou si vous préférez une flexibilité maximale.",
     options: ["Voir les autres forfaits", "Réserver un cours", "Retour au menu principal"]
   },
   "forfait 5 séances": {
@@ -71,11 +71,11 @@ const botResponses = {
     options: ["Voir les autres forfaits", "Réserver ce forfait", "Retour au menu principal"]
   },
   "forfait 10 séances": {
-    content: "Notre forfait le plus populaire ! 10 séances avec une réduction de 10%. Le prix total est de 360€, soit 36€ par séance. C'est l'idéal pour maîtriser la méthode Z2G et jouer votre premier morceau.",
+    content: "Notre forfait le plus populaire ! 10 séances avec une réduction de 10%. Le prix total est de 360€, soit 36€ par séance. C'est l'idéal pour maîtriser la méthode JCet jouer votre premier morceau.",
     options: ["Voir les autres forfaits", "Réserver ce forfait", "Retour au menu principal"]
   },
   "cours découverte gratuit": {
-    content: "Votre premier cours est totalement gratuit ! C'est l'occasion parfaite de découvrir la méthode Z2G et de voir si elle vous convient.",
+    content: "Votre premier cours est totalement gratuit ! C'est l'occasion parfaite de découvrir la méthode JCet de voir si elle vous convient.",
     options: ["Réserver un cours gratuit", "Voir les tarifs", "Retour au menu principal"]
   },
   "réserver un cours gratuit": {
@@ -92,7 +92,7 @@ const botResponses = {
     ]
   },
   "sophie, 28 ans": {
-    content: "\"Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode Z2G a changé ma vie !\"",
+    content: "\"Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode JCa changé ma vie !\"",
     options: ["Voir d'autres témoignages", "Réserver un cours gratuit", "Retour au menu principal"]
   },
   "thomas, 41 ans": {

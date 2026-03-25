@@ -59,7 +59,7 @@ export default function Method() {
             style={{ animationDelay: '200ms' }}
           >
             <p className="text-stone-500 max-w-xs text-lg leading-relaxed border-l-2 border-amber-200 pl-6">
-              La méthode JCc&apos;est des <span className="text-stone-900 font-medium italic">centaines</span> d&apos;élèves facilement qui progressent chaque année.
+              La méthode JC c&apos;est des <span className="text-stone-900 font-medium italic">centaines</span> d&apos;élèves facilement qui progressent chaque année.
             </p>
           </div>
         </div>

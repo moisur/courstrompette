@@ -64,7 +64,7 @@ export default function LocalMap({ locationName, zipCode }: LocalMapProps) {
                             {[
                                 "Déplacement inclus sans frais supplémentaires",
                                 "Horaires flexibles du lundi au samedi",
-                                "Secteur privilégié pour les séances Z2G",
+                                "Secteur privilégié pour les séances JC",
                                 "Studio partenaire disponible si souhaité"
                             ].map((text, i) => (
                                 <li key={i} className="flex items-center gap-3 text-stone-800 font-medium">

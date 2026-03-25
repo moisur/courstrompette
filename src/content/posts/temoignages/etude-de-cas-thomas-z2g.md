@@ -1,10 +1,10 @@
 ---
-title: "Étude de cas : Comment Thomas a gagné une octave en 3 mois (S'inscrire Méthode Z2G)"
+title: "Étude de cas : Comment Thomas a gagné une octave en 3 mois (S'inscrire Méthode JC)"
 date: "2025-08-06"
 image: "/debutant.webp"
 author: "JC Trompette"
-slug: "etude-de-cas-thomas-z2g"
-description: "Découvrez comment Thomas, amateur bloqué depuis des années, a débloqué ses aigus et joue maintenant lead en Big Band grâce à la méthode Z2G."
+slug: "etude-de-cas-thomas-JC"
+description: "Découvrez comment Thomas, amateur bloqué depuis des années, a débloqué ses aigus et joue maintenant lead en Big Band grâce à la méthode JC."
 niveau: "Intermédiaire"
 ---
 
@@ -13,7 +13,7 @@ niveau: "Intermédiaire"
     Thomas, 45 ans, est un passionné de jazz. Il joue depuis 15 ans en amateur. Mais depuis 5 ans, c'était le calme plat. Impossible de dépasser le Sol en haut de la portée. Chaque essai pour monter plus haut se soldait par un son écrasé et une fatigue labiale immédiate.
   </p>
   <p>
-    Voici l'histoire de sa transformation avec la méthode Zone de Génie.
+    Voici l'histoire de sa transformation avec la méthode JC.
   </p>
 </div>
 
@@ -33,7 +33,7 @@ niveau: "Intermédiaire"
     Le Déclic : La respiration "sans trompette"
   </h2>
   <p class="text-gray-700">
-    Nous avons passé les 2 premières semaines Loin de la trompette. Oui, sans jouer. Nous avons travaillé sur le <i>souffle pur</i>. Je lui ai fait faire l'exercice du "Tube" (Module 1 de la méthode Z2G) pour qu'il sente ce qu'est un air libre.
+    Nous avons passé les 2 premières semaines Loin de la trompette. Oui, sans jouer. Nous avons travaillé sur le <i>souffle pur</i>. Je lui ai fait faire l'exercice du "Tube" (Module 1 de la méthode JC) pour qu'il sente ce qu'est un air libre.
   </p>
   <p class="text-gray-700">
     <b>Le moment "Ah-Ha" :</b> Quand il a repris la trompette, je lui ai interdit de penser à la note. Je lui ai dit "souffle comme dans le tube". Il a sorti un Contre-Ut sans s'en rendre compte. Il n'en revenait pas.
@@ -59,9 +59,9 @@ niveau: "Intermédiaire"
     Thomas a intégré la section pupitre d'un Big Band local réputé. Il prend les solos. Il ne finit plus ses répètes avec de la glace sur les lèvres.
   </p>
   <p class="text-l text-gray-700 font-bold mb-6">
-    Il a trouvé sa Zone de Génie.
+    Il a trouvé sa JC.
   </p>
   <a href="#booking" class="inline-block bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-300 shadow-md">
-    Rejoindre la prochaine cohorte Z2G (Places limitées)
+    Rejoindre la prochaine cohorte JC(Places limitées)
   </a>
 </section>

@@ -1,10 +1,10 @@
 ---
-title: "Apprendre la Trompette Rapidement : Le Guide Complet de la Méthode Z2G"
+title: "Apprendre la Trompette Rapidement : Le Guide Complet de la Méthode JC"
 date: "2025-11-15"
 image: "/Cours-trompette-paris.webp"
 author: "JC Trompette"
 slug: "apprendre-trompette-rapidement"
-description: "Découvrez la méthode Z2G pour apprendre la trompette efficacement. Une approche moderne basée sur la physiologie et le plaisir, loin des contraintes du conservatoire."
+description: "Découvrez la méthode JCpour apprendre la trompette efficacement. Une approche moderne basée sur la physiologie et le plaisir, loin des contraintes du conservatoire."
 niveau: "Débutant"
 ---
 
@@ -16,7 +16,7 @@ niveau: "Débutant"
     Combien de fois avez-vous entendu cette phrase décourageante ? Si c'était vrai au siècle dernier, les connaissances en pédagogie et en biomécanique ont évolué. <b>Non, vous n'avez pas besoin de souffrir pendant une décennie.</b>
   </p>
   <p>
-    Ce guide complet vous présente la méthode Z2G (Zone de Génie), conçue pour les adultes qui veulent des résultats tangibles, rapidement, sans sacrifier la musicalité.
+    Ce guide complet vous présente la méthode JC(JC), conçue pour les adultes qui veulent des résultats tangibles, rapidement, sans sacrifier la musicalité.
   </p>
 </div>
 
@@ -29,7 +29,7 @@ niveau: "Débutant"
       Il faut distinguer <i>précipitation</i> et <i>efficacité</i>. La méthode traditionnelle est lente car elle est séquentielle : solfège D'ABORD, technique ENSUITE, musique ENFIN.
     </p>
     <p>
-      La méthode Z2G est "rapide" car elle est <b>simultanée</b>. On apprend la technique <i>par</i> la musique. On corrige le geste <i>par</i> le son. En éliminant les détours inutiles, on gagne des années.
+      La méthode JCest "rapide" car elle est <b>simultanée</b>. On apprend la technique <i>par</i> la musique. On corrige le geste <i>par</i> le son. En éliminant les détours inutiles, on gagne des années.
     </p>
   </div>
 </div>
@@ -66,7 +66,7 @@ niveau: "Débutant"
 
 <div class="space-y-6 mt-8">
   <h2 class="text-2xl font-semibold text-orange-600">
-    Les 3 Étapes de la Méthode Z2G
+    Les 3 Étapes de la Méthode JC
   </h2>
   <div class="space-y-8">
     <div class="bg-gray-50 p-6 rounded-lg">
@@ -75,7 +75,7 @@ niveau: "Débutant"
     </div>
     <div class="bg-gray-50 p-6 rounded-lg">
       <h3 class="font-bold text-xl mb-2 text-gray-800">Phase 2 : Reconstruction (Mois 2-3)</h3>
-      <p>On installe les nouveaux réflexes. On étend la tessiture (la hauteur des notes) note par note, sans jamais forcer. C'est là qu'on trouve sa "Zone de Génie" : cet endroit où jouer est facile.</p>
+      <p>On installe les nouveaux réflexes. On étend la tessiture (la hauteur des notes) note par note, sans jamais forcer. C'est là qu'on trouve sa "JC" : cet endroit où jouer est facile.</p>
     </div>
     <div class="bg-gray-50 p-6 rounded-lg">
       <h3 class="font-bold text-xl mb-2 text-gray-800">Phase 3 : Liberté (Mois 4+)</h3>
@@ -86,7 +86,7 @@ niveau: "Débutant"
 
 <div class="space-y-6 mt-8">
   <h2 class="text-2xl font-semibold text-orange-600">
-    Exemple de Séance Z2G (15 min)
+    Exemple de Séance JC(15 min)
   </h2>
   <ul class="list-decimal pl-5 space-y-4 text-gray-700">
     <li><b>2 min :</b> Respiration pure (sans instrument). Se centrer.</li>
@@ -104,6 +104,6 @@ niveau: "Débutant"
     Vous avez maintenant la théorie. Mais la trompette s'apprend par la pratique guidée. Ne restez pas seul face à vos doutes.
   </p>
   <a href="#booking" class="inline-block bg-white text-orange-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 transition duration-300 shadow-md">
-    Télécharger la Roadmap Z2G (PDF via Email)
+    Télécharger la Roadmap JC(PDF via Email)
   </a>
 </section>

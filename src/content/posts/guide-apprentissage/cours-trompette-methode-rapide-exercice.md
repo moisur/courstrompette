@@ -1,10 +1,10 @@
 ---
-title: "Cours Trompette Méthode Rapide : Votre Premier Exercice Z2G (Essai Gratuit)"
+title: "Cours Trompette Méthode Rapide : Votre Premier Exercice JC(Essai Gratuit)"
 date: "2025-07-07"
 image: "/Cours-trompette-paris2.webp"
 author: "JC Trompette"
 slug: "cours-trompette-methode-rapide-exercice"
-description: "Essayez la méthode Z2G immédiatement avec cet exercice de 5 minutes. Pas besoin d'inscription, juste votre trompette et votre souffle. Résultat immédiat."
+description: "Essayez la méthode JCimmédiatement avec cet exercice de 5 minutes. Pas besoin d'inscription, juste votre trompette et votre souffle. Résultat immédiat."
 niveau: "Débutant"
 ---
 
@@ -13,7 +13,7 @@ niveau: "Débutant"
     Vous êtes sceptique ? C'est normal. Internet regorge de promesses miracles.
   </p>
   <p>
-    C'est pourquoi, au lieu de vous vendre du rêve, je veux vous offrir une <b>victoire immédiate</b>. Voici un exercice tiré directement du Module 1 de la formation Z2G. Prenez votre instrument (ou juste votre embouchure). C'est parti.
+    C'est pourquoi, au lieu de vous vendre du rêve, je veux vous offrir une <b>victoire immédiate</b>. Voici un exercice tiré directement du Module 1 de la formation JC. Prenez votre instrument (ou juste votre embouchure). C'est parti.
   </p>
 </div>
 
@@ -66,7 +66,7 @@ niveau: "Débutant"
     Ce n'était que l'échauffement...
   </h2>
   <p class="text-l text-gray-700 mb-6">
-    Si vous avez senti une différence en 5 minutes, imaginez ce que nous pouvons faire en 3 mois. Cet exercice est la base de tout l'édifice Z2G.
+    Si vous avez senti une différence en 5 minutes, imaginez ce que nous pouvons faire en 3 mois. Cet exercice est la base de tout l'édifice JC.
   </p>
   <p class="text-l text-gray-700 mb-6">
     Vous voulez la suite ? Le Module 1 complet est disponible gratuitement pour vous prouver que ce n'est pas de la chance.

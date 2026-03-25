@@ -28,16 +28,19 @@ import {
   buildIrealSongKey,
   DisplayMode,
   IrealWikifoniaMatch,
+  LibrarySong,
   PlaybackMode,
   PlaybackPosition,
   ScoreTrack,
+  SheetReference,
+  StandaloneWikifoniaEntry,
 } from './irealWikifonia';
 import WikifoniaVexScore from './WikifoniaVexScore';
 
 const VF = Vex.Flow;
 
 type WikifoniaMatchMap = Record<string, IrealWikifoniaMatch>;
-type SongMatchFilter = 'all' | 'matched' | 'unmatched';
+type SongMatchFilter = 'all' | 'with-sheet' | 'without-sheet' | 'standalone';
 
 type RenderedNoteMeta = {
   id: string;
@@ -46,7 +49,9 @@ type RenderedNoteMeta = {
   endBeat: number;
 };
 
-function createDefaultTracks(): ScoreTrack[] {
+function createDefaultTracks(options?: { hasAccompaniment?: boolean }): ScoreTrack[] {
+  const hasAccompaniment = options?.hasAccompaniment ?? true;
+
   return [
     {
       id: 'melody',
@@ -60,17 +65,22 @@ function createDefaultTracks(): ScoreTrack[] {
       id: 'accompaniment',
       label: 'Accompagnement iReal',
       kind: 'accompaniment',
-      visible: true,
-      audioEnabled: true,
+      visible: hasAccompaniment,
+      audioEnabled: hasAccompaniment,
       fingeringEnabled: false,
     },
   ];
 }
 
-function getPlaybackFlags(mode: PlaybackMode, hasLeadSheet: boolean) {
+function getPlaybackFlags(
+  mode: PlaybackMode,
+  options: { hasLeadSheet: boolean; hasAccompaniment: boolean }
+) {
   return {
-    accompanimentEnabled: mode === 'ireal' || mode === 'both' || !hasLeadSheet,
-    melodyEnabled: hasLeadSheet && (mode === 'melody' || mode === 'both'),
+    accompanimentEnabled:
+      options.hasAccompaniment && (mode === 'ireal' || mode === 'both' || !options.hasLeadSheet),
+    melodyEnabled:
+      options.hasLeadSheet && (mode === 'melody' || mode === 'both' || !options.hasAccompaniment),
   };
 }
 
@@ -827,7 +837,8 @@ function TrackControls({
 
 export default function IrealChordViewerNext() {
   const [songs, setSongs] = useState<IRealSong[]>([]);
-  const [selectedSong, setSelectedSong] = useState<IRealSong | null>(null);
+  const [standaloneSheets, setStandaloneSheets] = useState<StandaloneWikifoniaEntry[]>([]);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [wikifoniaMatches, setWikifoniaMatches] = useState<WikifoniaMatchMap>({});
   const [leadSheet, setLeadSheet] = useState<ParsedLeadSheet | null>(null);
   const [isSheetLoading, setIsSheetLoading] = useState(false);
@@ -852,6 +863,41 @@ export default function IrealChordViewerNext() {
 
   const activeMeasure = playbackState ? playbackState.measure : -1;
   const matchedSongKeys = useMemo(() => new Set(Object.keys(wikifoniaMatches)), [wikifoniaMatches]);
+  const librarySongs = useMemo<LibrarySong[]>(() => {
+    const irealSongs: LibrarySong[] = songs.map((song) => {
+      const songKey = buildIrealSongKey(song.title, song.composer);
+      return {
+        id: `ireal:${songKey}`,
+        title: song.title,
+        composer: song.composer,
+        style: song.style,
+        keyLabel: song.key,
+        song,
+        sheet: wikifoniaMatches[songKey] ?? null,
+        source: 'ireal',
+      };
+    });
+
+    const standaloneSongs: LibrarySong[] = standaloneSheets.map((sheet) => ({
+      id: `sheet:${sheet.id}`,
+      title: sheet.title,
+      composer: sheet.composer,
+      style: 'Wikifonia',
+      keyLabel: 'VexFlow',
+      song: null,
+      sheet,
+      source: 'standalone',
+    }));
+
+    return [...irealSongs, ...standaloneSongs];
+  }, [songs, standaloneSheets, wikifoniaMatches]);
+  const selectedEntry = useMemo(
+    () => librarySongs.find((entry) => entry.id === selectedEntryId) ?? null,
+    [librarySongs, selectedEntryId]
+  );
+  const selectedSong = selectedEntry?.song ?? null;
+  const selectedMatch: SheetReference | null = selectedEntry?.sheet ?? null;
+  const hasAccompaniment = Boolean(selectedSong);
 
   useEffect(() => {
     engineRef.current = new UnifiedBackingTrackEngine();
@@ -865,7 +911,7 @@ export default function IrealChordViewerNext() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!selectedSong || ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '')) {
+      if (!selectedEntry || ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '')) {
         return;
       }
       if (event.code === 'Space') {
@@ -876,13 +922,13 @@ export default function IrealChordViewerNext() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedSong]);
+  }, [selectedEntry]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadData() {
-      const [songsResult, matchesResult] = await Promise.allSettled([
+      const [songsResult, matchesResult, standaloneResult] = await Promise.allSettled([
         fetch('/irealtexte.txt', { cache: 'no-store' })
           .then(async (response) => {
             if (!response.ok) {
@@ -919,6 +965,29 @@ export default function IrealChordViewerNext() {
 
             return nextMatches;
           }),
+        fetch('/api/wikifonia-standalone', { cache: 'no-store' })
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error(`Failed to load standalone manifest (${response.status})`);
+            }
+            return response.json();
+          })
+          .then((payload) => {
+            if (!Array.isArray(payload)) {
+              return [] as StandaloneWikifoniaEntry[];
+            }
+
+            return payload.filter(
+              (item): item is StandaloneWikifoniaEntry =>
+                Boolean(item) &&
+                typeof item.id === 'string' &&
+                typeof item.title === 'string' &&
+                typeof item.composer === 'string' &&
+                typeof item.wikifoniaPath === 'string' &&
+                typeof item.wikifoniaLabel === 'string' &&
+                item.matchType === 'standalone-rendered-score'
+            );
+          }),
       ]);
 
       if (cancelled) {
@@ -937,6 +1006,12 @@ export default function IrealChordViewerNext() {
         console.error('Failed to load Wikifonia matches:', matchesResult.reason);
       }
 
+      if (standaloneResult.status === 'fulfilled') {
+        setStandaloneSheets(standaloneResult.value);
+      } else {
+        console.error('Failed to load standalone Wikifonia scores:', standaloneResult.reason);
+      }
+
       setIsLoading(false);
     }
 
@@ -945,13 +1020,6 @@ export default function IrealChordViewerNext() {
       cancelled = true;
     };
   }, []);
-
-  const selectedMatch = useMemo(() => {
-    if (!selectedSong) {
-      return null;
-    }
-    return wikifoniaMatches[buildIrealSongKey(selectedSong.title, selectedSong.composer)] ?? null;
-  }, [selectedSong, wikifoniaMatches]);
 
   useEffect(() => {
     let cancelled = false;
@@ -992,27 +1060,56 @@ export default function IrealChordViewerNext() {
   const hasLeadSheet = Boolean(leadSheet && !sheetError);
 
   useEffect(() => {
-    if (!selectedSong || hasManualTempoOverride) {
+    if (!selectedEntry || hasManualTempoOverride) {
       return;
     }
-    setPlaybackBpm(Math.round(leadSheet?.sourceTempo ?? selectedSong.bpm ?? 120));
-  }, [hasManualTempoOverride, leadSheet?.sourceTempo, selectedSong]);
+    setPlaybackBpm(Math.round(leadSheet?.sourceTempo ?? selectedSong?.bpm ?? 120));
+  }, [hasManualTempoOverride, leadSheet?.sourceTempo, selectedEntry, selectedSong?.bpm]);
 
   useEffect(() => {
     setTracks((previousTracks) => {
-      const flags = getPlaybackFlags(playbackMode, hasLeadSheet);
+      const flags = getPlaybackFlags(playbackMode, { hasLeadSheet, hasAccompaniment });
       return previousTracks.map((track) => ({
         ...track,
         audioEnabled: track.kind === 'melody' ? flags.melodyEnabled : flags.accompanimentEnabled,
       }));
     });
-  }, [hasLeadSheet, playbackMode]);
+  }, [hasAccompaniment, hasLeadSheet, playbackMode]);
 
   useEffect(() => {
-    if (selectedSong && !selectedMatch && displayMode !== 'chords') {
-      setDisplayMode('chords');
+    if (!selectedEntry) {
+      return;
     }
-  }, [displayMode, selectedMatch, selectedSong]);
+
+    if (!hasAccompaniment && displayMode !== 'sheet') {
+      setDisplayMode('sheet');
+      return;
+    }
+
+    if (!selectedMatch && displayMode !== 'chords') {
+      setDisplayMode('chords');
+      return;
+    }
+
+    if (displayMode === 'split' && (!selectedMatch || !hasAccompaniment)) {
+      setDisplayMode(hasAccompaniment ? 'chords' : 'sheet');
+    }
+  }, [displayMode, hasAccompaniment, selectedEntry, selectedMatch]);
+
+  useEffect(() => {
+    if (!selectedEntry) {
+      return;
+    }
+
+    if (!hasAccompaniment && playbackMode !== 'melody') {
+      setPlaybackMode('melody');
+      return;
+    }
+
+    if (!selectedMatch && playbackMode !== 'ireal') {
+      setPlaybackMode('ireal');
+    }
+  }, [hasAccompaniment, playbackMode, selectedEntry, selectedMatch]);
 
   const transposedMeasures = useMemo(() => {
     if (!selectedSong) {
@@ -1033,7 +1130,7 @@ export default function IrealChordViewerNext() {
       return;
     }
 
-    const flags = getPlaybackFlags(playbackMode, hasLeadSheet);
+    const flags = getPlaybackFlags(playbackMode, { hasLeadSheet, hasAccompaniment });
     engineRef.current.configure({
       accompanimentMeasures: transposedMeasures,
       melodyMeasures: leadSheet?.melodyTrack,
@@ -1042,7 +1139,15 @@ export default function IrealChordViewerNext() {
       accompanimentEnabled: flags.accompanimentEnabled,
       melodyEnabled: flags.melodyEnabled,
     });
-  }, [defaultBeatsPerMeasure, hasLeadSheet, leadSheet?.melodyTrack, playbackBpm, playbackMode, transposedMeasures]);
+  }, [
+    defaultBeatsPerMeasure,
+    hasAccompaniment,
+    hasLeadSheet,
+    leadSheet?.melodyTrack,
+    playbackBpm,
+    playbackMode,
+    transposedMeasures,
+  ]);
 
   useEffect(() => {
     engineRef.current?.setVolume(volume);
@@ -1080,86 +1185,105 @@ export default function IrealChordViewerNext() {
   }, [isPlaying]);
 
   const composers = useMemo(() => {
-    const values = songs
-      .map((song) => song.composer)
+    const values = librarySongs
+      .map((entry) => entry.composer)
       .filter((composer) => composer && composer.trim() !== '' && composer !== 'Unknown' && composer !== 'Traditional');
     return Array.from(new Set(values)).sort();
-  }, [songs]);
+  }, [librarySongs]);
 
-  const totalMatchCount = useMemo(() => {
-    return songs.reduce((count, song) => {
-      return count + (matchedSongKeys.has(buildIrealSongKey(song.title, song.composer)) ? 1 : 0);
-    }, 0);
-  }, [matchedSongKeys, songs]);
+  const totalSheetCount = useMemo(() => {
+    return (
+      songs.reduce((count, song) => {
+        return count + (matchedSongKeys.has(buildIrealSongKey(song.title, song.composer)) ? 1 : 0);
+      }, 0) + standaloneSheets.length
+    );
+  }, [matchedSongKeys, songs, standaloneSheets.length]);
 
-  const baseFilteredSongs = useMemo(() => {
-    let list = songs;
+  const baseFilteredEntries = useMemo(() => {
+    let list = librarySongs;
 
     if (selectedComposer) {
-      list = list.filter((song) => song.composer === selectedComposer);
+      list = list.filter((entry) => entry.composer === selectedComposer);
     }
 
     if (searchQuery) {
       const normalizedQuery = searchQuery.toLowerCase();
       list = list.filter(
-        (song) =>
-          song.title.toLowerCase().includes(normalizedQuery) ||
-          song.composer.toLowerCase().includes(normalizedQuery)
+        (entry) =>
+          entry.title.toLowerCase().includes(normalizedQuery) ||
+          entry.composer.toLowerCase().includes(normalizedQuery)
       );
     } else if (activeLetter && !selectedComposer) {
       if (activeLetter === '#') {
-        list = list.filter((song) => !/^[A-Za-z]/.test(song.title));
+        list = list.filter((entry) => !/^[A-Za-z]/.test(entry.title));
       } else {
-        list = list.filter((song) => song.title.toUpperCase().startsWith(activeLetter));
+        list = list.filter((entry) => entry.title.toUpperCase().startsWith(activeLetter));
       }
     }
 
     return list;
-  }, [activeLetter, searchQuery, selectedComposer, songs]);
+  }, [activeLetter, librarySongs, searchQuery, selectedComposer]);
 
   const filterCounts = useMemo(() => {
-    let matched = 0;
-    baseFilteredSongs.forEach((song) => {
-      if (matchedSongKeys.has(buildIrealSongKey(song.title, song.composer))) {
-        matched += 1;
+    let withSheet = 0;
+    let standalone = 0;
+
+    baseFilteredEntries.forEach((entry) => {
+      if (entry.source === 'standalone') {
+        standalone += 1;
+        withSheet += 1;
+        return;
+      }
+
+      if (entry.sheet) {
+        withSheet += 1;
       }
     });
 
     return {
-      all: baseFilteredSongs.length,
-      matched,
-      unmatched: baseFilteredSongs.length - matched,
+      all: baseFilteredEntries.length,
+      withSheet,
+      withoutSheet: baseFilteredEntries.filter((entry) => entry.source === 'ireal' && !entry.sheet).length,
+      standalone,
     };
-  }, [baseFilteredSongs, matchedSongKeys]);
+  }, [baseFilteredEntries]);
 
-  const filteredSongs = useMemo(() => {
-    let list = baseFilteredSongs;
+  const filteredEntries = useMemo(() => {
+    let list = baseFilteredEntries;
 
-    if (matchFilter === 'matched') {
-      list = list.filter((song) => matchedSongKeys.has(buildIrealSongKey(song.title, song.composer)));
-    } else if (matchFilter === 'unmatched') {
-      list = list.filter((song) => !matchedSongKeys.has(buildIrealSongKey(song.title, song.composer)));
+    if (matchFilter === 'with-sheet') {
+      list = list.filter((entry) => (entry.source === 'ireal' && Boolean(entry.sheet)) || entry.source === 'standalone');
+    } else if (matchFilter === 'without-sheet') {
+      list = list.filter((entry) => entry.source === 'ireal' && !entry.sheet);
+    } else if (matchFilter === 'standalone') {
+      list = list.filter((entry) => entry.source === 'standalone');
     }
 
-    return [...list].sort((left, right) => left.title.localeCompare(right.title));
-  }, [baseFilteredSongs, matchFilter, matchedSongKeys]);
+    return [...list].sort((left, right) => {
+      const titleCompare = left.title.localeCompare(right.title);
+      if (titleCompare !== 0) {
+        return titleCompare;
+      }
 
-  const handleSelectSong = useCallback(
-    (song: IRealSong) => {
-      const songHasMatch = Boolean(wikifoniaMatches[buildIrealSongKey(song.title, song.composer)]);
-      setSelectedSong(song);
-      setTranspose(0);
-      setDisplayMode('chords');
-      setPlaybackMode(songHasMatch ? 'both' : 'ireal');
-      setTracks(createDefaultTracks());
-      setPlaybackBpm(Math.round(song.bpm ?? 120));
-      setHasManualTempoOverride(false);
-      setIsPlaying(false);
-      setPlaybackState(null);
-      engineRef.current?.stop();
-    },
-    [wikifoniaMatches]
-  );
+      return left.composer.localeCompare(right.composer);
+    });
+  }, [baseFilteredEntries, matchFilter]);
+
+  const handleSelectEntry = useCallback((entry: LibrarySong) => {
+    const songHasMatch = Boolean(entry.sheet);
+    const hasEntryAccompaniment = Boolean(entry.song);
+
+    setSelectedEntryId(entry.id);
+    setTranspose(0);
+    setDisplayMode(hasEntryAccompaniment ? 'chords' : 'sheet');
+    setPlaybackMode(hasEntryAccompaniment ? (songHasMatch ? 'both' : 'ireal') : 'melody');
+    setTracks(createDefaultTracks({ hasAccompaniment: hasEntryAccompaniment }));
+    setPlaybackBpm(Math.round(entry.song?.bpm ?? 120));
+    setHasManualTempoOverride(false);
+    setIsPlaying(false);
+    setPlaybackState(null);
+    engineRef.current?.stop();
+  }, []);
 
   const handleStop = useCallback(() => {
     engineRef.current?.stop();
@@ -1168,7 +1292,7 @@ export default function IrealChordViewerNext() {
   }, []);
 
   const togglePlayback = useCallback(() => {
-    if (!selectedSong || !engineRef.current) {
+    if (!selectedEntry || !engineRef.current || (!hasAccompaniment && !hasLeadSheet)) {
       return;
     }
 
@@ -1181,7 +1305,7 @@ export default function IrealChordViewerNext() {
 
     engineRef.current.start();
     setIsPlaying(true);
-  }, [isPlaying, selectedSong]);
+  }, [hasAccompaniment, hasLeadSheet, isPlaying, selectedEntry]);
 
   const updateTrack = useCallback((trackId: string, patch: Partial<ScoreTrack>) => {
     setTracks((previousTracks) =>
@@ -1190,9 +1314,9 @@ export default function IrealChordViewerNext() {
   }, []);
 
   const melodyPlayable = hasLeadSheet;
-  const showChordViews = displayMode === 'chords' || displayMode === 'split';
-  const showSheetView = displayMode === 'sheet' || displayMode === 'split';
   const canUseSheetModes = Boolean(selectedMatch);
+  const showChordViews = hasAccompaniment && (displayMode === 'chords' || displayMode === 'split');
+  const showSheetView = canUseSheetModes && (displayMode === 'sheet' || displayMode === 'split');
 
   if (isLoading) {
     return (
@@ -1202,7 +1326,7 @@ export default function IrealChordViewerNext() {
     );
   }
 
-  if (selectedSong) {
+  if (selectedEntry) {
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4 pb-52 md:pb-44">
         <div className="flex w-full items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -1211,7 +1335,7 @@ export default function IrealChordViewerNext() {
             size="icon"
             onClick={() => {
               handleStop();
-              setSelectedSong(null);
+              setSelectedEntryId(null);
             }}
             className="rounded-full bg-white shadow-sm hover:text-orange-600"
           >
@@ -1219,49 +1343,65 @@ export default function IrealChordViewerNext() {
           </Button>
 
           <div className="flex-1">
-            <h2 className="text-xl font-black text-slate-800">{selectedSong.title}</h2>
+            <h2 className="text-xl font-black text-slate-800">{selectedEntry.title}</h2>
             <div className="mt-1 flex gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
-              <span>{selectedSong.composer}</span>
-              <span className="text-orange-500">{selectedSong.style}</span>
+              <span>{selectedEntry.composer}</span>
+              <span className="text-orange-500">{selectedEntry.style}</span>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
               <span
                 className={cn(
                   'rounded-full px-2.5 py-1',
-                  canUseSheetModes ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
+                  selectedEntry.source === 'standalone'
+                    ? 'bg-sky-100 text-sky-700'
+                    : canUseSheetModes
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-slate-200 text-slate-500'
                 )}
               >
-                {canUseSheetModes ? 'Partition disponible' : 'Pas de partition'}
+                {selectedEntry.source === 'standalone'
+                  ? 'Partition seule'
+                  : canUseSheetModes
+                    ? 'Partition'
+                    : 'Pas de partition'}
               </span>
               {selectedMatch ? <span className="text-slate-400">{selectedMatch.wikifoniaLabel}</span> : null}
             </div>
           </div>
 
           <div className="text-right">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Tonalite</div>
-            <select
-              value={transpose}
-              onChange={(event) => {
-                setTranspose(Number(event.target.value));
-                handleStop();
-              }}
-              className="mt-1 cursor-pointer rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-black text-slate-800 outline-none"
-            >
-              {Array.from({ length: 12 }, (_, index) => (
-                <option key={`plus-${index}`} value={index}>
-                  {index === 0 ? selectedSong.key : `+${index} (${CHROMATIC_NOTES[index]})`}
-                </option>
-              ))}
-              {Array.from({ length: 11 }, (_, index) => {
-                const value = -index - 1;
-                const note = CHROMATIC_NOTES[((value % 12) + 12) % 12];
-                return (
-                  <option key={`minus-${index}`} value={value}>
-                    {`${value} (${note})`}
+            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              {selectedSong ? 'Tonalite' : 'Source'}
+            </div>
+            {selectedSong ? (
+              <select
+                value={transpose}
+                onChange={(event) => {
+                  setTranspose(Number(event.target.value));
+                  handleStop();
+                }}
+                className="mt-1 cursor-pointer rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-black text-slate-800 outline-none"
+              >
+                {Array.from({ length: 12 }, (_, index) => (
+                  <option key={`plus-${index}`} value={index}>
+                    {index === 0 ? selectedSong.key : `+${index} (${CHROMATIC_NOTES[index]})`}
                   </option>
-                );
-              })}
-            </select>
+                ))}
+                {Array.from({ length: 11 }, (_, index) => {
+                  const value = -index - 1;
+                  const note = CHROMATIC_NOTES[((value % 12) + 12) % 12];
+                  return (
+                    <option key={`minus-${index}`} value={value}>
+                      {`${value} (${note})`}
+                    </option>
+                  );
+                })}
+              </select>
+            ) : (
+              <div className="mt-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-black text-slate-800">
+                {selectedEntry.keyLabel}
+              </div>
+            )}
           </div>
         </div>
 
@@ -1270,9 +1410,9 @@ export default function IrealChordViewerNext() {
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mode d&apos;affichage</div>
             <div className="flex flex-wrap gap-1">
               {[
-                { value: 'chords' as DisplayMode, label: 'Accords', disabled: false },
+                { value: 'chords' as DisplayMode, label: 'Accords', disabled: !hasAccompaniment },
                 { value: 'sheet' as DisplayMode, label: 'Partition VexFlow', disabled: !canUseSheetModes },
-                { value: 'split' as DisplayMode, label: 'Les deux', disabled: !canUseSheetModes },
+                { value: 'split' as DisplayMode, label: 'Les deux', disabled: !canUseSheetModes || !hasAccompaniment },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -1296,6 +1436,10 @@ export default function IrealChordViewerNext() {
           {!canUseSheetModes ? (
             <p className="mt-2 text-xs text-slate-500">
               Aucune partition Wikifonia n&apos;est associee a ce morceau dans ce premier jet.
+            </p>
+          ) : !hasAccompaniment ? (
+            <p className="mt-2 text-xs text-slate-500">
+              Cette entree provient uniquement de Wikifonia, avec lecture et affichage en mode melodie seule.
             </p>
           ) : null}
         </section>
@@ -1351,9 +1495,9 @@ export default function IrealChordViewerNext() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { value: 'ireal' as PlaybackMode, label: 'iReal seul', disabled: false },
+                    { value: 'ireal' as PlaybackMode, label: 'iReal seul', disabled: !hasAccompaniment },
                     { value: 'melody' as PlaybackMode, label: 'Melodie seule', disabled: !melodyPlayable },
-                    { value: 'both' as PlaybackMode, label: 'Les deux', disabled: !melodyPlayable },
+                    { value: 'both' as PlaybackMode, label: 'Les deux', disabled: !melodyPlayable || !hasAccompaniment },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -1381,7 +1525,7 @@ export default function IrealChordViewerNext() {
 
         {canUseSheetModes ? (
           <TrackControls
-            tracks={tracks}
+            tracks={hasAccompaniment ? tracks : tracks.filter((track) => track.kind === 'melody')}
             hasLeadSheet={hasLeadSheet}
             onToggleVisible={(trackId, visible) => updateTrack(trackId, { visible })}
             onToggleFingerings={(trackId, fingeringEnabled) => updateTrack(trackId, { fingeringEnabled })}
@@ -1484,10 +1628,10 @@ export default function IrealChordViewerNext() {
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Filtres Wikifonia</p>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
               <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-emerald-700">
-                {filterCounts.matched} match{filterCounts.matched > 1 ? 'es' : ''}
+                {filterCounts.withSheet} entree{filterCounts.withSheet > 1 ? 's' : ''} avec partition
               </span>
               <span>
-                {totalMatchCount}/{songs.length} morceaux ont une partition
+                {totalSheetCount}/{librarySongs.length} entrees ont une partition VexFlow
               </span>
             </div>
           </div>
@@ -1495,8 +1639,9 @@ export default function IrealChordViewerNext() {
           <div className="flex flex-wrap gap-1">
             {[
               { value: 'all' as SongMatchFilter, label: 'Tous', count: filterCounts.all },
-              { value: 'matched' as SongMatchFilter, label: 'Matches', count: filterCounts.matched },
-              { value: 'unmatched' as SongMatchFilter, label: 'Sans match', count: filterCounts.unmatched },
+              { value: 'with-sheet' as SongMatchFilter, label: 'Avec partition', count: filterCounts.withSheet },
+              { value: 'without-sheet' as SongMatchFilter, label: 'Sans partition', count: filterCounts.withoutSheet },
+              { value: 'standalone' as SongMatchFilter, label: 'Partitions seules', count: filterCounts.standalone },
             ].map((option) => (
               <button
                 key={option.value}
@@ -1505,14 +1650,18 @@ export default function IrealChordViewerNext() {
                 className={cn(
                   'rounded-xl px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-colors',
                   matchFilter === option.value
-                    ? option.value === 'matched'
+                    ? option.value === 'with-sheet'
                       ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
-                      : option.value === 'unmatched'
+                      : option.value === 'without-sheet'
                         ? 'bg-slate-700 text-white shadow-lg shadow-slate-200'
-                        : 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                    : option.value === 'matched'
+                        : option.value === 'standalone'
+                          ? 'bg-sky-500 text-white shadow-lg shadow-sky-200'
+                          : 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                    : option.value === 'with-sheet'
                       ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      : option.value === 'standalone'
+                        ? 'bg-sky-50 text-sky-700 hover:bg-sky-100'
+                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                 )}
               >
                 {option.label} ({option.count})
@@ -1558,40 +1707,48 @@ export default function IrealChordViewerNext() {
       ) : null}
 
       <div className="max-h-[60vh] space-y-1.5 overflow-y-auto pr-1">
-        {filteredSongs.slice(0, activeLetter ? undefined : 150).map((song, index) => (
+        {filteredEntries.slice(0, activeLetter ? undefined : 150).map((entry, index) => (
           <motion.div
-            key={`${song.title}-${song.composer}`}
+            key={entry.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: Math.min(index * 0.01, 0.3) }}
           >
             <button
-              onClick={() => handleSelectSong(song)}
+              onClick={() => handleSelectEntry(entry)}
               className="w-full rounded-xl border border-slate-100 bg-white px-4 py-3 text-left transition-all hover:border-slate-200 hover:bg-slate-50 hover:shadow-sm active:scale-[0.98]"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-sm font-bold text-slate-800">{song.title}</div>
-                    {matchedSongKeys.has(buildIrealSongKey(song.title, song.composer)) ? (
+                    <div className="text-sm font-bold text-slate-800">{entry.title}</div>
+                    {entry.source === 'standalone' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-sky-700">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
+                        Partition seule
+                      </span>
+                    ) : entry.sheet ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-700">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Match
+                        Partition
                       </span>
                     ) : null}
                   </div>
-                  <div className="mt-0.5 text-[10px] text-slate-400">{song.composer}</div>
+                  <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] text-slate-400">
+                    <span>{entry.composer}</span>
+                    <span>{entry.style}</span>
+                  </div>
                 </div>
 
                 <div className="flex h-6 items-center rounded-md bg-slate-100 px-2 py-0.5 text-[9px] font-bold tracking-wider text-slate-500">
-                  {song.key}
+                  {entry.keyLabel}
                 </div>
               </div>
             </button>
           </motion.div>
         ))}
 
-        {filteredSongs.length === 0 ? (
+        {filteredEntries.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
             Aucun morceau pour ce filtre.
           </div>
@@ -1600,3 +1757,5 @@ export default function IrealChordViewerNext() {
     </motion.div>
   );
 }
+
+

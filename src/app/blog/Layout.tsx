@@ -33,7 +33,7 @@ export default function BlogLayout({ children }: BlogLayoutProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
             {[
               {
-                text: "Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode Z2G a changé ma vie !",
+                text: "Grâce à JC, j'ai réalisé mon rêve de jouer sur une scène avec mon copain en seulement 6 mois. La méthode JC a changé ma vie !",
                 author: "Sophie L., 28 ans",
                 role: "De débutante à pro en 6 mois"
               },

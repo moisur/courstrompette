@@ -67,7 +67,7 @@ export function StorySection({ locationName }: { locationName?: string }) {
                             </p>
 
                             <p className="font-medium text-stone-900 pt-2">
-                                J'ai donc décidé de partager la méthode JCau plus grand nombre.
+                                J'ai donc décidé de partager la méthode JC au plus grand nombre.
                             </p>
                         </div>
                     </div>

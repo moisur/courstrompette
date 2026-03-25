@@ -30,7 +30,7 @@ export default function ParisOverviewPage() {
                     <h2 className="text-4xl md:text-5xl font-serif text-stone-900 mb-6">Un professeur mobile dans tout Paris</h2>
                     <p className="text-xl text-stone-600 leading-relaxed">
                         Que vous soyez dans le centre historique, sur la rive gauche ou dans les quartiers bohèmes du nord,
-                        je me déplace pour vous offrir des cours de trompette de qualité avec la méthode Z2G.
+                        je me déplace pour vous offrir des cours de trompette de qualité avec la méthode JC.
                     </p>
                     <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto mt-8 opacity-20" />
                 </div>

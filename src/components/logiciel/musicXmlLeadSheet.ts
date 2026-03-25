@@ -1,4 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
+import JSZip from 'jszip';
 
 import { PISTONS, transposeConcertPitchToBb } from './irealMusicUtils';
 
@@ -48,6 +49,7 @@ export interface ParsedLeadSheet {
 }
 
 const COMPRESSED_SCORE_RE = /\.mxl(?:\.\d+)?$/i;
+const XML_SCORE_RE = /\.(musicxml|xml)$/i;
 
 function normalizeServedAssetPath(path: string): string {
   return path
@@ -71,6 +73,63 @@ function getFallbackServedPath(path: string): string | null {
   return path
     .replace('/Wikifonia.windows-safe/', '/Wikifonia.rendered/')
     .replace(/\.mxl(?:\.\d+)?$/i, '.musicxml');
+}
+
+function normalizeZipEntryPath(entryPath: string): string {
+  return entryPath.replace(/\\/g, '/').replace(/^\/+/, '');
+}
+
+function findXmlEntryPath(zip: JSZip, preferredPaths: string[]): string | null {
+  const files = Object.values(zip.files).filter((entry) => !entry.dir);
+  const fileLookup = new Map(files.map((entry) => [entry.name.toLowerCase(), entry.name]));
+
+  for (const preferredPath of preferredPaths) {
+    const normalizedPath = normalizeZipEntryPath(preferredPath).toLowerCase();
+    const match = fileLookup.get(normalizedPath);
+    if (match) {
+      return match;
+    }
+  }
+
+  const fallback = files.find(
+    (entry) => XML_SCORE_RE.test(entry.name) && !entry.name.toLowerCase().startsWith('meta-inf/')
+  );
+
+  return fallback?.name ?? null;
+}
+
+function extractContainerPaths(containerXml: string): string[] {
+  const xmlDocument = new DOMParser().parseFromString(containerXml, 'application/xml');
+  const rootfiles = Array.from(xmlDocument.getElementsByTagName('*')).filter(
+    (node) => node.localName === 'rootfile'
+  );
+
+  return rootfiles
+    .map((node) => node.getAttribute('full-path')?.trim() ?? '')
+    .filter(Boolean);
+}
+
+async function readMusicXmlFromArchive(buffer: ArrayBuffer): Promise<string> {
+  const archive = await JSZip.loadAsync(buffer);
+  const containerEntry = archive.file(/^META-INF\/container\.xml$/i)?.[0];
+
+  let preferredPaths: string[] = [];
+  if (containerEntry) {
+    const containerXml = await containerEntry.async('string');
+    preferredPaths = extractContainerPaths(containerXml);
+  }
+
+  const xmlEntryPath = findXmlEntryPath(archive, preferredPaths);
+  if (!xmlEntryPath) {
+    throw new Error('No MusicXML entry found in archive.');
+  }
+
+  const xmlEntry = archive.file(xmlEntryPath);
+  if (!xmlEntry) {
+    throw new Error(`Missing MusicXML entry: ${xmlEntryPath}`);
+  }
+
+  return xmlEntry.async('string');
 }
 
 function toArray<T>(value: T | T[] | undefined | null): T[] {
@@ -256,6 +315,7 @@ function pickPrimaryVoice(measures: Record<string, unknown>[]): string {
 export async function loadMusicXmlText(path: string): Promise<string> {
   const requestedPath = normalizeServedAssetPath(path);
   let response = await fetch(requestedPath, { cache: 'no-store' });
+  let resolvedPath = requestedPath;
 
   if (!response.ok && response.status === 404) {
     const fallbackPath = getFallbackServedPath(requestedPath);
@@ -263,6 +323,7 @@ export async function loadMusicXmlText(path: string): Promise<string> {
       const fallbackResponse = await fetch(fallbackPath, { cache: 'no-store' });
       if (fallbackResponse.ok) {
         response = fallbackResponse;
+        resolvedPath = fallbackPath;
       }
     }
   }
@@ -271,7 +332,9 @@ export async function loadMusicXmlText(path: string): Promise<string> {
     throw new Error(`HTTP ${response.status}`);
   }
 
-  return response.text();
+  return COMPRESSED_SCORE_RE.test(resolvedPath)
+    ? readMusicXmlFromArchive(await response.arrayBuffer())
+    : response.text();
 }
 
 export function parseMusicXmlLeadSheet(xmlContent: string): ParsedLeadSheet {
@@ -455,3 +518,4 @@ export async function loadParsedLeadSheet(path: string): Promise<ParsedLeadSheet
   const xmlText = await loadMusicXmlText(path);
   return parseMusicXmlLeadSheet(xmlText);
 }
+
