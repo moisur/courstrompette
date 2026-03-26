@@ -60,8 +60,9 @@ const ContactSection: React.FC = () => {
             <p className="text-stone-500 text-sm">
               © {new Date().getFullYear()} JC Trompette. Tous droits réservés.
             </p>
-            <p className="text-stone-600 text-xs">
+            <p className="text-stone-600 text-xs flex gap-4">
               <a href="/paris" className="hover:text-amber-500 transition-colors">Cours de trompette à Paris</a>
+              <a href="/service-a-la-personne" className="hover:text-amber-500 transition-colors">Avance immédiate (Service à la personne)</a>
             </p>
           </div>
         </div>

@@ -180,6 +180,7 @@ export default function Tuner() {
 
             {/* Logo repositioned with absolute positioning and full opacity */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-24 pointer-events-none z-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={instrument.toLowerCase().includes('sax') ? '/trompette/sax.png' : '/trompette/trompette.png'}
                 alt={instrument}
