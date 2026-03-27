@@ -43,9 +43,14 @@ interface ExercisePattern {
 interface Favorite {
   rootNote: string;
   scaleType: string;
+  exerciseCategory: 'generator' | 'repertoire' | 'bop' | 'midi';
   exerciseType: string;
-  startOctave: number;
   tempo: number;
+  volume: number;
+  startNote: string;
+  endNote: string;
+  upDown: boolean;
+  timestamp: number;
 }
 
 // Constants
@@ -72,6 +77,15 @@ const SCALE_PATTERNS: ScalePattern = {
   'Mineure naturelle': [0, 2, 3, 5, 7, 8, 10, 12],
   'Mineure harmonique': [0, 2, 3, 5, 7, 8, 11, 12],
   'Mineure mélodique': [0, 2, 3, 5, 7, 9, 11, 12],
+  'Majeur 7': [0, 4, 7, 11],
+  'Majeur 9': [0, 4, 7, 11, 14],
+  'Dominant 7': [0, 4, 7, 10],
+  'Dominant 9': [0, 4, 7, 10, 14],
+  'Mineur 7': [0, 3, 7, 10],
+  'Mineur 9': [0, 3, 7, 10, 14],
+  'Mineur 7 (b9)': [0, 3, 7, 10, 13],
+  'Diminué': [0, 3, 6, 9],
+  'Demi-diminué (m7b5)': [0, 3, 6, 10],
 };
 
 // Helpers for exercise generation
@@ -112,6 +126,14 @@ const getNoteByInterval = (note: string, semitones: number) => {
   const octShift = Math.floor(newIdx / 12);
   const modIdx = ((newIdx % 12) + 12) % 12;
   return `${CHROMATIC_NOTES[modIdx]}${octave + octShift}`;
+};
+
+const noteToMidi = (note: string): number => {
+  const cleanNote = note.replace('/r', '');
+  const noteBase = normalizeNote(cleanNote.replace(/[0-9]/, ''));
+  const octave = parseInt(cleanNote.match(/[0-9]/)?.[0] || '4', 10);
+  const idx = CHROMATIC_NOTES.indexOf(noteBase);
+  return (octave + 1) * 12 + idx;
 };
 
 const getScaleForRoot = (root: string) => {
@@ -616,9 +638,9 @@ const ScalePractice: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'exercises' | 'ireal'>('exercises');
   const [rootNote, setRootNote] = useState('C');
   const [scaleType, setScaleType] = useState('Majeure');
+  const [exerciseCategory, setExerciseCategory] = useState<'generator' | 'repertoire' | 'bop' | 'midi'>('generator');
   const [exerciseType, setExerciseType] = useState('Gamme simple');
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
-  const [startOctave, setStartOctave] = useState(4);
   const [tempo, setTempo] = useState(60);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.1);
@@ -637,6 +659,10 @@ const ScalePractice: React.FC = () => {
   const [displayBeat, setDisplayBeat] = useState(1);
   const [displayMeasure, setDisplayMeasure] = useState(1);
   const beatsPerMeasure = 4;
+
+  const [startNote, setStartNote] = useState('F#3');
+  const [endNote, setEndNote] = useState('C5');
+  const [upDown, setUpDown] = useState(false);
 
   // Acceleration Mode State
   const [accelConfig, setAccelConfig] = useState({
@@ -658,12 +684,18 @@ const ScalePractice: React.FC = () => {
   const volumeRef = useRef(volume);
   const isMutedRef = useRef(isMuted);
   const accelConfigRef = useRef(accelConfig);
+  const startNoteRef = useRef(startNote);
+  const endNoteRef = useRef(endNote);
+  const upDownRef = useRef(upDown);
 
   // 2. Synchronisation systématique des refs avec l'état UI
   useEffect(() => { tempoRef.current = tempo; }, [tempo]);
   useEffect(() => { volumeRef.current = volume; }, [volume]);
   useEffect(() => { isMutedRef.current = isMuted; }, [isMuted]);
   useEffect(() => { accelConfigRef.current = accelConfig; }, [accelConfig]);
+  useEffect(() => { startNoteRef.current = startNote; }, [startNote]);
+  useEffect(() => { endNoteRef.current = endNote; }, [endNote]);
+  useEffect(() => { upDownRef.current = upDown; }, [upDown]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -675,7 +707,56 @@ const ScalePractice: React.FC = () => {
   const generateScale = useMemo((): ExerciseNote[] => {
     let notes: ExerciseNote[];
 
-    if (exerciseType === 'Fichier MIDI' && midiNotes.length > 0) {
+    const isRepertoire = !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || exerciseType === 'Fichier MIDI';
+
+    if (!isRepertoire) {
+      // Logic for Scales and Patterns with Universal Range
+      const startMidi = noteToMidi(startNote);
+      const endMidi = noteToMidi(endNote);
+      const rootIdx = CHROMATIC_NOTES.indexOf(rootNote);
+      const intervals = SCALE_PATTERNS[scaleType] || [0];
+
+      const baseNotes: string[] = [];
+      for (let oct = -1; oct < 9; oct++) {
+        intervals.forEach(interval => {
+          const midi = (oct + 1) * 12 + rootIdx + interval;
+          if (midi >= startMidi && midi <= endMidi) {
+            const noteIdx = (rootIdx + interval) % 12;
+            const noteOct = oct + Math.floor((rootIdx + interval) / 12);
+            baseNotes.push(`${CHROMATIC_NOTES[noteIdx]}${noteOct}`);
+          }
+        });
+      }
+      baseNotes.sort((a, b) => noteToMidi(a) - noteToMidi(b));
+
+      let sequence: string[] = [];
+      if (exerciseType === 'Gamme simple') {
+        sequence = baseNotes;
+      } else if (exerciseType === 'Tierces') {
+        for (let i = 0; i < baseNotes.length - 2; i++) {
+          sequence.push(baseNotes[i], baseNotes[i + 2]);
+        }
+      } else if (exerciseType === 'Quartes') {
+        for (let i = 0; i < baseNotes.length - 3; i++) {
+          sequence.push(baseNotes[i], baseNotes[i + 3]);
+        }
+      } else if (exerciseType === 'Quintes') {
+        for (let i = 0; i < baseNotes.length - 4; i++) {
+          sequence.push(baseNotes[i], baseNotes[i + 4]);
+        }
+      } else if (exerciseType === 'Arpège') {
+        // Here we can either use the first 4 notes or repeat the arpeggio pattern
+        // Given the simplified request, let's just use the filtered baseNotes
+        sequence = baseNotes;
+      }
+
+      if (upDown) {
+        const reverse = [...sequence].reverse().slice(1);
+        sequence = sequence.concat(reverse);
+      }
+
+      notes = sequence.length > 0 ? sequence.map(key => ({ key, duration: '8' })) : [{ key: 'C4', duration: 'w' }];
+    } else if (exerciseType === 'Fichier MIDI' && midiNotes.length > 0) {
       notes = midiNotes.map(n => {
         const octave = parseInt(n.key.match(/\d+/)?.[0] || '4', 10);
         const noteName = n.key.replace(/\d+/, '');
@@ -695,25 +776,8 @@ const ScalePractice: React.FC = () => {
     } else if (SOULFUL_BOP_PHRASES[exerciseType]) {
       notes = [...SOULFUL_BOP_PHRASES[exerciseType]];
     } else {
-      const exerciseGenerator = EXERCISE_PATTERNS[exerciseType];
-      if (exerciseType === 'Flexibilité - Niveau 1') {
-        notes = exerciseGenerator() as ExerciseNote[];
-      } else {
-        const rootIndex = CHROMATIC_NOTES.indexOf(rootNote);
-        const chromaticScale = Array.from({ length: 24 }, (_, i) => {
-          const noteIndex = (rootIndex + i) % 12;
-          const octaveShift = Math.floor((rootIndex + i) / 12);
-          return `${CHROMATIC_NOTES[noteIndex]}${startOctave + octaveShift}`;
-        });
-        const pattern = SCALE_PATTERNS[scaleType];
-        const scaleNotes = pattern.map(interval => chromaticScale[interval]);
-        const result = exerciseGenerator(scaleNotes);
-        if (result.length > 0 && typeof result[0] === 'object') {
-          notes = result as ExerciseNote[];
-        } else {
-          notes = (result as string[]).map(key => ({ key, duration: 'q' }));
-        }
-      }
+      // Fallback if needed, though most logic is now handled by the isRepertoire block above
+      notes = [{ key: 'C4', duration: 'w' }];
     }
 
     // --- PAD : compléter la dernière mesure avec des silences ---
@@ -732,7 +796,7 @@ const ScalePractice: React.FC = () => {
       return padded;
     }
     return notes;
-  }, [rootNote, scaleType, startOctave, exerciseType, midiNotes, midiTranspose]);
+  }, [rootNote, scaleType, startNote, endNote, upDown, exerciseType, midiNotes, midiTranspose]);
 
   const noteToFrequency = useCallback((noteKey: string): number => {
     if (noteKey.includes('/r')) return 0;
@@ -774,10 +838,9 @@ const ScalePractice: React.FC = () => {
     }
   }, []);
 
-  // --- AUTO-RESET SUR CHANGEMENT DE CONFIG ---
   useEffect(() => {
     handleStop();
-  }, [exerciseType, rootNote, scaleType, startOctave, handleStop]);
+  }, [exerciseType, rootNote, scaleType, startNote, endNote, upDown, handleStop]);
 
   // --- PLAY / PAUSE TOGGLE (Gestion AudioContext) ---
   const togglePlay = useCallback(async () => {
@@ -909,19 +972,40 @@ const ScalePractice: React.FC = () => {
   }, [isPlaying, generateScale, playNote]);
 
   const saveFavorite = () => {
-    const newFavorite: Favorite = { rootNote, scaleType, exerciseType, startOctave, tempo };
-    const newFavorites = [...favorites, newFavorite];
+    const favorite = {
+      rootNote,
+      scaleType,
+      exerciseCategory,
+      exerciseType,
+      tempo,
+      volume,
+      startNote,
+      endNote,
+      upDown,
+      timestamp: Date.now()
+    };
+    const newFavorites = [favorite, ...favorites].slice(0, 10);
     setFavorites(newFavorites);
-    if (typeof window !== 'undefined') localStorage.setItem('scalesFavorites', JSON.stringify(newFavorites));
+    localStorage.setItem('scalePractice_favorites', JSON.stringify(newFavorites));
   };
 
-  const loadFavorite = (favorite: Favorite) => {
-    setRootNote(favorite.rootNote);
-    setScaleType(favorite.scaleType);
-    setExerciseType(favorite.exerciseType);
-    setStartOctave(favorite.startOctave);
-    setTempo(favorite.tempo);
+  const loadFavorite = (fav: Favorite) => {
+    if (!fav) return;
+    setRootNote(fav.rootNote);
+    setScaleType(fav.scaleType);
+    setExerciseCategory(fav.exerciseCategory || 'generator');
+    setExerciseType(fav.exerciseType);
+    setTempo(fav.tempo);
+    setVolume(fav.volume);
+    if (fav.startNote) setStartNote(fav.startNote);
+    if (fav.endNote) setEndNote(fav.endNote);
+    if (fav.upDown !== undefined) setUpDown(fav.upDown);
+    setIsPlaying(false);
     setActiveNoteIndex(0);
+
+    if (fav.exerciseCategory === 'midi') {
+      loadMidiFile(fav.exerciseType);
+    }
   };
 
   const loadMidiFile = async (filename: string, trackIndex: number = -1) => {
@@ -1041,222 +1125,141 @@ const ScalePractice: React.FC = () => {
           </Card>
         ) : (
         <>
-        <Card className="bg-white border-slate-200 shadow-xl overflow-hidden rounded-2xl relative">
-          <CardContent className="p-6 md:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <Card className="bg-white border-slate-200 shadow-xl overflow-hidden rounded-2xl relative">
+            <CardContent className="p-6 md:p-8">
+              {/* Category selector */}
+              <div className="flex flex-wrap gap-2 mb-8 p-1.5 bg-slate-50 rounded-2xl border border-slate-100">
+                {[
+                  { id: 'generator', label: 'Générateur', icon: Zap },
+                  { id: 'repertoire', label: 'Répertoire', icon: Music2 },
+                  { id: 'bop', label: 'Phrases Bop', icon: Rocket },
+                  { id: 'midi', label: 'MIDI', icon: FileMusic }
+                ].map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setExerciseCategory(cat.id as any);
+                      // Reset exercise type to first available in category
+                      if (cat.id === 'generator') setExerciseType('Gamme simple');
+                      else if (cat.id === 'repertoire') setExerciseType(Object.keys(REPERTOIRE_SONGS)[0]);
+                      else if (cat.id === 'bop') setExerciseType(Object.keys(SOULFUL_BOP_PHRASES)[0]);
+                      else if (cat.id === 'midi') setExerciseType('Fichier MIDI');
+                    }}
+                    className={cn(
+                      "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                      exerciseCategory === cat.id
+                        ? "bg-slate-800 text-white shadow-md"
+                        : "text-slate-400 hover:text-slate-600 hover:bg-white"
+                    )}
+                  >
+                    <cat.icon className="w-3.5 h-3.5" />
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
 
-              {/* Left: Metronome & Volume */}
-              {/* Left: Metronome & Volume */}
-              <div className="lg:col-span-4 space-y-6">
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    {/* Bouton PLAY / PAUSE */}
-                    <Button
-                      size="lg"
-                      className={cn(
-                        "flex-1 h-20 rounded-2xl flex flex-col gap-1 shadow-lg transition-all active:scale-95 text-white border-none",
-                        isPlaying
-                          ? "bg-amber-500 hover:bg-amber-600 ring-4 ring-amber-100"
-                          : "bg-orange-600 hover:bg-orange-700 ring-4 ring-orange-100"
-                      )}
-                      onClick={togglePlay}
-                    >
-                      {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
-                      <span className="text-[10px] font-black uppercase tracking-widest">
-                        {isPlaying ? 'PAUSE' : 'PLAY'}
-                      </span>
-                    </Button>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
+                
+                {/* 1. Metronome / Left (Col-span-4) */}
+                <div className="lg:col-span-4 space-y-6">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <Button
+                        size="lg"
+                        className={cn(
+                          "flex-1 h-20 rounded-2xl flex flex-col gap-1 shadow-lg transition-all active:scale-95 text-white border-none",
+                          isPlaying ? "bg-amber-500 hover:bg-amber-600 ring-4 ring-amber-100" : "bg-orange-600 hover:bg-orange-700 ring-4 ring-orange-100"
+                        )}
+                        onClick={togglePlay}
+                      >
+                        {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
+                        <span className="text-[10px] font-black uppercase tracking-widest">
+                          {isPlaying ? 'PAUSE' : 'PLAY'}
+                        </span>
+                      </Button>
 
-                    {/* Bouton STOP (Reset) */}
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-20 h-20 rounded-2xl border-2 border-slate-200 flex flex-col gap-1 hover:bg-slate-50 hover:border-red-200 hover:text-red-600 transition-all active:scale-95"
-                      onClick={handleStop}
-                    >
-                      <div className="w-6 h-6 bg-current rounded-sm" /> {/* Carré Stop */}
-                      <span className="text-[10px] font-black uppercase tracking-widest">STOP</span>
-                    </Button>
-                  </div>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="w-20 h-20 rounded-2xl border-2 border-slate-200 flex flex-col gap-1 hover:bg-slate-50 transition-all active:scale-95"
+                        onClick={handleStop}
+                      >
+                        <div className="w-6 h-6 bg-current rounded-sm" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">STOP</span>
+                      </Button>
+                    </div>
 
-                  {/* Slider Tempo */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-end justify-between">
-                      <div className="flex items-end gap-1">
-                        <span className="text-4xl font-mono font-black text-slate-900 tracking-tighter leading-none">{tempo}</span>
-                        <span className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">BPM</span>
-                      </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-end justify-between">
+                        <div className="flex items-end gap-1">
+                          <span className="text-4xl font-mono font-black text-slate-900 tracking-tighter leading-none">{tempo}</span>
+                          <span className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">BPM</span>
+                        </div>
 
-                      {/* ACCELERATION MODE BUTTON */}
-                      <Dialog open={isAccelDialogOpen} onOpenChange={setIsAccelDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                              "h-6 px-2 text-[10px] font-bold uppercase tracking-widest border border-slate-200 hover:bg-slate-50",
-                              accelConfig.active ? "bg-orange-100 text-orange-700 border-orange-200 animate-pulse" : "text-slate-400"
-                            )}
-                          >
-                            <Rocket className="w-3 h-3 mr-1" />
-                            {accelConfig.active ? "Activé" : "Accélérer"}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[420px] rounded-[2rem] border-0 shadow-2xl p-0 overflow-hidden bg-white">
-                          {/* Header avec dégradé subtil */}
-                          <div className="bg-gradient-to-br from-orange-50 to-amber-50/50 p-6 border-b border-orange-100/50">
-                            <DialogHeader>
-                              <DialogTitle className="text-xl font-black flex items-center gap-3 text-slate-800">
-                                <div className="p-2.5 bg-orange-500 rounded-2xl shadow-lg shadow-orange-200">
-                                  <Rocket className="w-5 h-5 text-white" />
-                                </div>
-                                <div className="flex flex-col">
-                                  <span>Testeur de Vitesse</span>
-                                  <span className="text-[10px] font-bold text-orange-600 uppercase tracking-[0.15em] mt-0.5">Entraînement Progressif</span>
-                                </div>
-                              </DialogTitle>
-                            </DialogHeader>
-                          </div>
-
-                          <div className="p-6 space-y-5">
-                            {/* SECTION PRINCIPALE : DEPART & OBJECTIF */}
-                            <div className="bg-slate-50/80 p-4 rounded-[1.5rem] border border-slate-100">
-                              <div className="grid grid-cols-2 gap-4">
-                                {/* DEPART */}
-                                <div className="space-y-2">
-                                  <Label className="flex items-center gap-2 text-[9px] uppercase font-black text-slate-400 ml-1">
-                                    <Flag className="w-3 h-3 text-orange-500" />
-                                    Départ
-                                  </Label>
-                                  <div className="relative group">
-                                    <Input
-                                      type="number"
-                                      value={accelConfig.start}
-                                      onChange={(e) => setAccelConfig(prev => ({ ...prev, start: Number(e.target.value) }))}
-                                      className="h-14 text-2xl font-mono font-black border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 bg-white pl-4 pr-10 rounded-2xl transition-all shadow-sm"
-                                    />
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-slate-300 group-focus-within:text-orange-400">BPM</span>
-                                  </div>
-                                </div>
-
-                                {/* OBJECTIF */}
-                                <div className="space-y-2">
-                                  <Label className="flex items-center gap-2 text-[9px] uppercase font-black text-slate-400 ml-1">
-                                    <Target className="w-3 h-3 text-orange-500" />
-                                    Objectif
-                                  </Label>
-                                  <div className="relative group">
-                                    <Input
-                                      type="number"
-                                      value={accelConfig.end}
-                                      onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))}
-                                      className="h-14 text-2xl font-mono font-black border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 bg-white pl-4 pr-10 rounded-2xl transition-all shadow-sm"
-                                    />
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-black text-slate-300 group-focus-within:text-orange-400">BPM</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* SECTION REGLAGES : PAS & INTERVALLE (Côte à côte pour réduire la hauteur) */}
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-2">
-                                <Label className="flex items-center gap-2 text-[9px] uppercase font-black text-slate-400">
-                                  <Zap className="w-3 h-3 text-amber-500" />
-                                  Pas
-                                </Label>
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    type="number"
-                                    value={accelConfig.step}
-                                    onChange={(e) => setAccelConfig(prev => ({ ...prev, step: Number(e.target.value) }))}
-                                    className="h-9 font-mono font-bold border-transparent bg-slate-50 focus:bg-white text-center rounded-lg"
-                                  />
-                                  <span className="text-[9px] font-bold text-slate-400">BPM</span>
-                                </div>
-                              </div>
-
-                              <div className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-2">
-                                <Label className="flex items-center gap-2 text-[9px] uppercase font-black text-slate-400">
-                                  <Repeat className="w-3 h-3 text-blue-500" />
-                                  Toutes les
-                                </Label>
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    type="number"
-                                    value={accelConfig.interval}
-                                    onChange={(e) => setAccelConfig(prev => ({ ...prev, interval: Number(e.target.value) }))}
-                                    className="h-9 font-mono font-bold border-transparent bg-slate-50 focus:bg-white text-center rounded-lg"
-                                  />
-                                  <span className="text-[9px] font-bold text-slate-400 uppercase">Mes.</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* BOUTON ACTION */}
+                        <Dialog open={isAccelDialogOpen} onOpenChange={setIsAccelDialogOpen}>
+                          <DialogTrigger asChild>
                             <Button
-                              onClick={() => {
-                                setAccelConfig(prev => ({ ...prev, active: !prev.active }));
-                                setIsAccelDialogOpen(false);
-                                if (!accelConfig.active) {
-                                  setTempo(accelConfig.start);
-                                }
-                              }}
-                              size="lg"
+                              variant="ghost"
+                              size="sm"
                               className={cn(
-                                "w-full h-16 rounded-2xl text-base font-black shadow-xl transition-all active:scale-[0.97] border-0",
-                                accelConfig.active
-                                  ? "bg-slate-800 hover:bg-slate-900 text-white"
-                                  : "bg-orange-500 hover:bg-orange-600 text-white shadow-orange-200"
+                                "h-6 px-2 text-[10px] font-bold uppercase tracking-widest border border-slate-200",
+                                accelConfig.active ? "bg-orange-100 text-orange-700 border-orange-200" : "text-slate-400"
                               )}
                             >
-                              {accelConfig.active ? (
-                                "Désactiver le mode"
-                              ) : (
-                                <span className="flex items-center gap-2">
-                                  Activer l&apos;accélération <Rocket className="w-4 h-4" />
-                                </span>
-                              )}
+                              <Rocket className="w-3 h-3 mr-1" />
+                              {accelConfig.active ? "Activé" : "Accélérer"}
                             </Button>
-
-                            <p className="text-[9px] text-center font-bold text-slate-300 uppercase tracking-widest">
-                              Pratiquez mieux, pas plus vite
-                            </p>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                    <Slider
-                      value={[tempo]}
-                      min={40}
-                      max={208}
-                      onValueChange={(vals) => setTempo(vals[0])}
-                      className="cursor-pointer"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4 pt-6 border-t border-slate-100">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-orange-600">
-                        <Volume2 className="w-3.5 h-3.5" />
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Volume</Label>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[420px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
+                             <DialogHeader>
+                               <DialogTitle className="text-xl font-black flex items-center gap-3 text-slate-800">
+                                 <Rocket className="w-5 h-5 text-orange-500" />
+                                 Testeur de Vitesse
+                               </DialogTitle>
+                             </DialogHeader>
+                             <div className="space-y-6 pt-4">
+                               <div className="grid grid-cols-2 gap-4">
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Départ</Label>
+                                   <Input type="number" value={accelConfig.start} onChange={(e) => setAccelConfig(prev => ({ ...prev, start: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Objectif</Label>
+                                   <Input type="number" value={accelConfig.end} onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                               </div>
+                               <Button
+                                 onClick={() => {
+                                   setAccelConfig(prev => ({ ...prev, active: !prev.active }));
+                                   setIsAccelDialogOpen(false);
+                                   if (!accelConfig.active) setTempo(accelConfig.start);
+                                 }}
+                                 className="w-full h-14 rounded-xl font-black text-lg bg-orange-600 hover:bg-orange-700"
+                               >
+                                 {accelConfig.active ? "Désactiver" : "Activer l'accélération"}
+                               </Button>
+                             </div>
+                          </DialogContent>
+                        </Dialog>
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-slate-400">{Math.round(volume * 200)}%</span>
+                      <Slider value={[tempo]} min={40} max={208} onValueChange={(vals) => setTempo(vals[0])} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                    <div className="flex items-center justify-between text-slate-500">
+                      <div className="flex items-center gap-2">
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Volume</span>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold">{Math.round(volume * 200)}%</span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <Slider
-                        value={[volume]}
-                        max={0.5}
-                        step={0.01}
-                        onValueChange={(vals) => setVolume(vals[0])}
-                        className="cursor-pointer"
-                      />
+                      <Slider value={[volume]} max={0.5} step={0.01} onValueChange={(vals) => setVolume(vals[0])} className="flex-1" />
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8 text-slate-400 hover:text-orange-600 hover:bg-slate-50 rounded-lg border border-slate-100"
+                        className="h-8 w-8 text-slate-400 hover:text-orange-600 rounded-lg border border-slate-100"
                         onClick={() => setIsMuted(!isMuted)}
                       >
                         {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
@@ -1264,213 +1267,229 @@ const ScalePractice: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Middle: Selection Controls */}
-              <div className="lg:col-span-5 space-y-5 lg:border-l border-slate-100 lg:pl-10">
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Exercice</Label>
-                    <select
-                      value={exerciseType}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val.startsWith('MIDI:')) {
-                          loadMidiFile(val.replace('MIDI:', ''));
-                        } else {
-                          setExerciseType(val);
-                          setMidiNotes([]);
-                          setAvailableTracks([]);
-                          setSelectedMidi('');
-                        }
-                      }}
-                      className="w-full h-11 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all cursor-pointer"
-                    >
-                      <optgroup label="Exercices & Gammes">
-                        {Object.keys(EXERCISE_PATTERNS).filter(k => !k.includes('Clarke')).map(type => <option key={type} value={type}>{type}</option>)}
-                      </optgroup>
-                      <optgroup label="Méthodes Célèbres">
-                        <option value="Clarke Second Study">Clarke - Second Study (Complet)</option>
-                        <option value="Clarke II (Single Tonalité)">Clarke - Lesson 3 (Single)</option>
-                        <option value="Clarke Étude III">Clarke - Étude III</option>
-                      </optgroup>
-                      <optgroup label="Répertoire Populaire">
-                        {Object.keys(REPERTOIRE_SONGS).map(type => <option key={type} value={type}>{type}</option>)}
-                      </optgroup>
-                      <optgroup label="🎺 Soulful Bop Jazz">
-                        {Object.keys(SOULFUL_BOP_PHRASES).map(type => <option key={type} value={type}>{type}</option>)}
-                      </optgroup>
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Tonalité</Label>
-                      <select
-                        value={rootNote}
-                        onChange={(e) => setRootNote(e.target.value)}
-                        disabled={isExerciseDisabled}
-                        className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all disabled:opacity-50"
-                      >
-                        {CHROMATIC_NOTES.map(note => <option key={note} value={note}>{NOTE_NAMES[note]}</option>)}
-                      </select>
+                {/* 2. Middle (Col-span-5) - Selections */}
+                <div className="lg:col-span-5 space-y-6 lg:border-l border-slate-100 lg:pl-10">
+                  {exerciseCategory === 'generator' && (
+                    <div className="space-y-3">
+                      <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">1. Type d'Arpège / Gamme</Label>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {Object.keys(SCALE_PATTERNS).map(t => (
+                          <button
+                            key={t}
+                            onClick={() => setScaleType(t)}
+                            className={cn(
+                              "py-2 px-2 rounded-xl text-[10px] font-bold transition-all border shadow-sm text-left overflow-hidden",
+                              scaleType === t ? "bg-orange-500 text-white border-orange-400" : "bg-white text-slate-500 border-slate-100"
+                            )}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Mode</Label>
-                      <select
-                        value={scaleType}
-                        onChange={(e) => setScaleType(e.target.value)}
-                        disabled={isExerciseDisabled}
-                        className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all disabled:opacity-50"
-                      >
-                        {Object.keys(SCALE_PATTERNS).map(type => <option key={type} value={type}>{type}</option>)}
-                      </select>
+                  )}
+
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">
+                      {exerciseCategory === 'generator' ? '2. Motif / Écart' : 
+                       exerciseCategory === 'repertoire' ? 'Morceau du Répertoire' : 
+                       exerciseCategory === 'bop' ? 'Phrase Jazz / Bop' : 'Fichier MIDI'}
+                    </Label>
+                    <div className="flex flex-col gap-1.5 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
+                      {(exerciseCategory === 'generator' ? ['Gamme simple', 'Tierces', 'Quartes', 'Quintes', 'Arpège'] :
+                        exerciseCategory === 'repertoire' ? Object.keys(REPERTOIRE_SONGS) :
+                        exerciseCategory === 'bop' ? Object.keys(SOULFUL_BOP_PHRASES) :
+                        MIDI_FILES).map(e => (
+                        <button
+                          key={e}
+                          onClick={() => {
+                            if (exerciseCategory === 'midi') loadMidiFile(e);
+                            setExerciseType(e);
+                          }}
+                          className={cn(
+                            "py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border shadow-sm flex items-center justify-between text-left",
+                            exerciseType === e ? "bg-amber-500 text-white border-amber-400" : "bg-white text-slate-500 border-slate-100 hover:bg-slate-50"
+                          )}
+                        >
+                          <span className="truncate">{e}</span>
+                          {exerciseType === e && <Zap className="w-3 h-3 fill-current" />}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Octave</Label>
-                      <select
-                        value={startOctave}
-                        onChange={(e) => setStartOctave(Number(e.target.value))}
-                        disabled={isExerciseDisabled}
-                        className="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all disabled:opacity-50"
-                      >
-                        {[3, 4, 5].map(o => <option key={o} value={o}>Octave {o}</option>)}
-                      </select>
-                    </div>
-                    <div className="flex items-end">
-                      <Button
-                        onClick={saveFavorite}
-                        variant="outline"
-                        className="h-10 w-full border-orange-200 text-orange-600 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-orange-50 transition-all active:scale-95"
-                      >
-                        <Save className="w-3.5 h-3.5 mr-2" />
-                        Sauvegarder
-                      </Button>
+                  <div className="space-y-3 pt-2">
+                    <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">3. Tonalité</Label>
+                    <div className="grid grid-cols-6 gap-1">
+                      {CHROMATIC_NOTES.map(n => (
+                        <button
+                          key={n}
+                          onClick={() => setRootNote(n)}
+                          className={cn(
+                            "h-8 rounded-lg text-[10px] font-bold transition-all border",
+                            rootNote === n ? "bg-slate-800 text-white border-slate-700 shadow-md" : "bg-white text-slate-500 border-slate-100"
+                          )}
+                        >
+                          {NOTE_NAMES[n] || n}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-5 border-t border-slate-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doigtés</Label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowFingerings(!showFingerings)}
+                {/* 3. Right (Col-span-3) - Range */}
+                <div className="lg:col-span-3 space-y-6 lg:border-l border-slate-100 lg:pl-10">
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">4. Plage : Début</Label>
+                    <div className="flex flex-col gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="grid grid-cols-6 gap-1">
+                        {CHROMATIC_NOTES.map(n => (
+                          <button
+                            key={n}
+                            onClick={() => setStartNote(n + (startNote.match(/[0-9]/)?.[0] || '3'))}
+                            className={cn(
+                              "h-6 rounded-lg text-[8px] font-bold transition-all border",
+                              startNote.replace(/[0-9]/g, '') === n ? "bg-orange-500 text-white border-orange-400 shadow-sm" : "bg-white text-slate-400 border-slate-100"
+                            )}
+                          >
+                            {NOTE_NAMES[n] || n}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-1 mt-1">
+                        {[2, 3, 4, 5, 6].map(o => (
+                          <button
+                            key={o}
+                            onClick={() => setStartNote(startNote.replace(/[0-9]/, '') + o)}
+                            className={cn(
+                              "flex-1 h-5 rounded-md text-[8px] font-black transition-all border",
+                              startNote.endsWith(o.toString()) ? "bg-slate-700 text-white border-slate-600" : "bg-white text-slate-300 border-transparent hover:bg-slate-100"
+                            )}
+                          >
+                            {o}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">5. Plage : Fin</Label>
+                    <div className="flex flex-col gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="grid grid-cols-6 gap-1">
+                        {CHROMATIC_NOTES.map(n => (
+                          <button
+                            key={n}
+                            onClick={() => setEndNote(n + (endNote.match(/[0-9]/)?.[0] || '5'))}
+                            className={cn(
+                              "h-6 rounded-lg text-[8px] font-bold transition-all border",
+                              endNote.replace(/[0-9]/g, '') === n ? "bg-orange-500 text-white border-orange-400 shadow-sm" : "bg-white text-slate-400 border-slate-100"
+                            )}
+                          >
+                            {NOTE_NAMES[n] || n}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-1 mt-1">
+                        {[2, 3, 4, 5, 6].map(o => (
+                          <button
+                            key={o}
+                            onClick={() => setEndNote(endNote.replace(/[0-9]/, '') + o)}
+                            className={cn(
+                              "flex-1 h-5 rounded-md text-[8px] font-black transition-all border",
+                              endNote.endsWith(o.toString()) ? "bg-slate-700 text-white border-slate-600" : "bg-white text-slate-300 border-transparent hover:bg-slate-100"
+                            )}
+                          >
+                            {o}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-orange-100/30 rounded-xl border border-orange-200">
+                    <div className="flex flex-col">
+                      <Label className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Aller-Retour</Label>
+                      <span className="text-[8px] text-orange-500 font-bold">Redescendre une fois en haut</span>
+                    </div>
+                    <button
+                      onClick={() => setUpDown(!upDown)}
                       className={cn(
-                        "h-7 px-3 text-[10px] font-bold uppercase tracking-widest rounded-lg border transition-all",
-                        showFingerings
-                          ? "bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100"
-                          : "bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100"
+                        "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all shadow-md border-2",
+                        upDown 
+                          ? "bg-orange-600 text-white border-orange-400 scale-105" 
+                          : "bg-white text-slate-400 border-slate-200 hover:bg-white"
                       )}
                     >
-                      {showFingerings ? 'Affichés' : 'Masqués'}
+                      {upDown ? "ON" : "OFF"}
+                    </button>
+                  </div>
+
+                  <div className="pt-2">
+                    <Button
+                      onClick={saveFavorite}
+                      variant="outline"
+                      className="w-full h-10 border-orange-200 text-orange-600 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-orange-50 transition-all active:scale-95"
+                    >
+                      <Save className="w-3.5 h-3.5 mr-2" />
+                      Sauvegarder Favori
                     </Button>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Instrument</Label>
-                    <div className="flex gap-4 items-center bg-slate-50 p-1.5 pr-4 rounded-xl border border-slate-200">
-                      <select
-                        value={selectedInstrument}
-                        onChange={(e) => setSelectedInstrument(e.target.value)}
-                        className="bg-transparent text-sm font-semibold text-slate-700 outline-none flex-1 px-2 border-none ring-0 focus:ring-0"
-                      >
-                        {Object.keys(INSTRUMENTS).map(inst => <option key={inst} value={inst}>{inst}</option>)}
-                      </select>
-                      <Activity className="w-3.5 h-3.5 text-orange-500" />
+                </div>
+
+                {/* Floating Counters Stats (Absolute) */}
+                <div className="absolute -bottom-1 -right-1 flex gap-2 pointer-events-none">
+                  <div className="bg-slate-900 rounded-xl p-3 border border-slate-800 shadow-xl flex items-center gap-4">
+                    <div className="flex flex-col items-center">
+                      <span className="text-[8px] text-slate-500 uppercase">Temps</span>
+                      <span className="text-xl font-mono text-orange-500 leading-none">{isPlaying ? displayBeat : "-"}</span>
+                    </div>
+                    <div className="w-px h-6 bg-slate-800" />
+                    <div className="flex flex-col items-center">
+                      <span className="text-[8px] text-slate-500 uppercase">Mesure</span>
+                      <span className="text-xl font-mono text-orange-500 leading-none">{isPlaying ? displayMeasure : "-"}</span>
                     </div>
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Right: Real-time Counters */}
-              <div className="lg:col-span-3 space-y-4 lg:border-l border-slate-100 lg:pl-10 flex flex-col">
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <Label className="text-[9px] text-orange-600 font-black uppercase tracking-[0.2em] text-center w-full block">Temps</Label>
-                    <div className="bg-slate-900 rounded-xl w-full p-3 flex flex-col items-center justify-center border border-slate-800 shadow-inner h-16">
-                      <div className="text-3xl font-mono font-black text-orange-500 tracking-tighter">
-                        {isPlaying ? displayBeat : "-"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[9px] text-orange-600 font-black uppercase tracking-[0.2em] text-center w-full block">Mesure</Label>
-                    <div className="bg-slate-900 rounded-xl w-full p-3 flex flex-col items-center justify-center border border-slate-800 shadow-inner h-16">
-                      <div className="text-3xl font-mono font-black text-orange-500 tracking-tighter">
-                        {isPlaying ? displayMeasure : "-"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Notation View */}
+          <div className="space-y-6 pb-20">
+            <NotationView
+              notes={generateScale}
+              activeNoteIndex={activeNoteIndex}
+              exerciseType={exerciseType}
+              showFingerings={showFingerings}
+            />
 
-                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex flex-col gap-3 mt-auto">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <FileMusic className="w-4 h-4 text-orange-500" />
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight truncate">{exerciseType}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={cn("w-2 h-2 rounded-full", isPlaying ? "bg-green-500 animate-pulse" : "bg-slate-300")} />
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-                      {isPlaying ? "En cours" : "Prêt"}
-                    </span>
-                  </div>
+            {favorites.length > 0 && (
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm overflow-x-auto">
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">Favoris</h3>
+                <div className="flex gap-2 min-w-max pb-2">
+                  {favorites.map((fav, idx) => (
+                    <Button
+                      key={idx}
+                      onClick={() => loadFavorite(fav)}
+                      variant="outline"
+                      className="px-4 py-2 text-[10px] font-bold rounded-xl whitespace-nowrap"
+                    >
+                      {NOTE_NAMES[fav.rootNote] || fav.rootNote} {fav.scaleType}
+                    </Button>
+                  ))}
                 </div>
               </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <Button onClick={() => { setActiveNoteIndex(0); setIsPlaying(false); }} variant="outline" className="h-12 rounded-xl text-[10px] font-black uppercase">Réinitialiser</Button>
+              <Button onClick={() => window.location.reload()} className="h-12 rounded-xl bg-orange-600 text-white font-black uppercase text-[10px]">Actualiser</Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Main Notation Area */}
-        <div className="space-y-6 pb-20">
-          <NotationView
-            notes={generateScale}
-            activeNoteIndex={activeNoteIndex}
-            exerciseType={exerciseType}
-            showFingerings={showFingerings}
-          />
-          {/* Favorites & Footer Controls */}
-          {favorites.length > 0 && (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 mb-4">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Favoris</h3>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {favorites.map((fav, idx) => (
-                  <Button
-                    key={idx}
-                    onClick={() => loadFavorite(fav)}
-                    variant="outline"
-                    className="px-4 py-2 bg-slate-50 border-slate-200 text-slate-600 rounded-xl hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 text-[10px] font-bold transition-all active:scale-95"
-                  >
-                    {NOTE_NAMES[fav.rootNote] || fav.rootNote} {fav.scaleType}
-                    <span className="ml-2 text-slate-400 font-mono text-[9px]">{fav.tempo}</span>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <Button
-              onClick={() => { setActiveNoteIndex(0); setIsPlaying(false); }}
-              variant="outline"
-              className="h-12 rounded-xl border-slate-200 bg-white text-slate-500 font-bold uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all"
-            >
-              Réinitialiser
-            </Button>
-            <Button
-              onClick={saveFavorite}
-              className="h-12 rounded-xl bg-orange-600 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-orange-700 shadow-lg active:scale-95 transition-all"
-            >
-              Sauvegarder Session
-            </Button>
           </div>
-        </div>
-        </>)}
+        </>
+        )}
       </div>
     </div>
   );
