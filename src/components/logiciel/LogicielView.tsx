@@ -717,17 +717,14 @@ const ScalePractice: React.FC = () => {
       const intervals = SCALE_PATTERNS[scaleType] || [0];
 
       const baseNotes: string[] = [];
-      for (let oct = -1; oct < 9; oct++) {
-        intervals.forEach(interval => {
-          const midi = (oct + 1) * 12 + rootIdx + interval;
-          if (midi >= startMidi && midi <= endMidi) {
-            const noteIdx = (rootIdx + interval) % 12;
-            const noteOct = oct + Math.floor((rootIdx + interval) / 12);
-            baseNotes.push(`${CHROMATIC_NOTES[noteIdx]}${noteOct}`);
-          }
-        });
+      for (let midi = startMidi; midi <= endMidi; midi++) {
+        const relativeMidi = (midi - rootIdx + 120) % 12;
+        if (intervals.includes(relativeMidi)) {
+          const noteIdx = midi % 12;
+          const noteOct = Math.floor(midi / 12) - 1;
+          baseNotes.push(`${CHROMATIC_NOTES[noteIdx]}${noteOct}`);
+        }
       }
-      baseNotes.sort((a, b) => noteToMidi(a) - noteToMidi(b));
 
       let sequence: string[] = [];
       if (exerciseType === 'Gamme simple') {
