@@ -1272,7 +1272,7 @@ const ScalePractice: React.FC = () => {
                 <div className="lg:col-span-5 space-y-6 lg:border-l border-slate-100 lg:pl-10">
                   {exerciseCategory === 'generator' && (
                     <div className="space-y-3">
-                      <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">1. Type d'Arpège / Gamme</Label>
+                      <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">1. Type d&apos;Arpège / Gamme</Label>
                       <div className="grid grid-cols-2 gap-1.5">
                         {Object.keys(SCALE_PATTERNS).map(t => (
                           <button
