@@ -111,7 +111,13 @@ export default function Header({ menuItems }: HeaderProps) {
     }
   }, [])
 
-  const isTransparentHeader = !isScrolled && (pathname === '/' || pathname === '/paris' || pathname?.startsWith('/paris/'));
+  const supportsTransparentHeader =
+    pathname === '/' ||
+    pathname === '/paris' ||
+    pathname?.startsWith('/paris/') ||
+    pathname === '/service-a-la-personne';
+
+  const isTransparentHeader = !isScrolled && supportsTransparentHeader;
   const isSolidContext = isScrolled || isMenuOpen || !isTransparentHeader;
 
   const textColor = isSolidContext ? 'text-stone-700' : 'text-white';

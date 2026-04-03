@@ -6,8 +6,8 @@ import { Card, CardContent } from '@/components/ui/card'; // We assume this exis
 import { HeroSection } from '@/components/home/HeroSection';
 
 export const metadata: Metadata = {
-  title: 'Service à la personne (Avance immédiate) | Cours de Trompette',
-  description: "Bénéficiez de l'Avance immédiate du crédit d'impôt avec l'Urssaf pour vos cours de trompette à domicile.",
+  title: 'Service à la personne (Urssaf / DGFiP) | Cours de Trompette',
+  description: "Comprenez le fonctionnement de l'Avance immédiate du crédit d'impôt : Urssaf pour l'activation et les paiements, DGFiP pour la partie fiscale, avec Jean-Christophe Yervant comme interlocuteur principal.",
 };
 
 export default function ServiceALaPersonnePage() {
@@ -19,10 +19,10 @@ export default function ServiceALaPersonnePage() {
           <>
             L&apos;Avance immédiate, un service
             <br />
-            proposé par l&apos;<span className="font-semibold text-amber-100">Urssaf</span>
+            proposé par l&apos;<span className="font-semibold text-amber-100">Urssaf</span> en lien avec la <span className="font-semibold text-amber-100">DGFiP</span>
           </>
         }
-        subtitle="Un crédit d'impôt instantané de 50% sur vos cours de trompette à domicile. Sans paperasse ni avance de frais."
+        subtitle="Un crédit d'impôt de 50% appliqué immédiatement sur vos cours de trompette à domicile. Jean-Christophe Yervant reste votre interlocuteur principal, pendant que l'Urssaf et la DGFiP gèrent le dispositif administratif et fiscal."
       />
 
       {/* SECTION 1: HERO / INTRO (Style: Prestige Header) */}
@@ -40,7 +40,7 @@ export default function ServiceALaPersonnePage() {
             </span>
             <h1 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
               L&apos;Avance immédiate, un service <br className="hidden md:block" />
-              proposé par l&apos;<span className="italic text-amber-600">Urssaf</span>
+              proposé par l&apos;<span className="italic text-amber-600">Urssaf</span> en lien avec la <span className="italic text-amber-600">DGFiP</span>
             </h1>
             <div className="w-24 h-1.5 bg-amber-600 rounded-full mx-auto opacity-30" />
           </div>
@@ -60,17 +60,17 @@ export default function ServiceALaPersonnePage() {
 
                 <div className="space-y-6 text-stone-600 text-lg font-light leading-relaxed">
                   <p>
-                    Lors du paiement de votre facture à votre organisme prestataire de services, vous ne réglez que la moitié du montant.
+                    Lors du paiement de votre facture à votre organisme prestataire de services, vous ne réglez que la moitié du montant. L&apos;Urssaf opère le service, et la DGFiP prend ensuite cette avance en compte dans votre situation fiscale.
                   </p>
 
                   {/* Highlights Card */}
                   <div className="bg-stone-50 border-none shadow-inner p-8 rounded-[2rem] relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-150 duration-700" />
                     <p className="font-medium text-stone-800 relative z-10 text-lg">
-                      Concrètement, pour une dépense de 200 € de services à la personne, l’Urssaf ne prélèvera plus que les 100 € de reste à payer.
+                      Concrètement, pour une dépense de 200 € de services à la personne, l&apos;Urssaf ne prélèvera plus que les 100 € de reste à payer.
                     </p>
                     <p className="mt-4 text-stone-600 relative z-10">
-                      <strong className="text-stone-900">CoursTrompette</strong> répercutera donc cet allègement dans les factures qu’il vous soumettra.
+                      <strong className="text-stone-900">Jean-Christophe Yervant</strong> répercutera donc cet allègement dans les factures qu&apos;il vous soumettra, et reste votre interlocuteur principal pour la mise en place comme pour le suivi.
                     </p>
                   </div>
                 </div>
@@ -82,8 +82,8 @@ export default function ServiceALaPersonnePage() {
               <div className="absolute -top-6 -right-6 w-full h-full border-2 border-stone-200 rounded-[2.5rem] -z-10" />
               <div className="relative rounded-[2.5rem] overflow-hidden border-2 border-stone-900 shadow-[8px_8px_0px_0px_rgba(251,191,36,1)] bg-white p-12 flex items-center justify-center min-h-[300px]">
                 <Image
-                  src="/sap/logo-urssaf. jpg"
-                  alt="Logo Urssaf - Au service de notre protection soci ale"
+                  src="/sap/logo-urssaf.jpg"
+                  alt="Logo Urssaf - Au service de notre protection sociale"
                   width={300}
                   height={100}
                   priority
@@ -132,21 +132,44 @@ export default function ServiceALaPersonnePage() {
 
               <div className="space-y-6 text-lg font-light text-stone-600 leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                 <p>
-                  C’est très simple puisque c’est <strong className="text-stone-900 font-medium">CoursTrompette</strong> qui s’occupe de tout !
+                  Jean-Christophe Yervant reste votre interlocuteur principal : il vous accompagne pour la mise en place du dispositif, puis pour son suivi au quotidien.
                 </p>
                 <div className="p-6 bg-white rounded-2xl border border-stone-100 shadow-sm">
                   <p>
-                    Avec votre autorisation, c’est votre organisme de services à la personne qui crée votre compte. Ensuite, vous recevez une notification de l’Urssaf vous invitant à activer votre compte sur un site dédié : {' '}
+                    Avec votre autorisation, <strong className="text-stone-900 font-medium">Jean-Christophe Yervant</strong> transmet à l&apos;Urssaf les informations nécessaires à l&apos;ouverture du service. Ensuite, vous recevez une notification de l&apos;Urssaf vous invitant à activer votre compte sur un site dédié : {' '}
                     <a href="https://www.particulier.urssaf.fr" target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:text-amber-700 underline underline-offset-4 font-medium transition-colors">
                       www.particulier.urssaf.fr
                     </a>.
                   </p>
                 </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="p-5 bg-white rounded-2xl border border-stone-100 shadow-sm">
+                    <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Votre contact</p>
+                    <p className="mt-2 text-xl font-serif text-stone-900">Jean-Christophe Yervant</p>
+                    <p className="mt-3 text-base font-light text-stone-600">
+                      Je vous explique le dispositif, je vous accompagne dans les démarches et je reste votre point de contact si vous avez la moindre question.
+                    </p>
+                  </div>
+                  <div className="p-5 bg-white rounded-2xl border border-stone-100 shadow-sm">
+                    <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Rôle Urssaf</p>
+                    <p className="mt-2 text-xl font-serif text-stone-900">Activation et paiement</p>
+                    <p className="mt-3 text-base font-light text-stone-600">
+                      L&apos;Urssaf gère l&apos;activation du service, reçoit les demandes de paiement et ne prélève que votre reste à charge après déduction de l&apos;avance immédiate.
+                    </p>
+                  </div>
+                  <div className="p-5 bg-white rounded-2xl border border-stone-100 shadow-sm">
+                    <p className="text-xs font-semibold tracking-[0.2em] uppercase text-amber-700">Rôle DGFiP</p>
+                    <p className="mt-2 text-xl font-serif text-stone-900">Traitement fiscal</p>
+                    <p className="mt-3 text-base font-light text-stone-600">
+                      La DGFiP prend en compte l&apos;avance immédiate dans votre déclaration de revenus et lors du calcul définitif de votre impôt.
+                    </p>
+                  </div>
+                </div>
                 <p>
-                  C’est sur ce site que <strong className="text-stone-900">CoursTrompette</strong> vous adresse les demandes de paiement suite aux prestations réalisées à votre domicile. <strong className="text-stone-900 font-medium bg-amber-100 px-1">Vous avez un délai de 48h pour la valider ou la refuser.</strong>
+                  Une fois l&apos;avance immédiate activée, <strong className="text-stone-900">Jean-Christophe Yervant</strong> vous adresse les demandes de paiement via l&apos;Urssaf après les prestations réalisées à votre domicile. <strong className="text-stone-900 font-medium bg-amber-100 px-1">Vous avez un délai de 48h pour les valider ou les contester.</strong>
                 </p>
                 <p>
-                  En un coup d’œil et à tout moment, vous pouvez visualiser depuis votre compte en ligne le crédit d’impôt consommé ainsi que le montant encore disponible pour l’année en cours.
+                  En un coup d&apos;oeil et à tout moment, vous pouvez visualiser depuis votre compte en ligne le crédit d&apos;impôt consommé ainsi que le montant encore disponible pour l&apos;année en cours. La DGFiP réintègre ensuite cette avance dans votre déclaration et dans le calcul final de votre impôt.
                 </p>
               </div>
             </div>
@@ -236,7 +259,7 @@ export default function ServiceALaPersonnePage() {
           </div>
 
           <p className="text-center text-stone-500 font-medium tracking-wide text-sm uppercase mt-16">
-            Pour toute question, CoursTrompette reste votre unique interlocuteur.
+            Jean-Christophe Yervant reste votre interlocuteur principal : l&apos;Urssaf et la DGFiP interviennent uniquement pour le traitement administratif et fiscal du dispositif.
           </p>
         </div>
       </section>

@@ -5,6 +5,8 @@ import IrealChordViewer from './IrealChordViewer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { Pause, Play, Save, Volume2, VolumeX, FileMusic, Activity, LayoutDashboard, Settings2, Music2, Rocket, Gauge, Flag, Zap, Repeat, Target, BookOpen } from 'lucide-react';
@@ -40,9 +42,12 @@ interface ExercisePattern {
   [exercise: string]: (scale?: string[]) => string[] | ExerciseNote[];
 }
 
+type TheoryMode = 'gamme' | 'accord';
+
 interface Favorite {
   rootNote: string;
   scaleType: string;
+  theoryMode?: TheoryMode;
   exerciseCategory: 'generator' | 'repertoire' | 'bop' | 'midi';
   exerciseType: string;
   tempo: number;
@@ -86,6 +91,230 @@ const SCALE_PATTERNS: ScalePattern = {
   'Mineur 7 (b9)': [0, 3, 7, 10, 13],
   'Diminué': [0, 3, 6, 9],
   'Demi-diminué (m7b5)': [0, 3, 6, 10],
+};
+
+const SCALE_TYPE_OPTIONS = ['Majeure', 'Mineure naturelle', 'Mineure harmonique', 'Mineure mÃ©lodique'] as const;
+const CHORD_TYPE_OPTIONS = ['Majeur 7', 'Majeur 9', 'Dominant 7', 'Dominant 9', 'Mineur 7', 'Mineur 9', 'Mineur 7 (b9)', 'DiminuÃ©', 'Demi-diminuÃ© (m7b5)'] as const;
+
+Object.assign(SCALE_PATTERNS, {
+  'Blues': [0, 3, 5, 6, 7, 10, 12],
+  'Pentatonique majeure': [0, 2, 4, 7, 9, 12],
+  'Pentatonique mineure': [0, 3, 5, 7, 10, 12],
+  'Majeur': [0, 4, 7],
+  'Mineur': [0, 3, 7],
+  'Majeur 6': [0, 4, 7, 9],
+  'Mineur 6': [0, 3, 7, 9],
+  'Augmente': [0, 4, 8],
+  'Sus2': [0, 2, 7],
+  'Sus4': [0, 5, 7],
+  '7sus4': [0, 5, 7, 10],
+});
+
+const GAMME_TYPE_OPTIONS = [
+  'Majeure',
+  'Mineure naturelle',
+  'Mineure harmonique',
+  'Mineure mÃƒÂ©lodique',
+  'Blues',
+  'Pentatonique majeure',
+  'Pentatonique mineure',
+  'Majeur 7',
+  'Majeur 9',
+  'Dominant 7',
+  'Dominant 9',
+  'Mineur 7',
+  'Mineur 9',
+  'Mineur 7 (b9)',
+  'DiminuÃƒÂ©',
+  'Demi-diminuÃƒÂ© (m7b5)',
+] as const;
+
+const ACCORD_TYPE_OPTIONS = [
+  'Majeur',
+  'Mineur',
+  'Majeur 6',
+  'Mineur 6',
+  'Sus2',
+  'Sus4',
+  '7sus4',
+  'Augmente',
+  'Majeur-Majeur 7',
+  'Majeur 9',
+  'Majeur-Mineur 7',
+  'Dominant 9',
+  'Mineur-Mineur 7',
+  'Mineur-Majeur 7',
+  'Mineur 9',
+  'Mineur 7 (b9)',
+  'DiminuÃƒÂ©',
+  'Demi-diminuÃƒÂ© (m7b5)',
+] as const;
+
+const isScaleOption = (value: string) => GAMME_TYPE_OPTIONS.includes(value as typeof GAMME_TYPE_OPTIONS[number]);
+const isChordOption = (value: string) => ACCORD_TYPE_OPTIONS.includes(value as typeof ACCORD_TYPE_OPTIONS[number]);
+const getTheoryModeForScaleType = (value: string): TheoryMode => isChordOption(value) ? 'accord' : 'gamme';
+const UNIFIED_THEORY_TYPE_OPTIONS = [
+  'Majeure',
+  'Mineure naturelle',
+  'Mineure harmonique',
+  'Mineure mélodique',
+  'Blues',
+  'Pentatonique majeure',
+  'Pentatonique mineure',
+  'Majeur',
+  'Mineur',
+  'Majeur 6',
+  'Mineur 6',
+  'Sus2',
+  'Sus4',
+  '7sus4',
+  'Augmente',
+  'Majeur 7',
+  'Majeur 9',
+  'Dominant 7',
+  'Dominant 9',
+  'Mineur 7',
+  'Mineur 9',
+  'Mineur 7 (b9)',
+  'Diminué',
+  'Demi-diminué (m7b5)',
+] as const;
+const LEGACY_ACCORD_DEFAULT_TYPES = new Set([
+  'Majeur',
+  'Mineur',
+  'Majeur 6',
+  'Mineur 6',
+  'Sus2',
+  'Sus4',
+  '7sus4',
+  'Augmente',
+]);
+const THEORY_TYPE_ALIASES: Record<string, string> = {
+  'Mineure mÃ©lodique': 'Mineure mélodique',
+  'Mineure mÃƒÂ©lodique': 'Mineure mélodique',
+  'Mineure mÃƒÆ’Ã‚Â©lodique': 'Mineure mélodique',
+  'DiminuÃ©': 'Diminué',
+  'DiminuÃƒÂ©': 'Diminué',
+  'DiminuÃƒÆ’Ã‚Â©': 'Diminué',
+  'Demi-diminuÃ© (m7b5)': 'Demi-diminué (m7b5)',
+  'Demi-diminuÃƒÂ© (m7b5)': 'Demi-diminué (m7b5)',
+  'Demi-diminuÃƒÆ’Ã‚Â© (m7b5)': 'Demi-diminué (m7b5)',
+};
+const EXTRA_THEORY_TYPE_ALIASES: Record<string, string> = {
+  'Majeur 7': 'Majeur-Majeur 7',
+  'Dominant 7': 'Majeur-Mineur 7',
+  'Mineur 7': 'Mineur-Mineur 7',
+  'Majeur majeur 7': 'Majeur-Majeur 7',
+  'Majeur mineur 7': 'Majeur-Mineur 7',
+  'Mineur mineur 7': 'Mineur-Mineur 7',
+  'Mineur majeur 7': 'Mineur-Majeur 7',
+};
+const normalizeTheoryType = (value: string) => EXTRA_THEORY_TYPE_ALIASES[THEORY_TYPE_ALIASES[value] || value] || THEORY_TYPE_ALIASES[value] || value;
+const THEORY_TYPE_LABELS: Record<string, string> = {
+  'Majeure': 'Maj',
+  'Mineure naturelle': 'm nat',
+  'Mineure harmonique': 'm harm',
+  'Mineure mélodique': 'm mel',
+  'Blues': 'Blues',
+  'Pentatonique majeure': 'Penta Maj',
+  'Pentatonique mineure': 'Penta m',
+  'Majeur': 'Maj',
+  'Mineur': 'm',
+  'Majeur 6': 'Maj6',
+  'Mineur 6': 'm6',
+  'Sus2': 'sus2',
+  'Sus4': 'sus4',
+  '7sus4': '7sus4',
+  'Augmente': 'aug',
+  'Majeur-Majeur 7': 'Maj7',
+  'Majeur 9': 'Maj9',
+  'Majeur-Mineur 7': '7',
+  'Dominant 9': '9',
+  'Mineur-Mineur 7': 'm7',
+  'Mineur-Majeur 7': 'mMaj7',
+  'Mineur 9': 'm9',
+  'Mineur 7 (b9)': 'm7(b9)',
+  'Diminué': 'dim',
+  'Demi-diminué (m7b5)': 'm7b5',
+};
+const getTheoryTypeLabel = (value: string) => THEORY_TYPE_LABELS[normalizeTheoryType(value)] || normalizeTheoryType(value);
+const MODE_SCALE_PATTERNS: ScalePattern = {
+  'Majeure': [0, 2, 4, 5, 7, 9, 11, 12],
+  'Mineure naturelle': [0, 2, 3, 5, 7, 8, 10, 12],
+  'Mineure harmonique': [0, 2, 3, 5, 7, 8, 11, 12],
+  'Mineure mélodique': [0, 2, 3, 5, 7, 9, 11, 12],
+  'Blues': [0, 3, 5, 6, 7, 10, 12],
+  'Pentatonique majeure': [0, 2, 4, 7, 9, 12],
+  'Pentatonique mineure': [0, 3, 5, 7, 10, 12],
+  'Majeur': [0, 2, 4, 5, 7, 9, 11, 12],
+  'Mineur': [0, 2, 3, 5, 7, 8, 10, 12],
+  'Majeur 6': [0, 2, 4, 5, 7, 9, 11, 12],
+  'Mineur 6': [0, 2, 3, 5, 7, 9, 10, 12],
+  'Sus2': [0, 2, 4, 7, 9, 12],
+  'Sus4': [0, 2, 5, 7, 9, 10, 12],
+  '7sus4': [0, 2, 5, 7, 9, 10, 12],
+  'Augmente': [0, 2, 4, 6, 8, 10, 12],
+  'Majeur 7': [0, 2, 4, 5, 7, 9, 11, 12],
+  'Majeur-Majeur 7': [0, 2, 4, 5, 7, 9, 11, 12],
+  'Majeur 9': [0, 2, 4, 5, 7, 9, 11, 12],
+  'Majeur-Mineur 7': [0, 2, 4, 5, 7, 9, 10, 12],
+  'Dominant 7': [0, 2, 4, 5, 7, 9, 10, 12],
+  'Dominant 9': [0, 2, 4, 5, 7, 9, 10, 12],
+  'Mineur 7': [0, 2, 3, 5, 7, 9, 10, 12],
+  'Mineur-Mineur 7': [0, 2, 3, 5, 7, 9, 10, 12],
+  'Mineur-Majeur 7': [0, 2, 3, 5, 7, 9, 11, 12],
+  'Mineur 9': [0, 2, 3, 5, 7, 9, 10, 12],
+  'Mineur 7 (b9)': [0, 1, 3, 5, 7, 8, 10, 12],
+  'Diminué': [0, 2, 3, 5, 6, 8, 9, 11, 12],
+  'Demi-diminué (m7b5)': [0, 1, 3, 5, 6, 8, 10, 12],
+};
+const MODE_CHORD_PATTERNS: ScalePattern = {
+  'Majeure': [0, 4, 7, 11],
+  'Mineure naturelle': [0, 3, 7, 10],
+  'Mineure harmonique': [0, 3, 7, 11],
+  'Mineure mélodique': [0, 3, 7, 11],
+  'Blues': [0, 3, 7, 10],
+  'Pentatonique majeure': [0, 4, 7, 9],
+  'Pentatonique mineure': [0, 3, 7, 10],
+  'Majeur': [0, 4, 7],
+  'Mineur': [0, 3, 7],
+  'Majeur 6': [0, 4, 7, 9],
+  'Mineur 6': [0, 3, 7, 9],
+  'Sus2': [0, 2, 7],
+  'Sus4': [0, 5, 7],
+  '7sus4': [0, 5, 7, 10],
+  'Augmente': [0, 4, 8],
+  'Majeur 7': [0, 4, 7, 11],
+  'Majeur-Majeur 7': [0, 4, 7, 11],
+  'Majeur 9': [0, 4, 7, 11, 14],
+  'Majeur-Mineur 7': [0, 4, 7, 10],
+  'Dominant 7': [0, 4, 7, 10],
+  'Dominant 9': [0, 4, 7, 10, 14],
+  'Mineur 7': [0, 3, 7, 10],
+  'Mineur-Mineur 7': [0, 3, 7, 10],
+  'Mineur-Majeur 7': [0, 3, 7, 11],
+  'Mineur 9': [0, 3, 7, 10, 14],
+  'Mineur 7 (b9)': [0, 3, 7, 10, 13],
+  'Diminué': [0, 3, 6, 9],
+  'Demi-diminué (m7b5)': [0, 3, 6, 10],
+};
+const getLegacyTheoryModeForScaleType = (value: string): TheoryMode => (
+  LEGACY_ACCORD_DEFAULT_TYPES.has(normalizeTheoryType(value)) ? 'accord' : 'gamme'
+);
+const getIntervalsForMode = (scaleType: string, theoryMode: TheoryMode) => {
+  const normalizedScaleType = normalizeTheoryType(scaleType);
+  return (
+  theoryMode === 'accord'
+    ? (MODE_CHORD_PATTERNS[normalizedScaleType] || MODE_CHORD_PATTERNS['Majeure'])
+    : (MODE_SCALE_PATTERNS[normalizedScaleType] || MODE_SCALE_PATTERNS['Majeure'])
+  );
+};
+const RANGE_OCTAVES = [2, 3, 4, 5, 6];
+const RANGE_NOTE_OPTIONS = RANGE_OCTAVES.flatMap((octave) => CHROMATIC_NOTES.map((note) => `${note}${octave}`));
+const formatRangeNoteLabel = (note: string) => {
+  const noteBase = note.replace(/[0-9]/g, '');
+  const octave = note.match(/[0-9]/)?.[0] || '';
+  return `${NOTE_NAMES[noteBase] || noteBase}${octave}`;
 };
 
 // Helpers for exercise generation
@@ -356,6 +585,122 @@ const EXERCISE_PATTERNS: ExercisePattern = {
   },
 };
 
+const GENERATOR_EXERCISES = Object.keys(EXERCISE_PATTERNS);
+const ROOT_ANCHORED_EXERCISES = new Set([
+  'ArpÃ¨ge avec septiÃ¨me',
+  'Enclosure sur 1-3-5-7',
+  'Clarke II (Single TonalitÃ©)',
+  'Clarke Ã‰tude III',
+]);
+const FIXED_DIRECTION_EXERCISES = new Set([
+  'FlexibilitÃ© - Niveau 1',
+  'Clarke II (Single TonalitÃ©)',
+  'Clarke Second Study',
+  'Clarke Ã‰tude III',
+]);
+const NOTE_KEY_REGEX = /^[A-G](?:#|b)?\d(?:\/r)?$/;
+
+const getNotesInSelectedRange = (rootNote: string, scaleType: string, theoryMode: TheoryMode, startNote: string, endNote: string) => {
+  const startMidi = Math.min(noteToMidi(startNote), noteToMidi(endNote));
+  const endMidi = Math.max(noteToMidi(startNote), noteToMidi(endNote));
+  const rootIdx = CHROMATIC_NOTES.indexOf(normalizeNote(rootNote));
+  const intervalPitchClasses = new Set(
+    getIntervalsForMode(scaleType, theoryMode).map((interval) => ((interval % 12) + 12) % 12)
+  );
+  const notes: string[] = [];
+
+  for (let midi = startMidi; midi <= endMidi; midi++) {
+    const relativeMidi = (midi - rootIdx + 120) % 12;
+    if (intervalPitchClasses.has(relativeMidi)) {
+      const noteIdx = midi % 12;
+      const noteOct = Math.floor(midi / 12) - 1;
+      notes.push(`${CHROMATIC_NOTES[noteIdx]}${noteOct}`);
+    }
+  }
+
+  return notes;
+};
+
+const getExpandedIntervals = (scaleType: string, theoryMode: TheoryMode, minimumLength = 8) => {
+  const baseIntervals = [...getIntervalsForMode(scaleType, theoryMode)];
+  const expanded = baseIntervals.includes(12) ? [...baseIntervals] : [...baseIntervals, 12];
+  const cycle = expanded.slice(1);
+  let octaveOffset = 12;
+
+  while (expanded.length < minimumLength && cycle.length > 0) {
+    cycle.forEach((interval) => {
+      if (expanded.length < minimumLength) {
+        expanded.push(interval + octaveOffset);
+      }
+    });
+    octaveOffset += 12;
+  }
+
+  return expanded;
+};
+
+const getAutoRangeForRoot = (rootNote: string) => {
+  const normalizedRoot = normalizeNote(rootNote);
+  const rootIdx = CHROMATIC_NOTES.indexOf(normalizedRoot);
+  const startOctave = rootIdx >= 0 && rootIdx <= CHROMATIC_NOTES.indexOf('F') ? 4 : 3;
+
+  return {
+    startNote: `${normalizedRoot}${startOctave}`,
+    endNote: `${normalizedRoot}${startOctave + 2}`,
+  };
+};
+
+const getAnchoredScaleNotes = (rootNote: string, scaleType: string, theoryMode: TheoryMode, startNote: string, endNote: string) => {
+  const startMidi = Math.min(noteToMidi(startNote), noteToMidi(endNote));
+  const endMidi = Math.max(noteToMidi(startNote), noteToMidi(endNote));
+  const rootIdx = CHROMATIC_NOTES.indexOf(normalizeNote(rootNote));
+  let rootMidi: number | null = null;
+
+  for (let midi = startMidi; midi <= endMidi; midi++) {
+    if (midi % 12 === rootIdx) {
+      rootMidi = midi;
+      break;
+    }
+  }
+
+  if (rootMidi === null) {
+    rootMidi = startMidi;
+    while (rootMidi % 12 !== rootIdx) rootMidi++;
+  }
+
+  return getExpandedIntervals(scaleType, theoryMode).map((interval) => {
+    const midi = rootMidi! + interval;
+    const noteIdx = midi % 12;
+    const noteOct = Math.floor(midi / 12) - 1;
+    return `${CHROMATIC_NOTES[noteIdx]}${noteOct}`;
+  });
+};
+
+const normalizeGeneratedNotes = (generated?: string[] | ExerciseNote[]): ExerciseNote[] => {
+  if (!generated) return [];
+
+  return generated
+    .map((item) => typeof item === 'string' ? { key: item, duration: '8' } : item)
+    .filter((item): item is ExerciseNote =>
+      !!item &&
+      typeof item.key === 'string' &&
+      NOTE_KEY_REGEX.test(item.key) &&
+      typeof item.duration === 'string'
+    );
+};
+
+const appendReturnTrip = (notes: ExerciseNote[]) => {
+  if (notes.length < 2) return notes;
+
+  return [
+    ...notes,
+    ...notes
+      .slice(0, -1)
+      .reverse()
+      .map((note) => ({ ...note, newLine: undefined })),
+  ];
+};
+
 const REPERTOIRE_SONGS: { [key: string]: ExerciseNote[] } = {
   'Star Wars (Thème)': [
     { key: 'G4', duration: 'h' }, { key: 'D5', duration: 'h' }, { key: 'C5', duration: '8' }, { key: 'B4', duration: '8' }, { key: 'A4', duration: '8' }, { key: 'G5', duration: 'h' },
@@ -591,6 +936,22 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
     }
   }, [activeNoteIndex]);
 
+  const exerciseCategory = 'generator';
+  const exerciseOptions = exerciseCategory === 'generator'
+    ? GENERATOR_EXERCISES
+    : exerciseCategory === 'repertoire'
+      ? Object.keys(REPERTOIRE_SONGS)
+      : exerciseCategory === 'bop'
+        ? Object.keys(SOULFUL_BOP_PHRASES)
+        : MIDI_FILES;
+  const exerciseLabel = exerciseCategory === 'generator'
+    ? '2. Motif / Ã‰cart'
+    : exerciseCategory === 'repertoire'
+      ? 'Morceau du RÃ©pertoire'
+      : exerciseCategory === 'bop'
+        ? 'Phrase Jazz / Bop'
+        : 'Fichier MIDI';
+
   return (
     <div className="w-full rounded-xl border border-slate-200 bg-white shadow-sm p-4 overflow-hidden">
       <div ref={containerRef} className="w-full" />
@@ -635,9 +996,11 @@ const ToneGenerator: React.FC<{ note: ExerciseNote; isPlaying: boolean; volume: 
 };
 
 const ScalePractice: React.FC = () => {
+  const initialAutoRange = getAutoRangeForRoot('C');
   const [activeTab, setActiveTab] = useState<'exercises' | 'ireal'>('exercises');
   const [rootNote, setRootNote] = useState('C');
   const [scaleType, setScaleType] = useState('Majeure');
+  const [theoryMode, setTheoryMode] = useState<TheoryMode>('gamme');
   const [exerciseCategory, setExerciseCategory] = useState<'generator' | 'repertoire' | 'bop' | 'midi'>('generator');
   const [exerciseType, setExerciseType] = useState('Gamme simple');
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
@@ -660,9 +1023,9 @@ const ScalePractice: React.FC = () => {
   const [displayMeasure, setDisplayMeasure] = useState(1);
   const beatsPerMeasure = 4;
 
-  const [startNote, setStartNote] = useState('F#3');
-  const [endNote, setEndNote] = useState('C5');
-  const [upDown, setUpDown] = useState(false);
+  const [startNote, setStartNote] = useState(initialAutoRange.startNote);
+  const [endNote, setEndNote] = useState(initialAutoRange.endNote);
+  const [upDown, setUpDown] = useState(true);
 
   // Acceleration Mode State
   const [accelConfig, setAccelConfig] = useState({
@@ -704,29 +1067,31 @@ const ScalePractice: React.FC = () => {
     }
   }, []);
 
+  const handleRootNoteSelect = useCallback((nextRootNote: string) => {
+    const autoRange = getAutoRangeForRoot(nextRootNote);
+    setRootNote(nextRootNote);
+    setStartNote(autoRange.startNote);
+    setEndNote(autoRange.endNote);
+    setUpDown(true);
+  }, []);
+
+  const handleTheoryModeSelect = useCallback((nextTheoryMode: TheoryMode) => {
+    setTheoryMode(nextTheoryMode);
+  }, []);
+
+  const handleScaleTypeSelect = useCallback((nextScaleType: string) => {
+    setScaleType(normalizeTheoryType(nextScaleType));
+  }, []);
+
   const generateScale = useMemo((): ExerciseNote[] => {
     let notes: ExerciseNote[];
 
     const isRepertoire = !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || exerciseType === 'Fichier MIDI';
 
     if (!isRepertoire) {
-      // Logic for Scales and Patterns with Universal Range
-      const startMidi = noteToMidi(startNote);
-      const endMidi = noteToMidi(endNote);
-      const rootIdx = CHROMATIC_NOTES.indexOf(rootNote);
-      const intervals = SCALE_PATTERNS[scaleType] || [0];
-
-      const baseNotes: string[] = [];
-      for (let midi = startMidi; midi <= endMidi; midi++) {
-        const relativeMidi = (midi - rootIdx + 120) % 12;
-        if (intervals.includes(relativeMidi)) {
-          const noteIdx = midi % 12;
-          const noteOct = Math.floor(midi / 12) - 1;
-          baseNotes.push(`${CHROMATIC_NOTES[noteIdx]}${noteOct}`);
-        }
-      }
-
+      const baseNotes = getNotesInSelectedRange(rootNote, scaleType, theoryMode, startNote, endNote);
       let sequence: string[] = [];
+      let generatedNotes: ExerciseNote[] | null = null;
       if (exerciseType === 'Gamme simple') {
         sequence = baseNotes;
       } else if (exerciseType === 'Tierces') {
@@ -745,14 +1110,26 @@ const ScalePractice: React.FC = () => {
         // Here we can either use the first 4 notes or repeat the arpeggio pattern
         // Given the simplified request, let's just use the filtered baseNotes
         sequence = baseNotes;
+      } else {
+        const sourceNotes = ROOT_ANCHORED_EXERCISES.has(exerciseType)
+          ? getAnchoredScaleNotes(rootNote, scaleType, theoryMode, startNote, endNote)
+          : baseNotes;
+        const generated = normalizeGeneratedNotes(EXERCISE_PATTERNS[exerciseType]?.(sourceNotes));
+        generatedNotes = generated.length > 0 ? generated : [{ key: 'C4', duration: 'w' }];
       }
 
-      if (upDown) {
-        const reverse = [...sequence].reverse().slice(1);
-        sequence = sequence.concat(reverse);
-      }
+      if (generatedNotes) {
+        notes = upDown && !FIXED_DIRECTION_EXERCISES.has(exerciseType)
+          ? appendReturnTrip(generatedNotes)
+          : generatedNotes;
+      } else {
+        if (upDown) {
+          const reverse = [...sequence].reverse().slice(1);
+          sequence = sequence.concat(reverse);
+        }
 
-      notes = sequence.length > 0 ? sequence.map(key => ({ key, duration: '8' })) : [{ key: 'C4', duration: 'w' }];
+        notes = sequence.length > 0 ? sequence.map(key => ({ key, duration: '8' })) : [{ key: 'C4', duration: 'w' }];
+      }
     } else if (exerciseType === 'Fichier MIDI' && midiNotes.length > 0) {
       notes = midiNotes.map(n => {
         const octave = parseInt(n.key.match(/\d+/)?.[0] || '4', 10);
@@ -793,7 +1170,7 @@ const ScalePractice: React.FC = () => {
       return padded;
     }
     return notes;
-  }, [rootNote, scaleType, startNote, endNote, upDown, exerciseType, midiNotes, midiTranspose]);
+  }, [rootNote, scaleType, theoryMode, startNote, endNote, upDown, exerciseType, midiNotes, midiTranspose]);
 
   const noteToFrequency = useCallback((noteKey: string): number => {
     if (noteKey.includes('/r')) return 0;
@@ -837,7 +1214,7 @@ const ScalePractice: React.FC = () => {
 
   useEffect(() => {
     handleStop();
-  }, [exerciseType, rootNote, scaleType, startNote, endNote, upDown, handleStop]);
+  }, [exerciseType, rootNote, scaleType, theoryMode, startNote, endNote, upDown, handleStop]);
 
   // --- PLAY / PAUSE TOGGLE (Gestion AudioContext) ---
   const togglePlay = useCallback(async () => {
@@ -942,8 +1319,10 @@ const ScalePractice: React.FC = () => {
 
             // --- ACCELERATION LOGIC ---
             const ac = accelConfigRef.current;
-            if (ac.active && (currentMeasure - 1) % ac.interval === 0) {
-              const newTempo = Math.min(ac.end, tempoRef.current + ac.step);
+            const intervalMeasures = Math.max(1, Math.trunc(ac.interval || 1));
+            const stepAmount = Math.max(1, Math.trunc(ac.step || 1));
+            if (ac.active && (currentMeasure - 1) % intervalMeasures === 0) {
+              const newTempo = Math.min(ac.end, tempoRef.current + stepAmount);
               if (newTempo !== tempoRef.current) {
                 // Update Ref immediately for audio
                 tempoRef.current = newTempo;
@@ -972,6 +1351,7 @@ const ScalePractice: React.FC = () => {
     const favorite = {
       rootNote,
       scaleType,
+      theoryMode,
       exerciseCategory,
       exerciseType,
       tempo,
@@ -988,8 +1368,11 @@ const ScalePractice: React.FC = () => {
 
   const loadFavorite = (fav: Favorite) => {
     if (!fav) return;
+    const normalizedScaleType = normalizeTheoryType(fav.scaleType);
+    const favoriteTheoryMode = fav.theoryMode || getLegacyTheoryModeForScaleType(normalizedScaleType);
     setRootNote(fav.rootNote);
-    setScaleType(fav.scaleType);
+    setScaleType(normalizedScaleType);
+    setTheoryMode(favoriteTheoryMode);
     setExerciseCategory(fav.exerciseCategory || 'generator');
     setExerciseType(fav.exerciseType);
     setTempo(fav.tempo);
@@ -1070,6 +1453,21 @@ const ScalePractice: React.FC = () => {
   };
 
   const isExerciseDisabled = exerciseType === 'Flexibilité - Niveau 1' || !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || exerciseType === 'Fichier MIDI';
+
+  const exerciseOptions = exerciseCategory === 'generator'
+    ? GENERATOR_EXERCISES
+    : exerciseCategory === 'repertoire'
+      ? Object.keys(REPERTOIRE_SONGS)
+      : exerciseCategory === 'bop'
+        ? Object.keys(SOULFUL_BOP_PHRASES)
+        : MIDI_FILES;
+  const exerciseLabel = exerciseCategory === 'generator'
+    ? '2. Motif / Ã‰cart'
+    : exerciseCategory === 'repertoire'
+      ? 'Morceau du RÃ©pertoire'
+      : exerciseCategory === 'bop'
+        ? 'Phrase Jazz / Bop'
+        : 'Fichier MIDI';
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 md:px-8">
@@ -1155,6 +1553,448 @@ const ScalePractice: React.FC = () => {
                 ))}
               </div>
 
+              <ScrollArea className="w-full">
+                <div className="flex min-w-max gap-3 pb-4">
+                  {false && <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="lg"
+                        className={cn(
+                          "h-14 min-w-[88px] rounded-2xl flex flex-col gap-1 shadow-md transition-all active:scale-95 text-white border-none",
+                          isPlaying ? "bg-amber-500 hover:bg-amber-600" : "bg-orange-600 hover:bg-orange-700"
+                        )}
+                        onClick={togglePlay}
+                      >
+                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
+                        <span className="text-[9px] font-black uppercase tracking-widest">
+                          {isPlaying ? 'Pause' : 'Play'}
+                        </span>
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="h-14 min-w-[72px] rounded-2xl border-slate-200 flex flex-col gap-1 hover:bg-white transition-all active:scale-95"
+                        onClick={handleStop}
+                      >
+                        <div className="w-4 h-4 bg-current rounded-sm" />
+                        <span className="text-[9px] font-black uppercase tracking-widest">Stop</span>
+                      </Button>
+                    </div>
+
+                    <div className="w-[220px] space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-end gap-1">
+                          <span className="text-3xl font-mono font-black text-slate-900 leading-none">{tempo}</span>
+                          <span className="text-[9px] font-bold text-slate-400 mb-0.5 uppercase tracking-widest">BPM</span>
+                        </div>
+                        <Dialog open={isAccelDialogOpen} onOpenChange={setIsAccelDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                "h-8 px-2.5 text-[9px] font-bold uppercase tracking-widest border border-slate-200 rounded-xl",
+                                accelConfig.active ? "bg-orange-100 text-orange-700 border-orange-200" : "text-slate-500"
+                              )}
+                            >
+                              <Rocket className="w-3 h-3 mr-1" />
+                              {accelConfig.active ? "ActivÃ©" : "AccÃ©lÃ©rer"}
+                            </Button>
+                          </DialogTrigger>
+                        <DialogContent className="sm:max-w-[420px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
+                             <DialogHeader>
+                               <DialogTitle className="text-xl font-black flex items-center gap-3 text-slate-800">
+                                 <Rocket className="w-5 h-5 text-orange-500" />
+                                 Testeur de Vitesse
+                               </DialogTitle>
+                             </DialogHeader>
+                             <div className="space-y-6 pt-4">
+                               <div className="grid grid-cols-2 gap-4">
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">DÃ©part</Label>
+                                   <Input type="number" value={accelConfig.start} onChange={(e) => setAccelConfig(prev => ({ ...prev, start: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Objectif</Label>
+                                   <Input type="number" value={accelConfig.end} onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Pas</Label>
+                                   <Input type="number" value={accelConfig.step} min={1} onChange={(e) => setAccelConfig(prev => ({ ...prev, step: Math.max(1, Number(e.target.value) || 1) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Mesures</Label>
+                                   <Input type="number" value={accelConfig.interval} min={1} onChange={(e) => setAccelConfig(prev => ({ ...prev, interval: Math.max(1, Number(e.target.value) || 1) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                               </div>
+                               <p className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 text-sm font-medium text-orange-700">
+                                 +{accelConfig.step} BPM toutes les {accelConfig.interval} mesure{accelConfig.interval > 1 ? 's' : ''}, de {accelConfig.start} à {accelConfig.end} BPM.
+                               </p>
+                               <Button
+                                 onClick={() => {
+                                   setAccelConfig(prev => ({ ...prev, active: !prev.active }));
+                                   setIsAccelDialogOpen(false);
+                                  if (!accelConfig.active) setTempo(accelConfig.start);
+                                }}
+                                className="w-full h-14 rounded-xl font-black text-lg bg-orange-600 hover:bg-orange-700"
+                              >
+                                {accelConfig.active ? "DÃ©sactiver" : "Activer l'accÃ©lÃ©ration"}
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                      <Slider value={[tempo]} min={40} max={208} onValueChange={(vals) => setTempo(vals[0])} />
+                    </div>
+
+                    <div className="w-[180px] space-y-2">
+                      <div className="flex items-center justify-between text-slate-500">
+                        <div className="flex items-center gap-2">
+                          <Volume2 className="w-3.5 h-3.5" />
+                          <span className="text-[9px] font-bold uppercase tracking-widest">Volume</span>
+                        </div>
+                        <span className="text-[9px] font-mono font-bold">{Math.round(volume * 200)}%</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Slider value={[volume]} max={0.5} step={0.01} onValueChange={(vals) => setVolume(vals[0])} className="flex-1" />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-slate-400 hover:text-orange-600 rounded-xl border border-slate-200 bg-white"
+                          onClick={() => setIsMuted(!isMuted)}
+                        >
+                          {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>}
+
+                  {exerciseCategory === 'generator' && (
+                    <div className="flex items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm">
+                      <div className="space-y-2 w-[148px]">
+                        <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">1. Mode</Label>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[
+                            { value: 'gamme' as const, label: 'Gamme' },
+                            { value: 'accord' as const, label: 'Accord' }
+                          ].map(option => (
+                            <button
+                              key={option.value}
+                              onClick={() => handleTheoryModeSelect(option.value)}
+                              className={cn(
+                                "h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                                theoryMode === option.value
+                                  ? "bg-slate-800 text-white border-slate-700 shadow-sm"
+                                  : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                              )}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 w-[220px]">
+                        <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">Type</Label>
+                        <Select value={scaleType} onValueChange={handleScaleTypeSelect}>
+                          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-[11px] font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[120]" side="bottom" sideOffset={6} avoidCollisions={false}>
+                            {UNIFIED_THEORY_TYPE_OPTIONS.map((option) => (
+                              <SelectItem key={option} value={option}>{getTheoryTypeLabel(option)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm w-[320px]">
+                    <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">{exerciseLabel}</Label>
+                    <Select
+                      value={exerciseCategory === 'midi' ? selectedMidi : exerciseType}
+                      onValueChange={(value) => {
+                        if (exerciseCategory === 'midi') {
+                          setExerciseType(value);
+                          loadMidiFile(value);
+                          return;
+                        }
+                        setExerciseType(value);
+                      }}
+                    >
+                      <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-[11px] font-semibold">
+                        <SelectValue placeholder="Choisir..." />
+                      </SelectTrigger>
+                      <SelectContent className="z-[120]" side="bottom" sideOffset={6} avoidCollisions={false}>
+                        {exerciseOptions.map((option: string) => (
+                          <SelectItem key={option} value={option}>{option}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {exerciseCategory === 'generator' && (
+                    <>
+                      {false && <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm w-[160px]">
+                        <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">3. TonalitÃ©</Label>
+                        {false && <Select value={rootNote} onValueChange={handleRootNoteSelect}>
+                          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-[11px] font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[120]">
+                            {CHROMATIC_NOTES.map((option) => (
+                              <SelectItem key={option} value={option}>{NOTE_NAMES[option] || option}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>}
+                      </div>}
+
+                      <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm w-[170px]">
+                        <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">4. Plage : DÃ©but</Label>
+                        <Select value={startNote} onValueChange={setStartNote}>
+                          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-[11px] font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[120]" side="bottom" sideOffset={6} avoidCollisions={false}>
+                            {RANGE_NOTE_OPTIONS.map((option) => (
+                              <SelectItem key={option} value={option}>{formatRangeNoteLabel(option)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm w-[170px]">
+                        <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">5. Plage : Fin</Label>
+                        <Select value={endNote} onValueChange={setEndNote}>
+                          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-[11px] font-semibold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[120]" side="bottom" sideOffset={6} avoidCollisions={false}>
+                            {RANGE_NOTE_OPTIONS.map((option) => (
+                              <SelectItem key={option} value={option}>{formatRangeNoteLabel(option)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+
+                  {false && <div className="flex items-end gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 shadow-sm">
+                    {exerciseCategory === 'generator' && (
+                      <div className="space-y-2 w-[150px]">
+                        <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">Aller-Retour</Label>
+                        <button
+                          onClick={() => setUpDown(!upDown)}
+                          className={cn(
+                            "w-full h-10 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm border-2",
+                            upDown
+                              ? "bg-orange-600 text-white border-orange-400"
+                              : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
+                          )}
+                        >
+                          {upDown ? "ON" : "OFF"}
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="space-y-2 w-[170px]">
+                      <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">Favori</Label>
+                      <Button
+                        onClick={saveFavorite}
+                        variant="outline"
+                        className="w-full h-10 border-orange-200 bg-white text-orange-600 font-bold text-[10px] uppercase tracking-widest rounded-xl hover:bg-orange-50 transition-all active:scale-95"
+                      >
+                        <Save className="w-3.5 h-3.5 mr-2" />
+                        Sauvegarder
+                      </Button>
+                    </div>
+
+                    <div className="bg-slate-900 rounded-xl px-4 py-2 border border-slate-800 shadow-sm flex items-center gap-4">
+                      <div className="flex flex-col items-center">
+                        <span className="text-[8px] text-slate-500 uppercase">Temps</span>
+                        <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayBeat : "-"}</span>
+                      </div>
+                      <div className="w-px h-6 bg-slate-800" />
+                      <div className="flex flex-col items-center">
+                        <span className="text-[8px] text-slate-500 uppercase">Mesure</span>
+                        <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayMeasure : "-"}</span>
+                      </div>
+                    </div>
+                  </div>}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+
+              {exerciseCategory === 'generator' && (
+                <div className="mt-1 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <div className="min-w-[420px] flex-1 space-y-2">
+                      <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">3. Tonalite</Label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {CHROMATIC_NOTES.map((noteOption) => (
+                          <button
+                            key={noteOption}
+                            onClick={() => handleRootNoteSelect(noteOption)}
+                            className={cn(
+                              "h-9 min-w-[54px] rounded-xl px-2 text-[10px] font-black uppercase transition-all border",
+                              rootNote === noteOption
+                                ? "bg-slate-800 text-white border-slate-700 shadow-sm"
+                                : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                            )}
+                          >
+                            {NOTE_NAMES[noteOption] || noteOption}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="lg"
+                          className={cn(
+                            "h-12 min-w-[78px] rounded-2xl flex flex-col gap-1 shadow-md transition-all active:scale-95 text-white border-none",
+                            isPlaying ? "bg-amber-500 hover:bg-amber-600" : "bg-orange-600 hover:bg-orange-700"
+                          )}
+                          onClick={togglePlay}
+                        >
+                          {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+                          <span className="text-[8px] font-black uppercase tracking-widest">{isPlaying ? 'Pause' : 'Play'}</span>
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="h-12 min-w-[64px] rounded-2xl border-slate-200 flex flex-col gap-1 hover:bg-slate-50 transition-all active:scale-95"
+                          onClick={handleStop}
+                        >
+                          <div className="w-3.5 h-3.5 bg-current rounded-sm" />
+                          <span className="text-[8px] font-black uppercase tracking-widest">Stop</span>
+                        </Button>
+                      </div>
+
+                      <div className="w-[180px] space-y-2">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-end gap-1">
+                            <span className="text-2xl font-mono font-black text-slate-900 leading-none">{tempo}</span>
+                            <span className="text-[8px] font-bold text-slate-400 mb-0.5 uppercase tracking-widest">BPM</span>
+                          </div>
+                          <Dialog open={isAccelDialogOpen} onOpenChange={setIsAccelDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                  "h-7 px-2 text-[8px] font-bold uppercase tracking-widest border border-slate-200 rounded-xl",
+                                  accelConfig.active ? "bg-orange-100 text-orange-700 border-orange-200" : "text-slate-500"
+                                )}
+                              >
+                                <Rocket className="w-3 h-3 mr-1" />
+                                {accelConfig.active ? "Active" : "Accel"}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[420px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
+                              <DialogHeader>
+                                <DialogTitle className="text-xl font-black flex items-center gap-3 text-slate-800">
+                                  <Rocket className="w-5 h-5 text-orange-500" />
+                                  Testeur de Vitesse
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-6 pt-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Depart</Label>
+                                    <Input type="number" value={accelConfig.start} onChange={(e) => setAccelConfig(prev => ({ ...prev, start: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Objectif</Label>
+                                    <Input type="number" value={accelConfig.end} onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                  </div>
+                                </div>
+                                <Button
+                                  onClick={() => {
+                                    setAccelConfig(prev => ({ ...prev, active: !prev.active }));
+                                    setIsAccelDialogOpen(false);
+                                    if (!accelConfig.active) setTempo(accelConfig.start);
+                                  }}
+                                  className="w-full h-14 rounded-xl font-black text-lg bg-orange-600 hover:bg-orange-700"
+                                >
+                                  {accelConfig.active ? "Desactiver" : "Activer l'acceleration"}
+                                </Button>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                        <Slider value={[tempo]} min={40} max={208} onValueChange={(vals) => setTempo(vals[0])} />
+                      </div>
+
+                      <div className="w-[160px] space-y-2">
+                        <div className="flex items-center justify-between text-slate-500">
+                          <div className="flex items-center gap-2">
+                            <Volume2 className="w-3.5 h-3.5" />
+                            <span className="text-[8px] font-bold uppercase tracking-widest">Volume</span>
+                          </div>
+                          <span className="text-[8px] font-mono font-bold">{Math.round(volume * 200)}%</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Slider value={[volume]} max={0.5} step={0.01} onValueChange={(vals) => setVolume(vals[0])} className="flex-1" />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-slate-400 hover:text-orange-600 rounded-xl border border-slate-200 bg-white"
+                            onClick={() => setIsMuted(!isMuted)}
+                          >
+                            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-end gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm">
+                      <div className="space-y-2 w-[130px]">
+                        <Label className="text-[8px] font-black text-orange-600 uppercase tracking-[0.2em]">Aller-Retour</Label>
+                        <button
+                          onClick={() => setUpDown(!upDown)}
+                          className={cn(
+                            "w-full h-10 rounded-xl text-[9px] font-black uppercase transition-all shadow-sm border-2",
+                            upDown
+                              ? "bg-orange-600 text-white border-orange-400"
+                              : "bg-white text-slate-400 border-slate-200 hover:bg-slate-50"
+                          )}
+                        >
+                          {upDown ? "ON" : "OFF"}
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 w-[150px]">
+                        <Label className="text-[8px] font-black text-orange-600 uppercase tracking-[0.2em]">Favori</Label>
+                        <Button
+                          onClick={saveFavorite}
+                          variant="outline"
+                          className="w-full h-10 border-orange-200 bg-white text-orange-600 font-bold text-[9px] uppercase tracking-widest rounded-xl hover:bg-orange-50 transition-all active:scale-95"
+                        >
+                          <Save className="w-3.5 h-3.5 mr-2" />
+                          Sauvegarder
+                        </Button>
+                      </div>
+
+                      <div className="bg-slate-900 rounded-xl px-4 py-2 border border-slate-800 shadow-sm flex items-center gap-4">
+                        <div className="flex flex-col items-center">
+                          <span className="text-[8px] text-slate-500 uppercase">Temps</span>
+                          <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayBeat : "-"}</span>
+                        </div>
+                        <div className="w-px h-6 bg-slate-800" />
+                        <div className="flex flex-col items-center">
+                          <span className="text-[8px] text-slate-500 uppercase">Mesure</span>
+                          <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayMeasure : "-"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {false && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
                 
                 {/* 1. Metronome / Left (Col-span-4) */}
@@ -1224,7 +2064,18 @@ const ScalePractice: React.FC = () => {
                                    <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Objectif</Label>
                                    <Input type="number" value={accelConfig.end} onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
                                  </div>
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Pas</Label>
+                                   <Input type="number" value={accelConfig.step} min={1} onChange={(e) => setAccelConfig(prev => ({ ...prev, step: Math.max(1, Number(e.target.value) || 1) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
+                                 <div className="space-y-2">
+                                   <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Mesures</Label>
+                                   <Input type="number" value={accelConfig.interval} min={1} onChange={(e) => setAccelConfig(prev => ({ ...prev, interval: Math.max(1, Number(e.target.value) || 1) }))} className="h-12 text-xl font-black rounded-xl" />
+                                 </div>
                                </div>
+                               <p className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 text-sm font-medium text-orange-700">
+                                 +{accelConfig.step} BPM toutes les {accelConfig.interval} mesure{accelConfig.interval > 1 ? 's' : ''}, de {accelConfig.start} à {accelConfig.end} BPM.
+                               </p>
                                <Button
                                  onClick={() => {
                                    setAccelConfig(prev => ({ ...prev, active: !prev.active }));
@@ -1270,17 +2121,36 @@ const ScalePractice: React.FC = () => {
                   {exerciseCategory === 'generator' && (
                     <div className="space-y-3">
                       <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">1. Type d&apos;Arpège / Gamme</Label>
+                      <div className="flex gap-2 p-1.5 bg-slate-50 rounded-2xl border border-slate-100">
+                        {[
+                          { value: 'gamme' as const, label: 'Gamme' },
+                          { value: 'accord' as const, label: 'Accord' }
+                        ].map(option => (
+                          <button
+                            key={option.value}
+                            onClick={() => handleTheoryModeSelect(option.value)}
+                            className={cn(
+                              "flex-1 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                              theoryMode === option.value
+                                ? "bg-slate-800 text-white border-slate-700 shadow-md"
+                                : "bg-white text-slate-500 border-slate-100 hover:bg-slate-50"
+                            )}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
                       <div className="grid grid-cols-2 gap-1.5">
-                        {Object.keys(SCALE_PATTERNS).map(t => (
+                        {UNIFIED_THEORY_TYPE_OPTIONS.map(t => (
                           <button
                             key={t}
-                            onClick={() => setScaleType(t)}
+                            onClick={() => handleScaleTypeSelect(t)}
                             className={cn(
                               "py-2 px-2 rounded-xl text-[10px] font-bold transition-all border shadow-sm text-left overflow-hidden",
                               scaleType === t ? "bg-orange-500 text-white border-orange-400" : "bg-white text-slate-500 border-slate-100"
                             )}
                           >
-                            {t}
+                            {getTheoryTypeLabel(t)}
                           </button>
                         ))}
                       </div>
@@ -1294,7 +2164,7 @@ const ScalePractice: React.FC = () => {
                        exerciseCategory === 'bop' ? 'Phrase Jazz / Bop' : 'Fichier MIDI'}
                     </Label>
                     <div className="flex flex-col gap-1.5 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
-                      {(exerciseCategory === 'generator' ? ['Gamme simple', 'Tierces', 'Quartes', 'Quintes', 'Arpège'] :
+                      {(exerciseCategory === 'generator' ? GENERATOR_EXERCISES :
                         exerciseCategory === 'repertoire' ? Object.keys(REPERTOIRE_SONGS) :
                         exerciseCategory === 'bop' ? Object.keys(SOULFUL_BOP_PHRASES) :
                         MIDI_FILES).map(e => (
@@ -1322,7 +2192,7 @@ const ScalePractice: React.FC = () => {
                       {CHROMATIC_NOTES.map(n => (
                         <button
                           key={n}
-                          onClick={() => setRootNote(n)}
+                          onClick={() => handleRootNoteSelect(n)}
                           className={cn(
                             "h-8 rounded-lg text-[10px] font-bold transition-all border",
                             rootNote === n ? "bg-slate-800 text-white border-slate-700 shadow-md" : "bg-white text-slate-500 border-slate-100"
@@ -1449,7 +2319,7 @@ const ScalePractice: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>)}
             </CardContent>
           </Card>
 
@@ -1473,7 +2343,7 @@ const ScalePractice: React.FC = () => {
                       variant="outline"
                       className="px-4 py-2 text-[10px] font-bold rounded-xl whitespace-nowrap"
                     >
-                      {NOTE_NAMES[fav.rootNote] || fav.rootNote} {fav.scaleType}
+                      {NOTE_NAMES[fav.rootNote] || fav.rootNote} {getTheoryTypeLabel(fav.scaleType)}
                     </Button>
                   ))}
                 </div>
