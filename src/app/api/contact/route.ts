@@ -19,7 +19,7 @@ const RATE_LIMIT_MAX_REQUESTS = 5;
 const BRAND_NAME = 'JC Trompette';
 const PHONE_DISPLAY = '06 63 73 89 02';
 const PHONE_E164 = '+33663738902';
-const WHATSAPP_URL = `https://wa.me/33663738902?text=${encodeURIComponent(
+const WHATSAPP_URL = `https://api.whatsapp.com/send/?phone=33663738902&text=${encodeURIComponent(
   'Bonjour JC Trompette, je viens de recevoir votre email. Je suis disponible pour organiser mon cours.',
 )}`;
 

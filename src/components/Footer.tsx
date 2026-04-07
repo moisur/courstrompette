@@ -28,7 +28,7 @@ const ContactSection: React.FC = () => {
 
           {/* Téléphone */}
           <a
-            href="https://wa.me/33663738902"
+            href="https://api.whatsapp.com/send?phone=33663738902"
             target="_blank"
             rel="noopener noreferrer"
             className="group text-center p-6 rounded-xl hover:bg-stone-800 transition-colors"
