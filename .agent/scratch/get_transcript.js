@@ -1,0 +1,1 @@
+const { YoutubeTranscript } = require('youtube-transcript'); YoutubeTranscript.fetchTranscript('https://youtu.be/_wQvuBTnxvM').then(t => console.log(t.map(i => i.text).join(' '))).catch(console.error);
