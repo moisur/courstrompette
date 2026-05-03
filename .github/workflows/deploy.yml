@@ -16,6 +16,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY_TROMPETTE }}
           script: |
+            set -e
+
             cd /var/www/courstrompette
 
             if [ ! -f .env.production ]; then
@@ -28,9 +30,8 @@ jobs:
             set +a
 
             git pull origin master
-            npm install
-            npx prisma generate
-            rm -rf .next
+            npm ci --include=dev --legacy-peer-deps
+            npx --no-install prisma generate
             npm run build
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
