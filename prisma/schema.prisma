@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STUDENT
+}
+
+enum LessonPaymentMethod {
+  DIRECT
+  PACK
+  MANUAL
+  URSSAF
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String?        @unique
+  passwordHash       String         @map("password_hash")
+  role               UserRole
+  isActive           Boolean        @default(true) @map("is_active")
+  mustChangePassword Boolean        @default(false) @map("must_change_password")
+  student            Student?
+  refreshTokens      RefreshToken[]
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Student {
+  id                   String                @id @default(uuid())
+  legacyMongoId        String?               @unique @map("legacy_mongo_id")
+  userId               String?               @unique @map("user_id")
+  user                 User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name                 String
+  rate                 Decimal               @db.Decimal(10, 2)
+  declared             Boolean               @default(false)
+  archived             Boolean               @default(false)
+  phone                String?
+  address              String?
+  notes                String?
+  legacyEmail          String?               @map("email")
+  legacyExperience     String?               @map("experience")
+  legacyLeadId         String?               @unique @map("lead_id")
+  legacyActive         Boolean?              @map("active")
+  courseDay            String?               @map("course_day")
+  courseHour           String?               @map("course_hour")
+  lessons              Lesson[]
+  coursePacks          CoursePack[]
+  lead                 Lead?
+  urssafClient         UrssafClient?
+  urssafPaymentRequests UrssafPaymentRequest[]
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+
+  @@map("students")
+}
+
+model Lead {
+  id          String    @id @default(uuid())
+  name        String
+  email       String
+  phone       String
+  experience  String
+  message     String    @default("")
+  stage       String    @default("new")
+  mailStatus  String    @default("pending") @map("mail_status")
+  mailError   String?   @map("mail_error")
+  notes       String    @default("")
+  convertedAt DateTime? @map("converted_at")
+  
+  studentId   String?   @unique @map("student_id")
+  student     Student?  @relation(fields: [studentId], references: [id])
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("leads")
+}
+
+model CoursePack {
+  id               String    @id @default(uuid())
+  legacyMongoId    String?   @unique @map("legacy_mongo_id")
+  studentId        String    @map("student_id")
+  student          Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  totalLessons     Int       @map("total_lessons")
+  remainingLessons Int       @map("remaining_lessons")
+  purchaseDate     DateTime  @map("purchase_date")
+  expiryDate       DateTime? @map("expiry_date")
+  price            Decimal   @db.Decimal(10, 2)
+  lessons          Lesson[]
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@index([studentId], map: "idx_course_packs_student_id")
+  @@map("course_packs")
+}
+
+model Lesson {
+  id                     String                @id @default(uuid())
+  legacyMongoId          String?               @unique @map("legacy_mongo_id")
+  studentId              String                @map("student_id")
+  student                Student               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date                   DateTime
+  amount                 Decimal               @db.Decimal(10, 2)
+  comment                String?
+  isPaid                 Boolean               @default(false) @map("is_paid")
+  paymentMethod          LessonPaymentMethod   @default(MANUAL) @map("payment_method")
+  packId                 String?               @map("pack_id")
+  pack                   CoursePack?           @relation(fields: [packId], references: [id], onDelete: SetNull)
+  urssafPaymentRequestId String?               @map("urssaf_payment_request_id")
+  urssafPaymentRequest   UrssafPaymentRequest? @relation(fields: [urssafPaymentRequestId], references: [id], onDelete: SetNull)
+  createdAt              DateTime              @default(now()) @map("created_at")
+  updatedAt              DateTime              @updatedAt @map("updated_at")
+
+  @@index([studentId], map: "idx_lessons_student_id")
+  @@index([packId], map: "idx_lessons_pack_id")
+  @@index([paymentMethod], map: "idx_lessons_payment_method")
+  @@index([urssafPaymentRequestId], map: "idx_lessons_urssaf_payment_request_id")
+  @@map("lessons")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  userAgent String?   @map("user_agent")
+   ip        String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId], map: "idx_refresh_tokens_user_id")
+  @@map("refresh_tokens")
+}
+
+model UrssafClient {
+  id              String                @id
+  nomNaissance    String                @map("nom_naissance")
+  prenoms         String
+  email           String
+  dateNaissance   String?               @map("date_naissance")
+  studentId       String?               @unique @map("student_id")
+  student         Student?              @relation(fields: [studentId], references: [id])
+  paymentRequests UrssafPaymentRequest[]
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  @@map("urssaf_clients")
+}
+
+model UrssafPaymentRequest {
+  id               String       @id @default(uuid())
+  studentId        String       @map("student_id")
+  student          Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  urssafClientId   String?      @map("urssaf_client_id")
+  urssafClient     UrssafClient? @relation(fields: [urssafClientId], references: [id], onDelete: SetNull)
+  numFactureTiers  String       @unique @map("num_facture_tiers")
+  idDemandePaiement String?     @unique @map("id_demande_paiement")
+  statutCode       String?      @map("statut_code")
+  statutLabel      String?      @map("statut_label")
+  amountTtc        Decimal      @map("amount_ttc") @db.Decimal(10, 2)
+  dateFacture      DateTime     @map("date_facture")
+  dateDebutEmploi  DateTime     @map("date_debut_emploi")
+  dateFinEmploi    DateTime     @map("date_fin_emploi")
+  submittedAt      DateTime?    @map("submitted_at")
+  lastSyncedAt     DateTime?    @map("last_synced_at")
+  rawLastResponse  Json?        @map("raw_last_response")
+  lessons          Lesson[]
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  @@index([studentId], map: "idx_urssaf_payment_requests_student_id")
+  @@index([urssafClientId], map: "idx_urssaf_payment_requests_urssaf_client_id")
+  @@index([statutCode], map: "idx_urssaf_payment_requests_statut_code")
+  @@map("urssaf_payment_requests")
+}

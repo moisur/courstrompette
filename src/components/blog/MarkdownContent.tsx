@@ -33,7 +33,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
                     img: ({ node, ...props }) => (
                         <span className="block my-8 relative w-full h-auto" style={{ maxHeight: '500px' }}>
                             <Image
-                                src={props.src || ''}
+                                src={String(props.src || '')}
                                 alt={props.alt || ''}
                                 width={800}
                                 height={500}
@@ -43,7 +43,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
                                     height: 'auto',
                                     maxHeight: '500px'
                                 }}
-                                unoptimized={props.src?.startsWith('http')}
+                                unoptimized={String(props.src || '').startsWith('http')}
                                 sizes="(max-width: 768px) 100vw, 800px"
                             />
                         </span>

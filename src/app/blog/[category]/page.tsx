@@ -9,21 +9,23 @@ import BlogCTA from '@/components/BlogCTA';
 import { cn } from '@/app/lib/utils';
 import InlineCTA from '@/components/blog/InlineCTA';
 
-export async function generateMetadata({ params, searchParams }: { params: { category: string }, searchParams: { level?: string } }) {
-    const categoryName = params.category.replace(/-/g, ' ').split(' ')
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ category: string }>, searchParams: Promise<{ level?: string }> }) {
+    const { category } = await params;
+    const { level } = await searchParams ?? {};
+    const categoryName = category.replace(/-/g, ' ').split(' ')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
-    const levelPrefix = searchParams.level ? `Niveau ${searchParams.level} : ` : '';
-    const canonicalPath = `/blog/${params.category}`;
+    const levelPrefix = level ? `Niveau ${level} : ` : '';
+    const canonicalPath = `/blog/${category}`;
 
     return {
         title: `${levelPrefix}${categoryName} : Conseils et Cours de Trompette | Jean Christophe Yervant`,
-        description: `Tous les articles sur "${categoryName}"${searchParams.level ? ` pour le niveau ${searchParams.level}` : ''} - Retrouvez les conseils d'expert de Jean Christophe Yervant pour progresser à la trompette.`,
+        description: `Tous les articles sur "${categoryName}"${level ? ` pour le niveau ${level}` : ''} - Retrouvez les conseils d'expert de Jean Christophe Yervant pour progresser à la trompette.`,
         alternates: {
             canonical: canonicalPath,
         },
-        robots: searchParams.level ? {
+        robots: level ? {
             index: false,
             follow: true,
         } : undefined,
@@ -36,9 +38,9 @@ export function generateStaticParams() {
     return categories.map((category) => ({ category }));
 }
 
-export default function CategoryPage({ params, searchParams }: { params: { category: string }, searchParams: { level?: string } }) {
-    const { category } = params;
-    const currentLevel = searchParams.level;
+export default async function CategoryPage({ params, searchParams }: { params: Promise<{ category: string }>, searchParams: Promise<{ level?: string }> }) {
+    const { category } = await params;
+    const { level: currentLevel } = await searchParams ?? {};
     const allPosts = getSortedPostsData();
     const categoryPosts = allPosts.filter((post: any) => post.category === category);
 

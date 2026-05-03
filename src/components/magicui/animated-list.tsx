@@ -43,6 +43,8 @@ export const AnimatedList = React.memo(
 
 AnimatedList.displayName = "AnimatedList";
 
+const MotionDiv = motion.div as React.ComponentType<any>;
+
 export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   const animations = {
     initial: { scale: 0, opacity: 0 },
@@ -52,8 +54,8 @@ export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <motion.div {...animations} layout className="mx-auto w-full">
+    <MotionDiv {...animations} layout className="mx-auto w-full">
       {children}
-    </motion.div>
+    </MotionDiv>
   );
 }

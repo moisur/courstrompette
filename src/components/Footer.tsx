@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 
-import React from 'react';
+import Link from 'next/link';
 import { MapPin, Phone, Mail } from 'lucide-react';
 
 const ContactSection: React.FC = () => {
@@ -61,8 +61,8 @@ const ContactSection: React.FC = () => {
               © {new Date().getFullYear()} JC Trompette. Tous droits réservés.
             </p>
             <p className="text-stone-600 text-xs flex gap-4">
-              <a href="/paris" className="hover:text-amber-500 transition-colors">Cours de trompette à Paris</a>
-              <a href="/service-a-la-personne" className="hover:text-amber-500 transition-colors">Avance immédiate (Service à la personne)</a>
+              <Link href="/paris" className="hover:text-amber-500 transition-colors">Cours de trompette à Paris</Link>
+              <Link href="/service-a-la-personne" className="hover:text-amber-500 transition-colors">Avance immédiate (Service à la personne)</Link>
             </p>
           </div>
         </div>

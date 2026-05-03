@@ -1,39 +1,11 @@
-import { randomUUID } from 'crypto';
-
-import { dbQuery } from '@/lib/db';
+import { prisma } from '@/lib/db';
+import { Lead, Student } from '@prisma/client';
 
 export type LeadStage = 'new' | 'contacted' | 'scheduled' | 'student' | 'lost';
 export type LeadMailStatus = 'pending' | 'sent' | 'failed';
 
-export type LeadRecord = {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  name: string;
-  email: string;
-  phone: string;
-  experience: string;
-  message: string;
-  stage: LeadStage;
-  mailStatus: LeadMailStatus;
-  mailError: string | null;
-  notes: string;
-  convertedAt: string | null;
-  studentId: string | null;
-};
-
-export type StudentRecord = {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  leadId: string | null;
-  name: string;
-  email: string | null;
-  phone: string;
-  experience: string | null;
-  notes: string;
-  active: boolean;
-};
+export type LeadRecord = Lead & { studentId: string | null };
+export type StudentRecord = Student & { email: string | null };
 
 export type LeadInput = {
   name: string;
@@ -43,275 +15,385 @@ export type LeadInput = {
   message: string;
 };
 
+export type TimelineSnapshot = {
+  id: 'month' | 'quarter' | 'year';
+  label: string;
+  periodLabel: string;
+  revenue: number;
+  declaredRevenue: number;
+  undeclaredRevenue: number;
+  lessonCount: number;
+  paidLessons: number;
+  unpaidLessons: number;
+  newStudents: number;
+  newLeads: number;
+};
+
 export const EXPERIENCE_LABELS: Record<string, string> = {
   beginner: 'Debutant total',
   intermediate: 'Intermediaire',
   advanced: 'Avance',
 };
 
-let schemaPromise: Promise<void> | null = null;
-
-function mapLead(row: Record<string, unknown>): LeadRecord {
-  return {
-    id: String(row.id),
-    createdAt: new Date(String(row.created_at)).toISOString(),
-    updatedAt: new Date(String(row.updated_at)).toISOString(),
-    name: String(row.name),
-    email: String(row.email),
-    phone: String(row.phone),
-    experience: String(row.experience),
-    message: String(row.message ?? ''),
-    stage: String(row.stage) as LeadStage,
-    mailStatus: String(row.mail_status) as LeadMailStatus,
-    mailError: row.mail_error ? String(row.mail_error) : null,
-    notes: String(row.notes ?? ''),
-    convertedAt: row.converted_at ? new Date(String(row.converted_at)).toISOString() : null,
-    studentId: row.student_id ? String(row.student_id) : null,
-  };
+function normalizeEmailForMatch(value?: string | null) {
+  return value?.trim().toLowerCase() || '';
 }
 
-function mapStudent(row: Record<string, unknown>): StudentRecord {
-  return {
-    id: String(row.id),
-    createdAt: new Date(String(row.created_at)).toISOString(),
-    updatedAt: new Date(String(row.updated_at)).toISOString(),
-    leadId: row.lead_id ? String(row.lead_id) : null,
-    name: String(row.name),
-    email: row.email ? String(row.email) : null,
-    phone: String(row.phone),
-    experience: row.experience ? String(row.experience) : null,
-    notes: String(row.notes ?? ''),
-    active: Boolean(row.active),
-  };
+async function findMatchingLead(input: LeadInput) {
+  const normalizedEmail = normalizeEmailForMatch(input.email);
+  const normalizedPhone = normalizePhoneForMatch(input.phone);
+
+  if (!normalizedEmail && !normalizedPhone) {
+    return null;
+  }
+
+  const leads = await prisma.lead.findMany({
+    orderBy: { updatedAt: 'desc' },
+  });
+
+  return (
+    leads.find((lead) => normalizeEmailForMatch(lead.email) === normalizedEmail) ||
+    leads.find((lead) => normalizePhoneForMatch(lead.phone) === normalizedPhone) ||
+    null
+  );
 }
 
-export async function ensureCrmSchema() {
-  if (!schemaPromise) {
-    schemaPromise = (async () => {
-      await dbQuery(`
-        CREATE TABLE IF NOT EXISTS leads (
-          id TEXT PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-          name TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT NOT NULL,
-          experience TEXT NOT NULL,
-          message TEXT NOT NULL DEFAULT '',
-          stage TEXT NOT NULL DEFAULT 'new',
-          mail_status TEXT NOT NULL DEFAULT 'pending',
-          mail_error TEXT,
-          notes TEXT NOT NULL DEFAULT '',
-          converted_at TIMESTAMPTZ
-        );
-      `);
+function normalizePhoneForMatch(value?: string | null) {
+  if (!value) {
+    return '';
+  }
 
-      await dbQuery(`
-        CREATE TABLE IF NOT EXISTS students (
-          id TEXT PRIMARY KEY,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-          lead_id TEXT UNIQUE REFERENCES leads(id) ON DELETE SET NULL,
-          name TEXT NOT NULL,
-          email TEXT,
-          phone TEXT NOT NULL,
-          experience TEXT,
-          notes TEXT NOT NULL DEFAULT '',
-          active BOOLEAN NOT NULL DEFAULT TRUE
-        );
-      `);
+  const digits = value.replace(/\D/g, '');
+  if (!digits) {
+    return '';
+  }
 
-      await dbQuery('CREATE INDEX IF NOT EXISTS leads_created_at_idx ON leads(created_at DESC);');
-      await dbQuery('CREATE INDEX IF NOT EXISTS leads_stage_idx ON leads(stage);');
-      await dbQuery('CREATE INDEX IF NOT EXISTS students_created_at_idx ON students(created_at DESC);');
-    })().catch((error) => {
-      schemaPromise = null;
-      throw error;
+  if (digits.startsWith('33') && digits.length === 11) {
+    return `0${digits.slice(2)}`;
+  }
+
+  if (digits.length === 9 && /^[67]/.test(digits)) {
+    return `0${digits}`;
+  }
+
+  return digits;
+}
+
+/**
+ * Creates a new lead in the database using Prisma.
+ * This ensures the "bonne tupo" (correct schema) requested by the user.
+ */
+export async function createLead(input: LeadInput) {
+  const matchingLead = await findMatchingLead(input);
+
+  if (matchingLead) {
+    return prisma.lead.update({
+      where: { id: matchingLead.id },
+      data: {
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        experience: input.experience,
+        message: input.message || '',
+        stage: matchingLead.studentId ? 'student' : matchingLead.stage,
+        mailStatus: 'pending',
+        mailError: null,
+      },
     });
   }
 
-  return schemaPromise;
-}
-
-export async function createLead(input: LeadInput) {
-  await ensureCrmSchema();
-
-  const id = randomUUID();
-  const result = await dbQuery(
-    `
-      INSERT INTO leads (id, name, email, phone, experience, message)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, created_at, updated_at, name, email, phone, experience, message, stage, mail_status, mail_error, notes, converted_at, NULL::TEXT AS student_id
-    `,
-    [id, input.name, input.email, input.phone, input.experience, input.message],
-  );
-
-  return mapLead(result.rows[0] as Record<string, unknown>);
+  return prisma.lead.create({
+    data: {
+      name: input.name,
+      email: input.email,
+      phone: input.phone,
+      experience: input.experience,
+      message: input.message || '',
+      stage: 'new',
+      mailStatus: 'pending',
+    },
+  });
 }
 
 export async function updateLeadMailStatus(id: string, mailStatus: LeadMailStatus, mailError: string | null = null) {
-  await ensureCrmSchema();
-
-  const result = await dbQuery(
-    `
-      UPDATE leads
-      SET mail_status = $2, mail_error = $3, updated_at = NOW()
-      WHERE id = $1
-      RETURNING id, created_at, updated_at, name, email, phone, experience, message, stage, mail_status, mail_error, notes, converted_at,
-        (SELECT id FROM students WHERE students.lead_id = leads.id LIMIT 1) AS student_id
-    `,
-    [id, mailStatus, mailError],
-  );
-
-  return result.rows[0] ? mapLead(result.rows[0] as Record<string, unknown>) : null;
+  return await prisma.lead.update({
+    where: { id },
+    data: {
+      mailStatus,
+      mailError,
+    },
+  });
 }
 
+/**
+ * Converts a lead to a student.
+ * If the student already exists (linked by leadId), updates it.
+ * Otherwise, creates a new student and links it.
+ */
 export async function convertLeadToStudent(leadId: string) {
-  await ensureCrmSchema();
+  const lead = await prisma.lead.findUnique({
+    where: { id: leadId },
+  });
 
-  const leadResult = await dbQuery(
-    `
-      SELECT id, name, email, phone, experience
-      FROM leads
-      WHERE id = $1
-      LIMIT 1
-    `,
-    [leadId],
-  );
-
-  if (!leadResult.rows[0]) {
+  if (!lead) {
     throw new Error('Lead not found.');
   }
 
-  const existingStudent = await dbQuery(
-    `
-      SELECT id, created_at, updated_at, lead_id, name, email, phone, experience, notes, active
-      FROM students
-      WHERE lead_id = $1
-      LIMIT 1
-    `,
-    [leadId],
-  );
+  const normalizedEmail = lead.email.trim().toLowerCase();
+  const normalizedPhone = normalizePhoneForMatch(lead.phone);
 
-  let studentId = existingStudent.rows[0]?.id ? String(existingStudent.rows[0].id) : randomUUID();
+  const existingStudent = lead.studentId
+    ? await prisma.student.findUnique({
+        where: { id: lead.studentId },
+      })
+    : null;
 
-  if (!existingStudent.rows[0]) {
-    await dbQuery(
-      `
-        INSERT INTO students (id, lead_id, name, email, phone, experience)
-        VALUES ($1, $2, $3, $4, $5, $6)
-      `,
-      [
-        studentId,
-        leadId,
-        String(leadResult.rows[0].name),
-        String(leadResult.rows[0].email),
-        String(leadResult.rows[0].phone),
-        String(leadResult.rows[0].experience),
-      ],
-    );
+  if (existingStudent) {
+    // Already converted
+    return existingStudent;
   }
 
-  await dbQuery(
-    `
-      UPDATE leads
-      SET stage = 'student', converted_at = COALESCE(converted_at, NOW()), updated_at = NOW()
-      WHERE id = $1
-    `,
-    [leadId],
-  );
+  const candidates = await prisma.student.findMany({
+    where: { archived: false },
+    include: {
+      user: { select: { email: true } },
+      lead: { select: { id: true, email: true } },
+    },
+  });
 
-  const studentResult = await dbQuery(
-    `
-      SELECT id, created_at, updated_at, lead_id, name, email, phone, experience, notes, active
-      FROM students
-      WHERE id = $1
-      LIMIT 1
-    `,
-    [studentId],
-  );
+  const matchedStudent =
+    candidates.find((student) => {
+      const studentEmail = student.user?.email || student.lead?.email || '';
+      return studentEmail.trim().toLowerCase() === normalizedEmail;
+    }) ||
+    candidates.find((student) => normalizePhoneForMatch(student.phone) === normalizedPhone);
 
-  return mapStudent(studentResult.rows[0] as Record<string, unknown>);
+  if (matchedStudent) {
+    const linkedLead = await prisma.lead.findFirst({
+      where: {
+        studentId: matchedStudent.id,
+      },
+      select: {
+        id: true,
+        notes: true,
+      },
+    });
+
+    if (linkedLead && linkedLead.id !== leadId) {
+      const duplicateNote = [
+        linkedLead.notes || '',
+        `Doublon CRM fusionne depuis ${lead.name} (${lead.email} / ${lead.phone}) le ${new Date().toLocaleDateString('fr-FR')}.`,
+        lead.message ? `Message recu: ${lead.message}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n');
+
+      await prisma.$transaction([
+        prisma.lead.update({
+          where: { id: linkedLead.id },
+          data: {
+            notes: duplicateNote,
+          },
+        }),
+        prisma.lead.update({
+          where: { id: leadId },
+          data: {
+            stage: 'student',
+            convertedAt: new Date(),
+            notes: [
+              lead.notes || '',
+              `Doublon rattache a l eleve existant ${matchedStudent.name}.`,
+            ]
+              .filter(Boolean)
+              .join('\n\n'),
+          },
+        }),
+      ]);
+    } else {
+      await prisma.lead.update({
+        where: { id: leadId },
+        data: {
+          studentId: matchedStudent.id,
+          stage: 'student',
+          convertedAt: new Date(),
+        },
+      });
+    }
+
+    return matchedStudent;
+  }
+
+  // Create new student from lead info
+  const student = await prisma.student.create({
+    data: {
+      name: lead.name,
+      phone: lead.phone,
+      notes: lead.message || '',
+      address: '', // Default empty, can be updated in admin
+      rate: 40.00,  // Default rate, can be updated in admin
+      declared: false,
+      archived: false,
+    },
+  });
+
+  // Update lead stage
+  await prisma.lead.update({
+    where: { id: leadId },
+    data: {
+      studentId: student.id,
+      stage: 'student',
+      convertedAt: new Date(),
+    },
+  });
+
+  return student;
 }
 
 export async function listLeads() {
-  await ensureCrmSchema();
-
-  const result = await dbQuery(
-    `
-      SELECT
-        leads.id,
-        leads.created_at,
-        leads.updated_at,
-        leads.name,
-        leads.email,
-        leads.phone,
-        leads.experience,
-        leads.message,
-        leads.stage,
-        leads.mail_status,
-        leads.mail_error,
-        leads.notes,
-        leads.converted_at,
-        students.id AS student_id
-      FROM leads
-      LEFT JOIN students ON students.lead_id = leads.id
-      ORDER BY leads.created_at DESC
-    `,
-  );
-
-  return result.rows.map((row: Record<string, unknown>) => mapLead(row));
+  return await prisma.lead.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      student: {
+        select: { id: true }
+      }
+    }
+  });
 }
 
 export async function listStudents() {
-  await ensureCrmSchema();
+  const students = await prisma.student.findMany({
+    orderBy: { createdAt: 'desc' },
+    where: { archived: false },
+    include: {
+      user: { select: { email: true } },
+      lead: { select: { email: true } },
+    }
+  });
 
-  const result = await dbQuery(
-    `
-      SELECT id, created_at, updated_at, lead_id, name, email, phone, experience, notes, active
-      FROM students
-      ORDER BY created_at DESC
-    `,
-  );
-
-  return result.rows.map((row: Record<string, unknown>) => mapStudent(row));
+  return students.map(s => ({
+    ...s,
+    email: s.user?.email || s.lead?.email || null
+  }));
 }
 
 export async function getCrmStats() {
-  await ensureCrmSchema();
-
-  const [leadCount, studentCount, mailCount, latestLeadResult, latestStudentResult] = await Promise.all([
-    dbQuery('SELECT COUNT(*)::INT AS count FROM leads'),
-    dbQuery('SELECT COUNT(*)::INT AS count FROM students'),
-    dbQuery(`SELECT
-      COUNT(*) FILTER (WHERE mail_status = 'sent')::INT AS sent,
-      COUNT(*) FILTER (WHERE mail_status = 'failed')::INT AS failed,
-      COUNT(*) FILTER (WHERE stage = 'student')::INT AS converted
-      FROM leads`),
-    dbQuery(`
-      SELECT leads.id, leads.created_at, leads.updated_at, leads.name, leads.email, leads.phone, leads.experience, leads.message,
-        leads.stage, leads.mail_status, leads.mail_error, leads.notes, leads.converted_at,
-        students.id AS student_id
-      FROM leads
-      LEFT JOIN students ON students.lead_id = leads.id
-      ORDER BY leads.created_at DESC
-      LIMIT 1
-    `),
-    dbQuery(`
-      SELECT id, created_at, updated_at, lead_id, name, email, phone, experience, notes, active
-      FROM students
-      ORDER BY created_at DESC
-      LIMIT 1
-    `),
+  const [leadCount, studentCount, mailStats] = await Promise.all([
+    prisma.lead.count(),
+    prisma.student.count({ where: { archived: false } }),
+    prisma.lead.groupBy({
+      by: ['mailStatus'],
+      _count: true,
+    }),
   ]);
 
+  const convertedCount = await prisma.lead.count({
+    where: { stage: 'student' }
+  });
+
+  const latestLead = await prisma.lead.findFirst({
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const latestStudent = await prisma.student.findFirst({
+    orderBy: { createdAt: 'desc' },
+    where: { archived: false },
+  });
+
+  const sentCount = mailStats.find(s => s.mailStatus === 'sent')?._count ?? 0;
+  const failedCount = mailStats.find(s => s.mailStatus === 'failed')?._count ?? 0;
+
   return {
-    leads: Number(leadCount.rows[0]?.count ?? 0),
-    students: Number(studentCount.rows[0]?.count ?? 0),
-    sent: Number(mailCount.rows[0]?.sent ?? 0),
-    failed: Number(mailCount.rows[0]?.failed ?? 0),
-    converted: Number(mailCount.rows[0]?.converted ?? 0),
-    latestLead: latestLeadResult.rows[0] ? mapLead(latestLeadResult.rows[0] as Record<string, unknown>) : null,
-    latestStudent: latestStudentResult.rows[0] ? mapStudent(latestStudentResult.rows[0] as Record<string, unknown>) : null,
+    leads: leadCount,
+    students: studentCount,
+    sent: sentCount,
+    failed: failedCount,
+    converted: convertedCount,
+    latestLead,
+    latestStudent,
   };
+}
+
+function sumLessonAmounts(
+  lessons: Array<{ amount: { toNumber(): number } | number }>,
+) {
+  return lessons.reduce((sum, lesson) => {
+    const value = typeof lesson.amount === 'number' ? lesson.amount : lesson.amount.toNumber();
+    return sum + value;
+  }, 0);
+}
+
+function getQuarterIndex(monthIndex: number) {
+  return Math.floor(monthIndex / 3) + 1;
+}
+
+export async function getTimelineSnapshots(referenceDate = new Date()): Promise<TimelineSnapshot[]> {
+  const monthStart = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), 1);
+  const quarterStart = new Date(referenceDate.getFullYear(), Math.floor(referenceDate.getMonth() / 3) * 3, 1);
+  const yearStart = new Date(referenceDate.getFullYear(), 0, 1);
+
+  const [lessons, students, leads] = await Promise.all([
+    prisma.lesson.findMany({
+      select: {
+        amount: true,
+        date: true,
+        isPaid: true,
+        student: {
+          select: {
+            declared: true,
+          },
+        },
+      },
+    }),
+    prisma.student.findMany({
+      select: {
+        createdAt: true,
+      },
+    }),
+    prisma.lead.findMany({
+      select: {
+        createdAt: true,
+      },
+    }),
+  ]);
+
+  const snapshots = [
+    {
+      id: 'month' as const,
+      label: 'Ce mois',
+      periodLabel: referenceDate.toLocaleString('fr-FR', { month: 'long', year: 'numeric' }),
+      start: monthStart,
+    },
+    {
+      id: 'quarter' as const,
+      label: 'Ce trimestre',
+      periodLabel: `T${getQuarterIndex(referenceDate.getMonth())} ${referenceDate.getFullYear()}`,
+      start: quarterStart,
+    },
+    {
+      id: 'year' as const,
+      label: 'Cette annee',
+      periodLabel: String(referenceDate.getFullYear()),
+      start: yearStart,
+    },
+  ];
+
+  return snapshots.map((snapshot) => {
+    const periodLessons = lessons.filter((lesson) => lesson.date >= snapshot.start);
+    const declaredLessons = periodLessons.filter((lesson) => lesson.student.declared);
+    const undeclaredLessons = periodLessons.filter((lesson) => !lesson.student.declared);
+
+    return {
+      id: snapshot.id,
+      label: snapshot.label,
+      periodLabel: snapshot.periodLabel,
+      revenue: sumLessonAmounts(periodLessons),
+      declaredRevenue: sumLessonAmounts(declaredLessons),
+      undeclaredRevenue: sumLessonAmounts(undeclaredLessons),
+      lessonCount: periodLessons.length,
+      paidLessons: periodLessons.filter((lesson) => lesson.isPaid).length,
+      unpaidLessons: periodLessons.filter((lesson) => !lesson.isPaid).length,
+      newStudents: students.filter((student) => student.createdAt >= snapshot.start).length,
+      newLeads: leads.filter((lead) => lead.createdAt >= snapshot.start).length,
+    };
+  });
 }

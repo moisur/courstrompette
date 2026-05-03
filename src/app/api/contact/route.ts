@@ -104,15 +104,15 @@ function validatePayload(payload: ContactPayload) {
   return null;
 }
 
-function getClientIp() {
-  const requestHeaders = headers();
-  const forwardedFor = requestHeaders.get('x-forwarded-for');
+async function getClientIp() {
+  const requestHeaders = await headers();
+  const forwardedFor = (requestHeaders as any).get('x-forwarded-for');
 
   if (forwardedFor) {
     return forwardedFor.split(',')[0]?.trim() || 'unknown';
   }
 
-  return requestHeaders.get('x-real-ip') || 'unknown';
+  return (requestHeaders as any).get('x-real-ip') || 'unknown';
 }
 
 function isRateLimited(ip: string) {
@@ -250,7 +250,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: validationMessage }, { status: 400 });
   }
 
-  const ip = getClientIp();
+  const ip = await getClientIp();
 
   if (isRateLimited(ip)) {
     return NextResponse.json(

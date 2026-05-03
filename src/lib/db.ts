@@ -1,7 +1,7 @@
-import { Pool, type QueryResultRow } from 'pg';
+import { PrismaClient } from '@prisma/client';
 
 declare global {
-  var __pgPool: Pool | undefined;
+  var __prisma: PrismaClient | undefined;
 }
 
 function getDatabaseUrl() {
@@ -14,20 +14,15 @@ function getDatabaseUrl() {
   return value;
 }
 
-export function getPool() {
-  if (!globalThis.__pgPool) {
-    globalThis.__pgPool = new Pool({
-      connectionString: getDatabaseUrl(),
-      ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: false } : undefined,
-    });
-  }
+/**
+ * Prisma Client Singleton
+ * This is the unified database access point for the entire application.
+ */
+export const prisma = globalThis.__prisma ?? new PrismaClient();
 
-  return globalThis.__pgPool;
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.__prisma = prisma;
 }
 
-export async function dbQuery<T extends QueryResultRow = QueryResultRow>(
-  text: string,
-  params: unknown[] = [],
-) {
-  return getPool().query<T>(text, params);
-}
+// Note: The deprecated dbQuery and pg Pool have been removed in favor of Prisma 
+// to ensure type safety and schema consistency across the unified application.

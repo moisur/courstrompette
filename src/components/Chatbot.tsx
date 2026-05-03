@@ -127,6 +127,8 @@ const botResponses = {
 
 const HIDDEN_CHATBOT_ROUTES = ['/accordeur', '/logiciel', '/pianoenligne']
 
+const MotionDiv = motion.div as any;
+
 export default function Chatbot() {
   const pathname = usePathname()
   const { isOpen: isBookingModalOpen } = useBooking();
@@ -211,7 +213,7 @@ export default function Chatbot() {
     handleSendMessage(option)
 
     if (option.toLowerCase() === "voir les disponibilités") {
-      window.open('https://calendly.com/yervantj/jctrompette', '_blank', 'noopener,noreferrer')
+      window.open('https://calendly.com/yervantj', '_blank', 'noopener,noreferrer')
     }
   }
 
@@ -245,7 +247,7 @@ export default function Chatbot() {
 
       <AnimatePresence>
         {!isOpen && (
-          <motion.div
+          <MotionDiv
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
@@ -262,18 +264,18 @@ export default function Chatbot() {
               {/* Status dot */}
               <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-green-500 border-2 border-stone-900 rounded-full"></span>
             </Button>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 40, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 40, scale: 0.9 }}
             transition={{ type: "spring", damping: 25, stiffness: 260 }}
-            className="w-full sm:w-[400px]"
           >
+            <div className="w-full sm:w-[400px]">
             <Card className="h-[calc(100vh-6rem)] sm:h-[600px] flex flex-col shadow-2xl overflow-hidden rounded-3xl border-stone-200">
               {/* Header */}
               <CardHeader className="flex flex-row items-center justify-between bg-stone-900 text-white p-5 rounded-t-3xl border-b border-stone-800">
@@ -303,70 +305,73 @@ export default function Chatbot() {
                 <ScrollArea className="h-full px-5 py-6" ref={scrollAreaRef}>
                   <div className="space-y-6 pb-4">
                     {messages.map((message) => (
-                      <motion.div
+                      <MotionDiv
                         key={message.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
-                          }`}
                       >
-                        {/* Avatar */}
-                        <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.type === 'user'
-                          ? 'bg-amber-100 text-amber-700'
-                          : 'bg-stone-200 text-stone-600'
+                        <div className={`flex gap-3 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'
                           }`}>
-                          {message.type === 'user' ? <User size={14} /> : <Bot size={16} />}
-                        </div>
-
-                        <div className={`flex flex-col gap-2 max-w-[80%] ${message.type === 'user' ? 'items-end' : 'items-start'
-                          }`}>
-                          <div
-                            className={`p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${message.type === 'user'
-                              ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-white rounded-tr-none'
-                              : 'bg-white text-stone-800 border border-stone-100 rounded-tl-none'
-                              }`}
-                          >
-                            {message.content}
+                          {/* Avatar */}
+                          <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.type === 'user'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-stone-200 text-stone-600'
+                            }`}>
+                            {message.type === 'user' ? <User size={14} /> : <Bot size={16} />}
                           </div>
 
-                          {/* Options / Quick Replies */}
-                          {message.options && message.id === lastBotMessageId && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.3 }}
-                              className="flex flex-wrap gap-2 mt-1"
+                          <div className={`flex flex-col gap-2 max-w-[80%] ${message.type === 'user' ? 'items-end' : 'items-start'
+                            }`}>
+                            <div
+                              className={`p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${message.type === 'user'
+                                ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-white rounded-tr-none'
+                                : 'bg-white text-stone-800 border border-stone-100 rounded-tl-none'
+                                }`}
                             >
-                              {message.options.map((option, optionIndex) => (
-                                <button
-                                  key={optionIndex}
-                                  onClick={() => handleOptionClick(option)}
-                                  className="px-4 py-2 text-sm bg-white border border-stone-200 text-stone-600 rounded-xl hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 transition-all duration-200 shadow-sm text-left"
+                              {message.content}
+                            </div>
+
+                            {/* Options / Quick Replies */}
+                              {message.options && message.id === lastBotMessageId && (
+                                <MotionDiv
+                                  initial={{ opacity: 0, y: 5 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.3 }}
                                 >
-                                  {option}
-                                </button>
-                              ))}
-                            </motion.div>
-                          )}
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {message.options.map((option, optionIndex) => (
+                                    <button
+                                      key={optionIndex}
+                                      onClick={() => handleOptionClick(option)}
+                                      className="px-4 py-2 text-sm bg-white border border-stone-200 text-stone-600 rounded-xl hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 transition-all duration-200 shadow-sm text-left"
+                                    >
+                                      {option}
+                                    </button>
+                                  ))}
+                                </div>
+                              </MotionDiv>
+                            )}
+                          </div>
                         </div>
-                      </motion.div>
+                      </MotionDiv>
                     ))}
 
-                    {isThinking && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center">
-                          <Bot size={16} />
+                      {isThinking && (
+                        <MotionDiv
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                        <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center">
+                            <Bot size={16} />
+                          </div>
+                          <div className="bg-white border border-stone-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1.5 min-w-[60px]">
+                            <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                            <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                            <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                          </div>
                         </div>
-                        <div className="bg-white border border-stone-100 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1.5 min-w-[60px]">
-                          <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                          <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                          <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-                        </div>
-                      </motion.div>
+                        </MotionDiv>
                     )}
                   </div>
                 </ScrollArea>
@@ -400,7 +405,8 @@ export default function Chatbot() {
                 </form>
               </CardFooter>
             </Card>
-          </motion.div>
+            </div>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </div>

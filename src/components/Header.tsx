@@ -162,7 +162,7 @@ export default function Header({ menuItems }: HeaderProps) {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <Link href="/blog" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>Blog</Link>
+            <Link href="/blog" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>Nos guides</Link>
             {showBlogMenu && (
               <ul
                 className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 bg-white shadow-lg rounded-xl py-2 z-50 border border-stone-100 hidden md:block"

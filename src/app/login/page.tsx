@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { ShieldCheck, ArrowRight, Lock, Mail, Key } from 'lucide-react';
 
 import {
   authenticateAdmin,
@@ -13,7 +14,8 @@ import {
 } from '@/lib/admin-auth';
 
 export const metadata: Metadata = {
-  title: 'Connexion admin',
+  title: 'Connexion Admin | JC Trompette',
+  description: 'Espace sécurisé pour l\'administration de JC Trompette.',
   robots: {
     index: false,
     follow: false,
@@ -21,10 +23,10 @@ export const metadata: Metadata = {
 };
 
 type LoginPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     next?: string;
     error?: string;
-  };
+  }>;
 };
 
 async function loginAction(formData: FormData) {
@@ -34,130 +36,128 @@ async function loginAction(formData: FormData) {
   const email = String(formData.get('email') ?? '').trim();
   const password = String(formData.get('password') ?? '');
 
-  if (isAdminLoginRateLimited()) {
+  if (await isAdminLoginRateLimited()) {
     redirect(`/login?next=${encodeURIComponent(nextPath)}&error=rate`);
   }
 
-  if (!authenticateAdmin(email, password)) {
-    registerAdminLoginFailure();
+  // authenticateAdmin is now async due to Web Crypto usage
+  if (!await authenticateAdmin(email, password)) {
+    await registerAdminLoginFailure();
     redirect(`/login?next=${encodeURIComponent(nextPath)}&error=invalid`);
   }
 
-  clearAdminLoginFailures();
+  await clearAdminLoginFailures();
   redirect(nextPath);
 }
 
-export default function LoginPage({ searchParams }: LoginPageProps) {
-  const nextPath = normalizeAdminNextPath(searchParams?.next);
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const nextPath = normalizeAdminNextPath(params?.next);
   const configured = isAdminAuthConfigured();
-  const error = searchParams?.error;
-  const session = getAdminSession();
+  const error = params?.error;
+  const session = await getAdminSession();
 
   if (session) {
     redirect(nextPath);
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(245,158,11,0.16),_transparent_35%),linear-gradient(180deg,_#fafaf9_0%,_#f5f5f4_100%)] px-4 py-16 text-stone-900">
-      <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[minmax(0,1.1fr)_420px] lg:items-center">
-        <section className="space-y-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-amber-700">Admin Courstrompette</p>
-          <div className="space-y-4">
-            <h1 className="max-w-xl text-4xl font-semibold tracking-tight text-stone-950 sm:text-5xl">
-              Acces prive au CRM et aux outils de publication.
-            </h1>
-            <p className="max-w-2xl text-base leading-8 text-stone-600">
-              Cette zone donne acces aux leads, aux eleves et a la creation d articles. Elle doit
-              rester reservee a ton compte admin.
-            </p>
-          </div>
-          <div className="rounded-3xl border border-stone-200 bg-white/80 p-6 shadow-sm backdrop-blur">
-            <p className="text-sm font-semibold text-stone-900">Ce que cette protection couvre maintenant</p>
-            <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-600">
-              <li>Acces a toutes les pages sous /admin</li>
-              <li>Blocage de /api/admin/create-post sans session</li>
-              <li>Session httpOnly signee avec cookie securise</li>
-              <li>Rate limit sur les tentatives de connexion admin</li>
-            </ul>
-          </div>
-        </section>
+    <main className="min-h-screen bg-[#fafaf9] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-amber-100/50 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-stone-200/40 rounded-full blur-[100px]" />
+      </div>
 
-        <section className="rounded-[28px] border border-stone-200 bg-white p-8 shadow-[0_24px_80px_rgba(28,25,23,0.10)]">
-          <div className="mb-8 space-y-2">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">Connexion</p>
-            <h2 className="text-2xl font-semibold tracking-tight text-stone-950">Email + mot de passe</h2>
-            <p className="text-sm leading-6 text-stone-500">
-              Configure ADMIN_EMAIL, ADMIN_PASSWORD et ADMIN_SESSION_SECRET sur le serveur.
-            </p>
-          </div>
-
-          {!configured ? (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4 text-sm leading-7 text-rose-700">
-              Les variables d environnement admin ne sont pas configurees. Ajoute-les avant toute
-              tentative de connexion.
+      <div className="relative z-10 w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white border border-stone-200 rounded-2xl shadow-sm mb-4">
+               <ShieldCheck className="w-8 h-8 text-amber-600" />
             </div>
-          ) : null}
+            <h1 className="text-3xl font-black text-stone-900 tracking-tight">Espace Admin</h1>
+            <p className="text-stone-500 font-medium mt-2">Connectez-vous pour gérer vos élèves</p>
+        </div>
 
-          {error === 'invalid' ? (
-            <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Identifiants invalides.
+        <div className="bg-white border border-stone-200 rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(28,25,23,0.05)]">
+          {!configured && (
+            <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl">
+              <p className="text-xs font-bold text-rose-800 uppercase tracking-widest mb-1">Configuration Requise</p>
+              <p className="text-sm text-rose-700 leading-relaxed">
+                Les variables d&apos;environnement admin ne sont pas détectées sur ce serveur.
+              </p>
             </div>
-          ) : null}
+          )}
 
-          {error === 'rate' ? (
-            <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              Trop de tentatives. Attends quelques minutes avant de reessayer.
+          {error === 'invalid' && (
+            <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3">
+              <Lock className="w-5 h-5 text-rose-600 shrink-0" />
+              <p className="text-sm font-bold text-rose-800">Identifiants incorrects.</p>
             </div>
-          ) : null}
+          )}
+
+          {error === 'rate' && (
+            <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl">
+              <p className="text-sm font-bold text-rose-800">Trop de tentatives. Veuillez patienter.</p>
+            </div>
+          )}
 
           <form action={loginAction} className="space-y-5">
             <input type="hidden" name="next" value={nextPath} />
 
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-stone-700">
-                Email admin
+              <label htmlFor="email" className="text-xs font-black text-stone-400 uppercase tracking-widest ml-1">
+                Email
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="username"
-                className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100"
-                placeholder="admin@courstrompette.fr"
-                required
-              />
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  className="w-full h-14 bg-stone-50 border border-stone-200 rounded-2xl pl-12 pr-4 outline-none focus:bg-white focus:border-amber-600 focus:ring-4 focus:ring-amber-600/5 transition-all font-medium text-stone-900"
+                  placeholder="admin@courstrompette.fr"
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-stone-700">
-                Mot de passe
+              <label htmlFor="password" className="text-xs font-black text-stone-400 uppercase tracking-widest ml-1">
+                Mot de Passe
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                className="w-full rounded-2xl border border-stone-300 px-4 py-3 text-base text-stone-900 outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100"
-                placeholder="Mot de passe admin"
-                required
-              />
+              <div className="relative">
+                <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  className="w-full h-14 bg-stone-50 border border-stone-200 rounded-2xl pl-12 pr-4 outline-none focus:bg-white focus:border-amber-600 focus:ring-4 focus:ring-amber-600/5 transition-all font-medium text-stone-900"
+                  placeholder="••••••••••••"
+                  required
+                />
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={!configured}
-              className="inline-flex w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+              className="group w-full h-14 bg-stone-900 hover:bg-stone-800 text-white rounded-full font-black uppercase text-sm tracking-widest flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none shadow-xl shadow-stone-200 mt-2"
             >
-              Ouvrir l admin
+              Se Connecter
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
           </form>
 
-          <div className="mt-6 text-sm text-stone-500">
-            <Link href="/" className="font-medium text-amber-700 transition hover:text-amber-600">
-              Revenir au site public
-            </Link>
+          <div className="mt-8 pt-6 border-t border-stone-100 text-center">
+             <Link href="/" className="text-sm font-bold text-stone-400 hover:text-amber-600 transition-colors">
+                ← Revenir au site public
+             </Link>
           </div>
-        </section>
+        </div>
+
+        <p className="text-center mt-8 text-stone-400 text-xs font-medium">
+          Accès réservé • Protection par Session Sécurisée
+        </p>
       </div>
     </main>
   );

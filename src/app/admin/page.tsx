@@ -1,6 +1,13 @@
 import Link from 'next/link';
 
-import { getCrmStats, listLeads, listStudents, type LeadRecord, type StudentRecord } from '@/lib/crm';
+import {
+  getCrmStats,
+  getTimelineSnapshots,
+  listLeads,
+  listStudents,
+  type LeadRecord,
+  type StudentRecord,
+} from '@/lib/crm';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +17,12 @@ const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
 });
 
 export default async function AdminDashboardPage() {
-  const [stats, leads, students] = await Promise.all([getCrmStats(), listLeads(), listStudents()]);
+  const [stats, leads, students, snapshots] = await Promise.all([
+    getCrmStats(),
+    listLeads(),
+    listStudents(),
+    getTimelineSnapshots(),
+  ]);
   const latestLeads = leads.slice(0, 5);
   const latestStudents = students.slice(0, 3);
 
@@ -35,6 +47,12 @@ export default async function AdminDashboardPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
+              href="/admin/finances"
+              className="rounded-full border border-stone-300 px-5 py-3 text-sm font-semibold text-stone-700 transition hover:border-amber-300 hover:text-amber-700"
+            >
+              Ouvrir les finances
+            </Link>
+            <Link
               href="/admin/leads"
               className="rounded-full bg-stone-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-stone-700"
             >
@@ -57,6 +75,70 @@ export default async function AdminDashboardPage() {
             <p className="mt-3 text-4xl font-semibold tracking-tight text-stone-900">{card.value}</p>
           </div>
         ))}
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">Recap activite</p>
+            <h3 className="mt-2 text-2xl font-semibold tracking-tight text-stone-900">
+              Mois, trimestre et annee en un coup d oeil
+            </h3>
+          </div>
+          <Link
+            href="/admin/students"
+            className="rounded-full border border-stone-300 px-5 py-3 text-sm font-semibold text-stone-700 transition hover:border-amber-300 hover:text-amber-700"
+          >
+            Ouvrir le CRM eleves
+          </Link>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-3">
+          {snapshots.map((snapshot) => (
+            <article
+              key={snapshot.id}
+              className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-stone-400">{snapshot.label}</p>
+                  <h4 className="mt-2 text-xl font-semibold text-stone-900">{snapshot.periodLabel}</h4>
+                </div>
+                <div className="rounded-2xl bg-amber-50 px-4 py-3 text-right">
+                  <p className="text-[11px] font-black uppercase tracking-[0.24em] text-amber-700">CA total</p>
+                  <p className="mt-1 text-2xl font-black text-stone-900">{snapshot.revenue.toFixed(0)}€</p>
+                </div>
+              </div>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-stone-50 px-4 py-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-400">Cours</p>
+                  <p className="mt-2 text-2xl font-black text-stone-900">{snapshot.lessonCount}</p>
+                  <p className="mt-1 text-xs text-stone-500">
+                    {snapshot.paidLessons} payes, {snapshot.unpaidLessons} a regler
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-stone-50 px-4 py-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-400">Nouveaux profils</p>
+                  <p className="mt-2 text-2xl font-black text-stone-900">{snapshot.newStudents + snapshot.newLeads}</p>
+                  <p className="mt-1 text-xs text-stone-500">
+                    {snapshot.newStudents} eleves, {snapshot.newLeads} leads
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-emerald-50 px-4 py-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-700">Declare</p>
+                  <p className="mt-2 text-2xl font-black text-stone-900">{snapshot.declaredRevenue.toFixed(0)}€</p>
+                  <p className="mt-1 text-xs text-emerald-700/80">Cours a integrer au suivi officiel</p>
+                </div>
+                <div className="rounded-2xl bg-amber-50 px-4 py-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-700">Hors declare</p>
+                  <p className="mt-2 text-2xl font-black text-stone-900">{snapshot.undeclaredRevenue.toFixed(0)}€</p>
+                  <p className="mt-1 text-xs text-amber-700/80">Permet de voir ce qui reste a basculer</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">

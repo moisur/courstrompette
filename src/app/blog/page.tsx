@@ -7,11 +7,12 @@ import Breadcrumb from '@/components/Breadcrumb';
 import BlogCTA from '@/components/BlogCTA';
 import { Card, CardContent } from '@/components/ui/card';
 
-export async function generateMetadata({ searchParams }: { searchParams: { level?: string } }) {
-  const levelPrefix = searchParams.level ? `Niveau ${searchParams.level} : ` : '';
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ level?: string }> }) {
+  const { level } = await searchParams ?? {};
+  const levelPrefix = level ? `Niveau ${level} : ` : '';
   return {
     title: `${levelPrefix}Blog de la Trompette : Conseils, Astuces et Histoire | Jean Christophe Yervant`,
-    description: `Découvrez nos articles de blog sur la trompette par Jean Christophe Yervant${searchParams.level ? ` pour le niveau ${searchParams.level}` : ''}. Conseils pour débutants, entretien, histoire et biographies des plus grands trompettistes.`,
+    description: `Découvrez nos articles de blog sur la trompette par Jean Christophe Yervant${level ? ` pour le niveau ${level}` : ''}. Conseils pour débutants, entretien, histoire et biographies des plus grands trompettistes.`,
     alternates: {
       canonical: '/blog',
     },
@@ -39,7 +40,6 @@ export default function BlogPage() {
     if (!orderedCategories.includes(c)) orderedCategories.push(c);
   });
 
-
   return (
     <div className="container mx-auto px-6 pt-24 pb-16 max-w-7xl">
       <div className="mb-12">
@@ -48,7 +48,7 @@ export default function BlogPage() {
 
       <div className="text-center mb-16">
         <span className="text-amber-700 font-medium tracking-widest text-sm uppercase">
-          Ressources & Conseils
+          Ressources &amp; Conseils
         </span>
         <h1 className="text-4xl md:text-6xl font-serif text-stone-900 mt-4 mb-6">
           Bienvenue sur notre <span className="italic text-stone-500">Blog</span>

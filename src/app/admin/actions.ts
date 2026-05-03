@@ -7,7 +7,7 @@ import { convertLeadToStudent } from '@/lib/crm';
 export async function convertLeadToStudentAction(formData: FormData) {
   'use server';
 
-  requireAdminSession('/admin/leads');
+  await requireAdminSession('/admin/leads');
 
   const leadId = String(formData.get('leadId') ?? '').trim();
 

@@ -13,7 +13,6 @@ import { Pause, Play, Save, Volume2, VolumeX, FileMusic, Activity, LayoutDashboa
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { motion } from 'framer-motion';
 import * as Vex from 'vexflow';
 import { Midi } from '@tonejs/midi';
 
@@ -1474,13 +1473,11 @@ const ScalePractice: React.FC = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="text-center space-y-1">
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+          <h1
             className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-amber-500"
           >
             Logiciel d&apos;Entraînement Trompette
-          </motion.h1>
+          </h1>
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Assistant Pratique Virtuel</p>
         </div>
 

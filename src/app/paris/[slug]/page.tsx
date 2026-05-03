@@ -7,7 +7,7 @@ import { useBooking } from "@/context/BookingContext";
 import NeighborhoodsGrid from '@/components/seo/NeighborhoodsGrid';
 
 interface Props {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -24,14 +24,14 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const location = locations.find((l) => l.slug === params.slug || l.aliases?.includes(params.slug));
+    const { slug } = await params;
+    const location = locations.find((l) => l.slug === slug || l.aliases?.includes(slug));
 
     if (!location) {
         return {
             title: 'Page non trouvée',
         };
     }
-    // ... (rest remains similar, but using the found location)
 
     const title = `Cours de Trompette à ${location.name} (${location.zipCode || 'Paris'}) | Méthode Rapide`;
     const description = `${location.description} Profitez d'un coaching personnalisé par un professeur expérimenté. Premier cours offert !`;
@@ -51,14 +51,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default function LocationPage({ params }: Props) {
-    const location = locations.find((l) => l.slug === params.slug || l.aliases?.includes(params.slug));
+export default async function LocationPage({ params }: Props) {
+    const { slug } = await params;
+    const location = locations.find((l) => l.slug === slug || l.aliases?.includes(slug));
 
     if (!location) {
         notFound();
     }
 
-    if (params.slug !== location.slug) {
+    if (slug !== location.slug) {
         permanentRedirect(`/paris/${location.slug}`);
     }
 

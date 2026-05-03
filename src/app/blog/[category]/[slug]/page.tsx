@@ -12,10 +12,10 @@ import JsonLd from '@/components/seo/JsonLd';
 import { estimateReadingTimeMinutes } from '@/lib/post-config';
 
 interface Props {
-  params: {
+  params: Promise<{
     category: string;
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -24,16 +24,17 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props) {
+  const { category, slug } = await params;
   try {
-    const postData = getPostData(params.category, params.slug);
+    const postData = getPostData(category, slug);
     return {
       title: postData.frontmatter.title,
       description: postData.frontmatter.description || postData.frontmatter.title,
       alternates: {
-        canonical: `/blog/${params.category}/${params.slug}`,
+        canonical: `/blog/${category}/${slug}`,
       },
       openGraph: {
-        url: `/blog/${params.category}/${params.slug}`,
+        url: `/blog/${category}/${slug}`,
         images: [postData.frontmatter.image],
       },
     };
@@ -44,22 +45,23 @@ export async function generateMetadata({ params }: Props) {
   }
 }
 
-export default function Post({ params }: Props) {
+export default async function Post({ params }: Props) {
+  const { category, slug } = await params;
   try {
-    const postData = getPostData(params.category, params.slug);
+    const postData = getPostData(category, slug);
     const readingTimeMinutes = estimateReadingTimeMinutes(postData.content);
-    const categoryName = params.category.replace(/-/g, ' ').split(' ')
+    const categoryName = category.replace(/-/g, ' ').split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
     const allPosts = getSortedPostsData();
-    const categoryPosts = allPosts.filter((post: any) => post.category === params.category);
-    const currentIndex = categoryPosts.findIndex((post: any) => post.slug === params.slug);
+    const categoryPosts = allPosts.filter((post: any) => post.category === category);
+    const currentIndex = categoryPosts.findIndex((post: any) => post.slug === slug);
 
     const prevPost = currentIndex > 0 ? categoryPosts[currentIndex - 1] as BlogPostLink : null;
     const nextPost = currentIndex < categoryPosts.length - 1 ? categoryPosts[currentIndex + 1] as BlogPostLink : null;
 
-    const relatedPostsRaw = categoryPosts.filter((post: any) => post.slug !== params.slug);
+    const relatedPostsRaw = categoryPosts.filter((post: any) => post.slug !== slug);
     const shuffled = [...relatedPostsRaw].sort(() => 0.5 - Math.random());
     const relatedPosts = shuffled.slice(0, 3) as BlogPostLink[];
 
@@ -83,7 +85,7 @@ export default function Post({ params }: Props) {
           "@type": "ListItem",
           "position": 3,
           "name": categoryName,
-          "item": `https://courstrompette.fr/blog/${params.category}`
+          "item": `https://courstrompette.fr/blog/${category}`
         },
         {
           "@type": "ListItem",
@@ -116,7 +118,7 @@ export default function Post({ params }: Props) {
           <Breadcrumb items={[
             { label: 'Accueil', href: '/' },
             { label: 'Blog', href: '/blog' },
-            { label: categoryName, href: `/blog/${params.category}` },
+            { label: categoryName, href: `/blog/${category}` },
             { label: postData.frontmatter.title }
           ]} />
         </div>

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Label } from '@/components/ui/label'
 import { Volume2, Play, Square, Music, Activity, Pause } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 // Types & Data (Inchangés)
@@ -303,9 +302,9 @@ export default function PianoView() {
             <div className="max-w-6xl mx-auto flex-1 flex flex-col justify-center space-y-4 w-full h-full">
 
                 <div className="text-center space-y-1">
-                    <motion.h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-amber-500">
+                    <h1 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-amber-500">
                         Piano Virtuel pour Trompette
-                    </motion.h1>
+                    </h1>
                 </div>
 
                 <Card className="border-slate-200 shadow-xl overflow-hidden rounded-2xl">

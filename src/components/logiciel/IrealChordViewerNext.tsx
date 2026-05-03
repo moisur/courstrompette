@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Pause, Play, Search, Square } from 'lucide-react';
 import Vex from 'vexflow';
 
@@ -835,7 +834,7 @@ function TrackControls({
   );
 }
 
-export default function IrealChordViewerNext() {
+export function IrealChordViewerNext() {
   const [songs, setSongs] = useState<IRealSong[]>([]);
   const [standaloneSheets, setStandaloneSheets] = useState<StandaloneWikifoniaEntry[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -859,7 +858,7 @@ export default function IrealChordViewerNext() {
   const [hasManualTempoOverride, setHasManualTempoOverride] = useState(false);
 
   const engineRef = useRef<UnifiedBackingTrackEngine | null>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
 
   const activeMeasure = playbackState ? playbackState.measure : -1;
   const matchedSongKeys = useMemo(() => new Set(Object.keys(wikifoniaMatches)), [wikifoniaMatches]);
@@ -1328,7 +1327,7 @@ export default function IrealChordViewerNext() {
 
   if (selectedEntry) {
     return (
-      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4 pb-52 md:pb-44">
+      <div className="space-y-4 pb-52 md:pb-44">
         <div className="flex w-full items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <Button
             variant="outline"
@@ -1518,7 +1517,7 @@ export default function IrealChordViewerNext() {
                 </div>
               </div>
             </div>
-              </div>
+          </div>
             </section>
           </div>
         </div>
@@ -1584,12 +1583,12 @@ export default function IrealChordViewerNext() {
             </div>
           )
         ) : null}
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+    <div className="space-y-4">
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
@@ -1708,12 +1707,7 @@ export default function IrealChordViewerNext() {
 
       <div className="max-h-[60vh] space-y-1.5 overflow-y-auto pr-1">
         {filteredEntries.slice(0, activeLetter ? undefined : 150).map((entry, index) => (
-          <motion.div
-            key={entry.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(index * 0.01, 0.3) }}
-          >
+          <div key={entry.id}>
             <button
               onClick={() => handleSelectEntry(entry)}
               className="w-full rounded-xl border border-slate-100 bg-white px-4 py-3 text-left transition-all hover:border-slate-200 hover:bg-slate-50 hover:shadow-sm active:scale-[0.98]"
@@ -1745,7 +1739,7 @@ export default function IrealChordViewerNext() {
                 </div>
               </div>
             </button>
-          </motion.div>
+          </div>
         ))}
 
         {filteredEntries.length === 0 ? (
@@ -1754,8 +1748,10 @@ export default function IrealChordViewerNext() {
           </div>
         ) : null}
       </div>
-    </motion.div>
+    </div>
   );
 }
+
+export default IrealChordViewerNext;
 
 
