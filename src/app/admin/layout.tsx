@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { FileText, Landmark, LayoutDashboard, LogOut, Music, UserCog, Users, Wallet } from "lucide-react";
+import { FileText, Landmark, LayoutDashboard, LogOut, Music, PenTool, UserCog, Users, Wallet } from "lucide-react";
 
 import { logoutAdminAction } from "@/app/admin/actions";
 import { requireAdminSession } from "@/lib/admin-auth";
@@ -11,6 +11,7 @@ const navigation = [
   { href: "/admin/finances", label: "Finances", icon: Wallet },
   { href: "/admin/leads", label: "Prospects", icon: Users },
   { href: "/admin/students", label: "Eleves", icon: UserCog },
+  { href: "/admin/signature", label: "Signer PDF", icon: PenTool },
   { href: "/admin/urssaf-suivi", label: "URSSAF", icon: Landmark },
   { href: "/admin/urssaf", label: "URSSAF Test", icon: Landmark },
   { href: "/admin/create", label: "Blog", icon: FileText },

@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Trumpeeeet",
+    "slug": "trumpeeeet-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.trumpeeeet.app",
+      "versionCode": 1
+    },
+    "extra": {
+      "apiBaseUrl": "https://your-domain.tld"
+    }
+  }
+}

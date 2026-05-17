@@ -1,3 +1,5 @@
+"use server";
+
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -5,7 +7,6 @@ import { clearAdminSession, requireAdminSession } from '@/lib/admin-auth';
 import { convertLeadToStudent, deleteLead } from '@/lib/crm';
 
 export async function convertLeadToStudentAction(formData: FormData) {
-  'use server';
 
   await requireAdminSession('/admin/leads');
 
@@ -22,7 +23,6 @@ export async function convertLeadToStudentAction(formData: FormData) {
 }
 
 export async function deleteLeadAction(formData: FormData) {
-  'use server';
 
   await requireAdminSession('/admin/leads');
 
@@ -38,7 +38,6 @@ export async function deleteLeadAction(formData: FormData) {
 }
 
 export async function logoutAdminAction() {
-  'use server';
 
   clearAdminSession();
   redirect('/login');

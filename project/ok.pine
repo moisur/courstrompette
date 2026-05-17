@@ -1,0 +1,322 @@
+//@version=5
+indicator("Master Setup: Control Panel", overlay = true, max_labels_count = 500)
+
+// ==========================================
+// 1. PANNEAU DE CONTRÔLE (Checkboxes)
+// ==========================================
+
+// Groupe 1 : Le Flux (Ta stratégie active)
+g_flux = "--- 1. FLUX & SIGNAUX ---"
+show_signals = input.bool(true, "Afficher Signaux IN / OUT (SuperTrend)", group=g_flux)
+show_st      = input.bool(true, "Afficher Ligne Discipline (SuperTrend)", group=g_flux)
+manualBench  = input.symbol("", "Forcer Indice (ex: SPY)", group=g_flux)
+stFactor     = input.float(3.0, "SuperTrend Facteur", group=g_flux)
+stPeriod     = input.int(10, "SuperTrend Période", group=g_flux)
+
+// Groupe 2 : Les Moyennes Mobiles
+g_ma = "--- 2. MOYENNES MOBILES ---"
+show_ma      = input.bool(true, "Afficher les Moyennes Mobiles", group=g_ma)
+show_ma200   = input.bool(true, "Afficher le Fond (MA200)", group=g_ma)
+
+// Groupe 3 : Contexte (Bollinger & Fond)
+g_ctx = "--- 3. CONTEXTE & VISUEL ---"
+show_bb      = input.bool(true, "Afficher Bollinger", group=g_ctx)
+show_bg      = input.bool(true, "Afficher Couleur de Fond (Bull/Bear)", group=g_ctx)
+
+// Groupe 4 : Signaux Avancés
+g_adv = "--- 4. SIGNAUX AVANCÉS ---"
+show_squeeze  = input.bool(true, "🔵 Sys 2: TTM Squeeze + HMA (H1/H4)", group=g_adv)
+show_smc      = input.bool(true, "🟠 Sys 3: Smart Money BOS+FVG (H4/D)", group=g_adv)
+show_turtle   = input.bool(true, "🟣 Sys 4: Turtle Breakout + ATR (D/W)", group=g_adv)
+show_stochroc = input.bool(true, "⚪ Sys 5: StochRSI + ROC (D/W)", group=g_adv)
+
+// ==========================================
+// 2. DÉTECTION DU TIMEFRAME
+// ==========================================
+tf = timeframe.period
+isH1  = (tf == "60")
+isH4  = (tf == "240")
+isD   = (tf == "D" or tf == "1D")
+isW   = (tf == "W" or tf == "1W")
+
+// Timeframes autorisés par système
+tf_sys2 = isH1 or isH4           // Squeeze: H1, H4
+tf_sys3 = isH4 or isD            // Smart Money: H4, D
+tf_sys4 = isD  or isW            // Turtle: D, W
+tf_sys5 = isD  or isW            // StochRSI+ROC: D, W
+
+// ==========================================
+// 3. CALCULS DE BASE (existants)
+// ==========================================
+
+// MAs
+ma7   = ta.sma(close, 7)
+ma25  = ta.sma(close, 25)
+ma50  = ta.sma(close, 50)
+ma100 = ta.sma(close, 100)
+ma200 = ta.sma(close, 200)
+
+// SuperTrend
+[superTrendLine, direction] = ta.supertrend(stFactor, stPeriod)
+
+// Flux & Indice
+var string autoBench = "AMEX:SPY"
+if syminfo.type == "crypto"
+    autoBench := "BINANCE:BTCUSDT"
+else if syminfo.currency == "EUR"
+    autoBench := "TVC:CAC40"
+else
+    autoBench := "AMEX:SPY"
+finalBench = manualBench != "" ? manualBench : autoBench
+
+// RSI & Bollinger
+rsi14 = ta.rsi(close, 14)
+length = 20
+mult = 2.0
+basis = ta.sma(close, length)
+dev = mult * ta.stdev(close, length)
+bbl = basis - dev
+bbu = basis + dev
+// BB Extreme
+mult2 = 2.5
+dev2 = mult2 * ta.stdev(close, length)
+bbl2 = basis - dev2
+bbu2 = basis + dev2
+
+// ==========================================
+// 4. SYSTÈME 2 — TTM SQUEEZE + HULL MA
+// ==========================================
+
+// --- Keltner Channel ---
+kcLength = 20
+kcMult   = 1.5
+kcBasis  = ta.sma(close, kcLength)
+kcRange  = ta.atr(kcLength)
+kcUpper  = kcBasis + kcMult * kcRange
+kcLower  = kcBasis - kcMult * kcRange
+
+// --- Squeeze Detection ---
+// Squeeze ON = BB est à l'intérieur de KC (volatilité comprimée)
+squeezeBBU = bbu   // Utilise les BB déjà calculées (length=20, mult=2.0)
+squeezeBBL = bbl
+squeezeOn  = squeezeBBL > kcLower and squeezeBBU < kcUpper
+squeezeOff = not squeezeOn
+
+// Squeeze momentum (linreg du delta prix vs midline)
+sqzMom = ta.linreg(close - (ta.highest(high, kcLength) + ta.lowest(low, kcLength)) / 2, kcLength, 0)
+
+// Squeeze "fire" = moment où on passe de ON à OFF (le ressort se relâche)
+squeezeFire = squeezeOff and squeezeOn[1]
+
+// --- Hull Moving Average (moins de lag que EMA) ---
+hmaLength = 21
+hmaHalf   = int(hmaLength / 2)
+hmaSqrt   = int(math.round(math.sqrt(hmaLength)))
+hma = ta.wma(2 * ta.wma(close, hmaHalf) - ta.wma(close, hmaLength), hmaSqrt)
+hmaRising  = hma > hma[1]
+hmaFalling = hma < hma[1]
+
+// --- Signaux Sys 2 (transition only, not state) ---
+sys2_in_raw  = squeezeFire and sqzMom > 0 and hmaRising
+sys2_out_raw = (sqzMom < 0 and sqzMom[1] >= 0) or (squeezeFire and sqzMom < 0)  // crossunder zero, pas état
+
+// ==========================================
+// 5. SYSTÈME 3 — SMART MONEY: BOS + FVG
+// ==========================================
+
+// --- Swing High / Low Detection (5 bars lookback) ---
+swingLen = 5
+swingHigh = ta.pivothigh(high, swingLen, swingLen)
+swingLow  = ta.pivotlow(low, swingLen, swingLen)
+
+// Track le dernier swing high et low
+var float lastSwingHigh = na
+var float lastSwingLow  = na
+if not na(swingHigh)
+    lastSwingHigh := swingHigh
+if not na(swingLow)
+    lastSwingLow := swingLow
+
+// --- Break of Structure ---
+// Bullish BOS : le prix casse au-dessus du dernier swing high
+// Bearish BOS : le prix casse en-dessous du dernier swing low
+bullishBOS = not na(lastSwingHigh) and close > lastSwingHigh and close[1] <= lastSwingHigh[1]
+bearishBOS = not na(lastSwingLow) and close < lastSwingLow and close[1] >= lastSwingLow[1]
+
+// --- Fair Value Gap (FVG) Detection ---
+// Bullish FVG : low[0] > high[2] (gap entre la bougie actuelle et celle d'il y a 2)
+// On cherche si un FVG haussier existe dans les 5 derniers bars
+bullFVG = low > high[2]
+bullFVG_recent = bullFVG or bullFVG[1] or bullFVG[2] or bullFVG[3] or bullFVG[4]
+
+// Bearish FVG : high[0] < low[2]
+bearFVG = high < low[2]
+bearFVG_recent = bearFVG or bearFVG[1] or bearFVG[2] or bearFVG[3] or bearFVG[4]
+
+// --- Signaux Sys 3 ---
+sys3_in_raw  = bullishBOS and bullFVG_recent and close > ma50
+sys3_out_raw = bearishBOS
+
+// ==========================================
+// 6. SYSTÈME 4 — TURTLE BREAKOUT + ATR FILTER
+// ==========================================
+
+// --- Donchian Channels ---
+donchianHighPeriod = 20
+donchianLowPeriod  = 10
+donchianHigh = ta.highest(high, donchianHighPeriod)
+donchianLow  = ta.lowest(low, donchianLowPeriod)
+
+// --- ATR Volatility Filter ---
+atrLen      = 14
+atrCurrent  = ta.atr(atrLen)
+atrAvg      = ta.sma(atrCurrent, 20)
+atrExpanded = atrCurrent > 1.5 * atrAvg    // Volatilité significative
+
+// --- Signaux Sys 4 (first bar of breakout only) ---
+sys4_in_raw  = close > donchianHigh[1] and close[1] <= donchianHigh[2] and atrExpanded  // première bougie du breakout
+sys4_out_raw = close < donchianLow[1] and close[1] >= donchianLow[2]                  // première bougie du breakdown
+
+// ==========================================
+// 7. SYSTÈME 5 — STOCHASTIC RSI + ROC MOMENTUM
+// ==========================================
+
+// --- Stochastic RSI ---
+stochRsiLen = 14
+stochLen    = 14
+smoothK     = 3
+smoothD     = 3
+rsiForStoch = ta.rsi(close, stochRsiLen)
+stochRsiK   = ta.sma(ta.stoch(rsiForStoch, rsiForStoch, rsiForStoch, stochLen), smoothK)
+stochRsiD   = ta.sma(stochRsiK, smoothD)
+
+// Stoch RSI cross depuis oversold / overbought
+stochBullCross = ta.crossover(stochRsiK, stochRsiD) and stochRsiK[1] < 20
+stochBearCross = ta.crossunder(stochRsiK, stochRsiD) and stochRsiK[1] > 80
+
+// --- Rate of Change (Momentum Factor) ---
+rocLen   = 10
+rocValue = ta.roc(close, rocLen)
+
+// --- Signaux Sys 5 ---
+sys5_in_raw  = stochBullCross and rocValue > 0 and close > ma200
+sys5_out_raw = stochBearCross and rocValue < 0
+
+// ==========================================
+// ANTI-SPAM : Cooldown de 10 barres entre signaux du même système
+// ==========================================
+cooldown = 10
+
+// Sys 2
+sys2_in  = sys2_in_raw  and (na(ta.barssince(sys2_in_raw[1]))  or ta.barssince(sys2_in_raw[1])  >= cooldown)
+sys2_out = sys2_out_raw and (na(ta.barssince(sys2_out_raw[1])) or ta.barssince(sys2_out_raw[1]) >= cooldown)
+
+// Sys 3
+sys3_in  = sys3_in_raw  and (na(ta.barssince(sys3_in_raw[1]))  or ta.barssince(sys3_in_raw[1])  >= cooldown)
+sys3_out = sys3_out_raw and (na(ta.barssince(sys3_out_raw[1])) or ta.barssince(sys3_out_raw[1]) >= cooldown)
+
+// Sys 4
+sys4_in  = sys4_in_raw  and (na(ta.barssince(sys4_in_raw[1]))  or ta.barssince(sys4_in_raw[1])  >= cooldown)
+sys4_out = sys4_out_raw and (na(ta.barssince(sys4_out_raw[1])) or ta.barssince(sys4_out_raw[1]) >= cooldown)
+
+// Sys 5
+sys5_in  = sys5_in_raw  and (na(ta.barssince(sys5_in_raw[1]))  or ta.barssince(sys5_in_raw[1])  >= cooldown)
+sys5_out = sys5_out_raw and (na(ta.barssince(sys5_out_raw[1])) or ta.barssince(sys5_out_raw[1]) >= cooldown)
+
+// ==========================================
+// 8. AFFICHAGE CONDITIONNEL
+// ==========================================
+
+// --- Moyennes Mobiles ---
+plot(show_ma ? ma7 : na, color = color.rgb(0, 246, 49), title = "MA7")
+plot(show_ma ? ma25 : na, color = color.rgb(0, 150, 255), title = "MA25") 
+plot(show_ma ? ma50 : na, color = color.rgb(251, 255, 0), title = "MA50")
+plot(show_ma200 ? ma200 : na, color = color.red, title = "MA200 (Le Fond)", linewidth=2)
+
+// --- SuperTrend ---
+stColor = direction == -1 ? color.green : color.red
+plot(show_st ? superTrendLine : na, "Ligne Discipline", color=stColor, linewidth=2)
+
+// --- Bollinger ---
+plot(show_bb ? bbl : na, color = color.new(color.gray, 70), title = "BBL")
+plot(show_bb ? bbu : na, color = color.new(color.gray, 70), title = "BBU")
+plot(show_bb ? bbl2 : na, color = color.new(color.black, 60), title = "BBL2")
+plot(show_bb ? bbu2 : na, color = color.new(color.black, 60), title = "BBU2")
+
+// --- Background (Fond d'écran) ---
+bullish_setup = ma7 > ma25 and ma25 > ma50 and ma50 > ma200 and rsi14 > 50
+bearish_setup = ma7 < ma25 and ma25 < ma50 and ma50 < ma200 and rsi14 < 50
+bg_color = show_bg ? (bullish_setup ? color.new(color.green, 95) : bearish_setup ? color.new(color.red, 95) : na) : na
+bgcolor(bg_color)
+
+// ==========================================
+// 9. SIGNAUX IN / OUT — TOUS SYSTÈMES
+// ==========================================
+
+// --- Sys 1 : SuperTrend (original, tous TF) ---
+fluxEntrant = ta.crossover(close, superTrendLine) and (close > ma200)
+fluxSortant = ta.crossunder(close, superTrendLine)
+plotshape(show_signals and fluxEntrant, "IN₁ SuperTrend", shape.labelup, location.belowbar, color.lime, text="IN", textcolor=color.black, size=size.small)
+plotshape(show_signals and fluxSortant, "OUT₁ SuperTrend", shape.labeldown, location.abovebar, color.red, text="OUT", textcolor=color.white, size=size.small)
+
+// --- Sys 2 : TTM Squeeze + HMA (H1, H4) ---
+plotshape(show_squeeze and tf_sys2 and sys2_in, "IN₂ Squeeze", shape.triangleup, location.belowbar, color.new(color.blue, 0), text="IN₂", textcolor=color.white, size=size.tiny)
+plotshape(show_squeeze and tf_sys2 and sys2_out, "OUT₂ Squeeze", shape.triangledown, location.abovebar, color.new(color.blue, 0), text="OUT₂", textcolor=color.white, size=size.tiny)
+
+// --- Sys 3 : Smart Money BOS + FVG (H4, D) ---
+plotshape(show_smc and tf_sys3 and sys3_in, "IN₃ SMC", shape.diamond, location.belowbar, color.new(color.orange, 0), text="IN₃", textcolor=color.white, size=size.tiny)
+plotshape(show_smc and tf_sys3 and sys3_out, "OUT₃ SMC", shape.diamond, location.abovebar, color.new(color.orange, 0), text="OUT₃", textcolor=color.white, size=size.tiny)
+
+// --- Sys 4 : Turtle Breakout + ATR (D, W) ---
+plotshape(show_turtle and tf_sys4 and sys4_in, "IN₄ Turtle", shape.arrowup, location.belowbar, color.new(color.purple, 0), text="IN₄", textcolor=color.white, size=size.tiny)
+plotshape(show_turtle and tf_sys4 and sys4_out, "OUT₄ Turtle", shape.arrowdown, location.abovebar, color.new(color.purple, 0), text="OUT₄", textcolor=color.white, size=size.tiny)
+
+// --- Sys 5 : StochRSI + ROC Momentum (D, W) ---
+plotshape(show_stochroc and tf_sys5 and sys5_in, "IN₅ Momentum", shape.circle, location.belowbar, color.new(color.white, 0), text="IN₅", textcolor=color.black, size=size.tiny)
+plotshape(show_stochroc and tf_sys5 and sys5_out, "OUT₅ Momentum", shape.circle, location.abovebar, color.new(color.gray, 0), text="OUT₅", textcolor=color.white, size=size.tiny)
+
+// ==========================================
+// 10. PANEL INFO — Score de Confluence
+// ==========================================
+var table panel = table.new(position.top_right, 1, 4, bgcolor=color.new(color.black, 70))
+
+if barstate.islast
+    // Compte les systèmes bullish (dernier signal = IN, pas OUT)
+    // On vérifie si le dernier signal de chaque système est un IN
+    
+    // Score
+    bullScore = 0
+    totalActive = 0
+    
+    // Sys 1 toujours actif
+    totalActive += 1
+    bullScore += direction == -1 ? 1 : 0   // SuperTrend bullish
+    
+    // Sys 2
+    if tf_sys2 and show_squeeze
+        totalActive += 1
+        bullScore += sqzMom > 0 and hmaRising ? 1 : 0
+    
+    // Sys 3
+    if tf_sys3 and show_smc
+        totalActive += 1
+        bullScore += close > ma50 and close > lastSwingLow ? 1 : 0
+    
+    // Sys 4
+    if tf_sys4 and show_turtle
+        totalActive += 1
+        bullScore += close > donchianHigh[1] ? 1 : 0
+    
+    // Sys 5
+    if tf_sys5 and show_stochroc
+        totalActive += 1
+        bullScore += stochRsiK > 50 and rocValue > 0 ? 1 : 0
+    
+    // Couleur du score
+    scoreColor = bullScore >= 4 ? color.lime : bullScore >= 3 ? color.green : bullScore >= 2 ? color.yellow : color.red
+    scoreText = str.tostring(bullScore) + "/" + str.tostring(totalActive)
+    
+    table.cell(panel, 0, 0, "Vs: " + str.replace_all(finalBench, "BINANCE:", ""), text_color=color.white, text_size=size.small)
+    table.cell(panel, 0, 1, "TF: " + tf, text_color=color.gray, text_size=size.small)
+    table.cell(panel, 0, 2, "Confluence: " + scoreText, text_color=scoreColor, text_size=size.small)
+    table.cell(panel, 0, 3, bullScore >= 3 ? "✅ STRONG" : bullScore >= 2 ? "⚡ MIXED" : "⛔ WEAK", text_color=scoreColor, text_size=size.small)
