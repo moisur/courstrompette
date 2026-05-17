@@ -17,7 +17,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CoursePack, Lesson } from "@/hooks/use-student-detail";
-import { AlertTriangle, Check, CheckCircle, CreditCard, Loader2, ReceiptText, Send, Trash2, X } from "lucide-react";
+import { 
+  AlertTriangle, 
+  Check, 
+  CheckCircle, 
+  CheckCircle2,
+  Clock, 
+  CreditCard, 
+  History, 
+  Loader2, 
+  ReceiptText, 
+  Send, 
+  Trash2, 
+  X,
+  XCircle 
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StudentLessonsSectionProps {
@@ -26,6 +40,23 @@ interface StudentLessonsSectionProps {
   onOpenPayWithPack: (lessonId: string) => void;
   onTogglePayment: (lessonId: string, isPaid: boolean) => void;
   onDeleteLesson: (lessonId: string) => void;
+}
+
+function getStatusLabel(code?: string | null) {
+  switch (code) {
+    case "10": return "Intégrée";
+    case "20": return "En attente de validation";
+    case "30": return "Validée";
+    case "40": return "Refusée";
+    case "50": return "Prélevée";
+    case "60": return "Refus de prélèvement";
+    case "70": return "Payée";
+    case "110": case "111": case "112": case "113": return "Annulée";
+    case "120": return "Recouvrée";
+    case "260": return "Impayé prestataire";
+    case "270": return "Régularisée prestataire";
+    default: return code ? `Code ${code}` : "Inconnu";
+  }
 }
 
 function getUrssafLessonStatus(lesson: Lesson) {
@@ -79,6 +110,127 @@ function hasActiveUrssafRequest(lesson: Lesson) {
   return !cancelledCodes.includes(code);
 }
 
+// ─── Timeline component for nested lesson row ──────────────────
+function LessonUrssafTimeline({ req }: { req: any }) {
+  const [showHistory, setShowHistory] = useState(false);
+
+  const formatDate = (iso?: string | Date | null) => {
+    if (!iso) return null;
+    return new Date(iso).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const milestones: Array<{ label: string; date: string | Date | null; icon: React.ReactNode; tone: string }> = [
+    {
+      label: "Soumise",
+      date: req.submittedAt ?? null,
+      icon: <Clock size={10} />,
+      tone: req.submittedAt ? "bg-blue-500 animate-pulse" : "bg-stone-300",
+    },
+    {
+      label: "Intégrée",
+      date: req.integreeAt ?? null,
+      icon: <Clock size={10} />,
+      tone: req.integreeAt ? "bg-amber-500 animate-pulse" : "bg-stone-300",
+    },
+    {
+      label: "Validée",
+      date: req.valideeAt ?? null,
+      icon: <CheckCircle2 size={10} />,
+      tone: req.valideeAt ? "bg-emerald-500" : "bg-stone-300",
+    },
+    {
+      label: "Prélevée",
+      date: req.preleveeAt ?? null,
+      icon: <CheckCircle2 size={10} />,
+      tone: req.preleveeAt ? "bg-emerald-600" : "bg-stone-300",
+    },
+    {
+      label: "Payée",
+      date: req.paidAt ?? null,
+      icon: <CheckCircle2 size={10} />,
+      tone: req.paidAt ? "bg-green-600 font-bold" : "bg-stone-300",
+    },
+  ];
+
+  if (req.errorAt) {
+    milestones.push({
+      label: "Erreur",
+      date: req.errorAt,
+      icon: <XCircle size={10} />,
+      tone: "bg-rose-500",
+    });
+  }
+
+  return (
+    <div className="space-y-3 pt-2">
+      <div className="flex flex-wrap items-center gap-y-4 gap-x-1 sm:gap-x-2">
+        {milestones.map((m, i) => (
+          <div key={m.label} className="flex items-center">
+            <div className="flex flex-col items-center min-w-[50px] text-center">
+              <div
+                className={`flex h-5 w-5 items-center justify-center rounded-full text-white ${m.tone}`}
+                title={m.date ? `${m.label}: ${formatDate(m.date)}` : `${m.label}: en attente`}
+              >
+                {m.icon}
+              </div>
+              <span className="mt-1 text-[9px] font-bold uppercase tracking-wide text-stone-500">
+                {m.label}
+              </span>
+              {m.date && (
+                <span className="text-[8px] text-stone-400">
+                  {formatDate(m.date)?.split(" ")[0]}
+                </span>
+              )}
+            </div>
+            {i < milestones.length - 1 && (
+              <div
+                className={`mx-1 h-0.5 w-4 sm:w-8 ${
+                  m.date ? "bg-emerald-300" : "bg-stone-200"
+                }`}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {req.statusHistory && req.statusHistory.length > 0 && (
+        <div className="pt-1">
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-stone-600 transition-colors hover:bg-stone-100"
+          >
+            <History size={10} />
+            {showHistory ? "Masquer" : "Voir"} l&apos;historique ({req.statusHistory.length})
+          </button>
+
+          {showHistory && (
+            <div className="mt-2 ml-2 space-y-1 border-l-2 border-stone-200 pl-3">
+              {req.statusHistory.map((h: any) => (
+                <div key={h.id} className="flex items-center gap-1.5 text-[10px]">
+                  <span className="font-mono text-stone-400">{formatDate(h.changedAt)}</span>
+                  <span className="text-stone-500">
+                    {h.previousLabel ?? h.previousCode ?? "—"}
+                  </span>
+                  <span className="text-stone-400">→</span>
+                  <span className="font-bold text-stone-700">
+                    {h.newLabel ?? getStatusLabel(h.newCode)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StudentLessonsSection({
   lessons,
   activePacks,
@@ -91,6 +243,11 @@ export function StudentLessonsSection({
   const [emailBody, setEmailBody] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [expandedLessonId, setExpandedLessonId] = useState<string | null>(null);
+
+  const toggleExpand = (lessonId: string) => {
+    setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
+  };
 
   const handleDeleteClick = (lesson: Lesson) => {
     if (hasActiveUrssafRequest(lesson)) {
@@ -171,82 +328,112 @@ export function StudentLessonsSection({
               lessons.map((lesson) => {
                 const isUrssafLesson = lesson.paymentMethod === "URSSAF";
                 const urssafStatus = isUrssafLesson ? getUrssafLessonStatus(lesson) : null;
+                const isExpanded = expandedLessonId === lesson.id;
 
                 return (
-                  <TableRow key={lesson.id} className="border-stone-100 transition-colors hover:bg-stone-50/50">
-                    <TableCell className="font-medium text-stone-700">
-                      {new Date(lesson.date).toLocaleDateString("fr-FR")}
-                    </TableCell>
-                    <TableCell className="max-w-[300px] truncate text-stone-600">
-                      {lesson.comment || "-"}
-                    </TableCell>
-                    <TableCell>
-                      {isUrssafLesson && urssafStatus ? (
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${urssafStatus.className}`}>
-                          {urssafStatus.label}
-                        </span>
-                      ) : lesson.isPaid ? (
-                        lesson.packId ? (
-                          <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-blue-700">
-                            Pack
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-bold text-green-700">
-                            Direct
-                          </span>
-                        )
-                      ) : (
-                        <span className="inline-flex items-center rounded-full border border-red-200 bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700">
-                          A payer
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right font-black text-stone-800">
-                      {Number(lesson.amount).toFixed(2)} EUR
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1.5">
-                        {!lesson.isPaid && !isUrssafLesson && activePacks.length > 0 ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-700"
-                            onClick={() => onOpenPayWithPack(lesson.id)}
-                            title="Payer avec un pack"
-                          >
-                            <CreditCard className="h-4 w-4" />
-                          </Button>
-                        ) : null}
-
-                        {!isUrssafLesson ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
+                  <>
+                    <TableRow key={lesson.id} className="border-stone-100 transition-colors hover:bg-stone-50/50">
+                      <TableCell className="font-medium text-stone-700">
+                        {new Date(lesson.date).toLocaleDateString("fr-FR")}
+                      </TableCell>
+                      <TableCell className="max-w-[300px] truncate text-stone-600">
+                        {lesson.comment || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {isUrssafLesson && urssafStatus ? (
+                          <span 
+                            onClick={() => toggleExpand(lesson.id)}
                             className={cn(
-                              "h-8 w-8 transition-colors",
-                              lesson.isPaid
-                                ? "text-stone-400 hover:bg-red-50 hover:text-red-500"
-                                : "text-green-500 hover:bg-green-50 hover:text-green-700",
+                              "inline-flex items-center gap-1.5 cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-bold transition-all hover:scale-105 active:scale-95 select-none hover:opacity-90 shadow-sm border",
+                              urssafStatus.className
                             )}
-                            onClick={() => onTogglePayment(lesson.id, !lesson.isPaid)}
-                            title={lesson.isPaid ? "Marquer comme non paye" : "Marquer comme paye"}
+                            title="Cliquer pour afficher l'historique et le suivi temps réel"
                           >
-                            {lesson.isPaid ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                          </Button>
-                        ) : null}
+                            {urssafStatus.label}
+                            <span className="text-[10px] opacity-75">⏱️</span>
+                          </span>
+                        ) : lesson.isPaid ? (
+                          lesson.packId ? (
+                            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-blue-700">
+                              Pack
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-bold text-green-700">
+                              Direct
+                            </span>
+                          )
+                        ) : (
+                          <span className="inline-flex items-center rounded-full border border-red-200 bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700">
+                            A payer
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right font-black text-stone-800">
+                        {Number(lesson.amount).toFixed(2)} EUR
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1.5">
+                          {!lesson.isPaid && !isUrssafLesson && activePacks.length > 0 ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-700"
+                              onClick={() => onOpenPayWithPack(lesson.id)}
+                              title="Payer avec un pack"
+                            >
+                              <CreditCard className="h-4 w-4" />
+                            </Button>
+                          ) : null}
 
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-stone-300 hover:bg-red-50 hover:text-red-500"
-                          onClick={() => handleDeleteClick(lesson)}
-                          title="Supprimer"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                          {!isUrssafLesson ? (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className={cn(
+                                "h-8 w-8 transition-colors",
+                                lesson.isPaid
+                                  ? "text-stone-400 hover:bg-red-50 hover:text-red-500"
+                                  : "text-green-500 hover:bg-green-50 hover:text-green-700",
+                              )}
+                              onClick={() => onTogglePayment(lesson.id, !lesson.isPaid)}
+                              title={lesson.isPaid ? "Marquer comme non paye" : "Marquer comme paye"}
+                            >
+                              {lesson.isPaid ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                            </Button>
+                          ) : null}
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-stone-300 hover:bg-red-50 hover:text-red-500"
+                            onClick={() => handleDeleteClick(lesson)}
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    
+                    {/* Expandable URSSAF timeline row */}
+                    {isExpanded && isUrssafLesson && lesson.urssafPaymentRequest && (
+                      <TableRow className="bg-stone-50/50 hover:bg-stone-50/50">
+                        <TableCell colSpan={5} className="py-4 px-6 border-stone-100">
+                          <div className="space-y-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-stone-100 pb-2">
+                              <p className="text-[11px] font-black uppercase tracking-widest text-stone-500">
+                                Suivi Temps Réel — Facture {lesson.urssafPaymentRequest.numFactureTiers}
+                              </p>
+                              <span className="text-[10px] text-stone-400 font-mono">
+                                ID URSSAF : {lesson.urssafPaymentRequest.idDemandePaiement || "Non encore attribué"}
+                              </span>
+                            </div>
+                            <LessonUrssafTimeline req={lesson.urssafPaymentRequest} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
                 );
               })
             )}

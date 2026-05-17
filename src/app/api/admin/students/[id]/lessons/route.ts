@@ -26,14 +26,18 @@ export async function GET(
     include: {
       pack: true,
       urssafPaymentRequest: {
-        select: {
-          id: true,
-          numFactureTiers: true,
-          idDemandePaiement: true,
-          statutCode: true,
-          statutLabel: true,
-          submittedAt: true,
-          lastSyncedAt: true,
+        include: {
+          statusHistory: {
+            select: {
+              id: true,
+              previousCode: true,
+              previousLabel: true,
+              newCode: true,
+              newLabel: true,
+              changedAt: true,
+            },
+            orderBy: { changedAt: "asc" },
+          },
         },
       },
     }
