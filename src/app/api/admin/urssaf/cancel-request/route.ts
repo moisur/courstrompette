@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { getAdminSession } from "@/lib/admin-auth";
+import { prisma } from "@/lib/db";
 
 interface CancelRequestBody {
   numFactureTiers: string;
@@ -101,6 +102,34 @@ export async function POST(request: Request) {
       subject: `[Confirmation] ${body.subject}`,
       html: buildConfirmationHtml(body.subject, body.emailBody),
     });
+
+    // 3. Update status in database to 110 (Annulée)
+    const requestItem = await prisma.urssafPaymentRequest.findUnique({
+      where: { numFactureTiers: body.numFactureTiers },
+    });
+
+    if (requestItem) {
+      await prisma.$transaction([
+        prisma.urssafPaymentRequest.update({
+          where: { id: requestItem.id },
+          data: {
+            statutCode: "110",
+            statutLabel: "Annulation demandée",
+          },
+        }),
+        prisma.urssafStatusHistory.create({
+          data: {
+            paymentRequestId: requestItem.id,
+            previousCode: requestItem.statutCode,
+            previousLabel: requestItem.statutLabel,
+            newCode: "110",
+            newLabel: "Annulation demandée",
+            changedAt: new Date(),
+          },
+        }),
+      ]);
+      console.log(`Database updated for URSSAF cancel request ${body.numFactureTiers}`);
+    }
 
     console.log(`URSSAF cancel request sent for ${body.numFactureTiers}`);
 

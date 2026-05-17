@@ -249,6 +249,12 @@ export async function convertLeadToStudent(leadId: string) {
   return student;
 }
 
+export async function deleteLead(id: string) {
+  return await prisma.lead.delete({
+    where: { id },
+  });
+}
+
 export async function listLeads() {
   return await prisma.lead.findMany({
     orderBy: { createdAt: 'desc' },

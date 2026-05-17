@@ -2,7 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { clearAdminSession, requireAdminSession } from '@/lib/admin-auth';
-import { convertLeadToStudent } from '@/lib/crm';
+import { convertLeadToStudent, deleteLead } from '@/lib/crm';
 
 export async function convertLeadToStudentAction(formData: FormData) {
   'use server';
@@ -19,6 +19,22 @@ export async function convertLeadToStudentAction(formData: FormData) {
   revalidatePath('/admin');
   revalidatePath('/admin/leads');
   revalidatePath('/admin/students');
+}
+
+export async function deleteLeadAction(formData: FormData) {
+  'use server';
+
+  await requireAdminSession('/admin/leads');
+
+  const leadId = String(formData.get('leadId') ?? '').trim();
+
+  if (!leadId) {
+    throw new Error('Lead id missing.');
+  }
+
+  await deleteLead(leadId);
+  revalidatePath('/admin');
+  revalidatePath('/admin/leads');
 }
 
 export async function logoutAdminAction() {

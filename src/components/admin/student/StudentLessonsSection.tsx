@@ -249,6 +249,14 @@ export function StudentLessonsSection({
     setExpandedLessonId(expandedLessonId === lessonId ? null : lessonId);
   };
 
+  const handleClose = () => {
+    setUrssafWarningLesson(null);
+    if (sendResult?.success) {
+      window.location.reload();
+    }
+    setSendResult(null);
+  };
+
   const handleDeleteClick = (lesson: Lesson) => {
     if (hasActiveUrssafRequest(lesson)) {
       setUrssafWarningLesson(lesson);
@@ -442,7 +450,7 @@ export function StudentLessonsSection({
       </div>
 
       {/* URSSAF Annulation Warning Dialog */}
-      <Dialog open={Boolean(urssafWarningLesson)} onOpenChange={(open) => { if (!open) { setUrssafWarningLesson(null); setSendResult(null); } }}>
+      <Dialog open={Boolean(urssafWarningLesson)} onOpenChange={(open) => { if (!open) { handleClose(); } }}>
         <DialogContent className="sm:max-w-[640px] border-none bg-white max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100">
@@ -509,14 +517,29 @@ export function StudentLessonsSection({
             </div>
           )}
 
-          <DialogFooter className="flex-col gap-2 sm:flex-row">
-            <Button
-              variant="outline"
-              onClick={() => { setUrssafWarningLesson(null); setSendResult(null); }}
-              className="rounded-full border-stone-200"
-            >
-              Fermer
-            </Button>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="rounded-full border-stone-200"
+              >
+                Fermer
+              </Button>
+              {!sendResult?.success && urssafWarningLesson && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    onDeleteLesson(urssafWarningLesson.id);
+                    setUrssafWarningLesson(null);
+                  }}
+                  className="rounded-full text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                  title="Supprime uniquement le cours dans notre base, sans envoyer d'email à l'URSSAF"
+                >
+                  Forcer la suppression locale (Sans mail)
+                </Button>
+              )}
+            </div>
             {!sendResult?.success && urssafWarningLesson && (
               <Button
                 onClick={handleSendCancelRequest}

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport Premortem - JC Trompette</title>
+    <style>
+        :root {
+            --bg: #0a0e1a;
+            --card-bg: #161b22;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --accent-urssaf: #58a6ff;
+            --accent-vps: #7ee787;
+            --accent-billing: #d2a8ff;
+            --danger: #f85149;
+            --warning: #d29922;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            letter-spacing: -0.05em;
+            text-align: center;
+            background: linear-gradient(90deg, var(--accent-urssaf), var(--accent-vps), var(--accent-billing));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+        .synthesis {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        .synthesis h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-dim);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border-top: 4px solid var(--accent-urssaf);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card.vps { border-top-color: var(--accent-vps); }
+        .card.billing { border-top-color: var(--accent-billing); }
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: #fff;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.1);
+        }
+        .tag.critical { color: var(--danger); border: 1px solid var(--danger); }
+        .tag.high { color: var(--warning); border: 1px solid var(--warning); }
+        .story {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+        .assumption {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border-left: 3px solid var(--text-dim);
+        }
+        .warnings {
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .warnings strong { color: #fff; }
+        .checklist {
+            margin-top: 40px;
+            background: rgba(126, 231, 135, 0.05);
+            border: 1px dashed var(--accent-vps);
+            padding: 25px;
+            border-radius: 16px;
+        }
+        .checklist h2 { color: var(--accent-vps); margin-top: 0; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PREMORTEM : JC TROMPETTE</h1>
+        <p class="subtitle">"Le futur a déjà eu lieu. Voici pourquoi tout a cassé."</p>
+
+        <div class="synthesis">
+            <h2>Synthèse Stratégique</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <p><strong style="color:var(--danger)">L'Échec Fatidique :</strong> La <strong>Désynchronisation URSSAF</strong>. Un étudiant paie, l'URSSAF valide, mais ton serveur plante au moment du webhook ou ton script de sync rate un record. Tu relances manuellement une demande : double prélèvement, plainte client, perte d'agrément.</p>
+                </div>
+                <div>
+                    <p><strong style="color:var(--accent-billing)">L'Angle Mort :</strong> Tu penses que ton <strong>VPS Hetzner</strong> est "set and forget". Sans backups automatisés <u>hors site</u>, un simple 'disk full' à cause des logs PM2 corrompt ta DB SQLite/Postgres et tu perds 1 an de leçons.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- URSSAF CARD -->
+            <div class="card">
+                <span class="tag critical">CRITIQUE</span>
+                <h3>L'Enfer de l'Éligibilité</h3>
+                <div class="story">
+                    En septembre, tu as 10 nouveaux élèves. Tu lances les inscriptions M010. L'un d'eux n'a jamais déclaré de revenus en France. L'API renvoie une erreur obscure. Tu tentes de forcer, l'élève reçoit 5 emails de l'URSSAF, panique, et annule ses cours. Ton système reste bloqué sur "Loading" car tu n'as pas géré ce cas spécifique d'erreur métier.
+                </div>
+                <div class="assumption">
+                    <strong>Hypothèse :</strong> "Tous les élèves qui veulent l'avance immédiate sont déjà connus des services fiscaux français."
+                </div>
+                <div class="warnings">
+                    <strong>Warning signs :</strong> Taux d'échec > 15% sur les nouveaux formulaires ; Retours clients disant "L'URSSAF me demande des trucs bizarres".
+                </div>
+            </div>
+
+            <!-- VPS CARD -->
+            <div class="card vps">
+                <span class="tag high">RISQUE ÉLEVÉ</span>
+                <h3>Le Crash Silencieux</h3>
+                <div class="story">
+                    Ton serveur Hetzner tourne à merveille, jusqu'au jour où Next.js 15 commence à consommer trop de RAM sur un pic de trafic (ou un crawler agressif). Le process PM2 redémarre en boucle, remplit les fichiers logs en 10 minutes, et sature le disque. Nginx ne peut plus écrire ses logs et s'arrête. Le site est mort, et tu mets 4h à comprendre que c'est juste une question d'espace disque.
+                </div>
+                <div class="assumption">
+                    <strong>Hypothèse :</strong> "Le monitoring de PM2 suffit à garantir que le serveur est en bonne santé."
+                </div>
+                <div class="warnings">
+                    <strong>Warning signs :</strong> Utilisation disque > 80% ; Temps de réponse du dashboard admin qui augmente lentement.
+                </div>
+            </div>
+
+            <!-- BILLING CARD -->
+            <div class="card billing">
+                <span class="tag high">RISQUE ÉLEVÉ</span>
+                <h3>La Leçon Oubliée</h3>
+                <div class="story">
+                    Le workflow repose sur ton action manuelle de "Validation" de fin de mois. Un mois de juin chargé, tu oublies de cliquer sur le bouton pour 3 élèves. En juillet, tu t'en aperçois, mais l'URSSAF refuse car on ne peut pas facturer rétroactivement au-delà d'une certaine période ou parce que le plafond de l'élève est atteint. Tu travailles gratuitement pour 12 heures de cours.
+                </div>
+                <div class="assumption">
+                    <strong>Hypothèse :</strong> "Je n'oublierai jamais de déclencher la facturation mensuelle."
+                </div>
+                <div class="warnings">
+                    <strong>Warning signs :</strong> Leçons marquées "URSSAF" non liées à une Request pendant plus de 15 jours.
+                </div>
+            </div>
+        </div>
+
+        <div class="checklist">
+            <h2>🛡️ Plan de Mitigation (Checklist)</h2>
+            <ul>
+                <li>✅ <strong>URSSAF :</strong> Ajouter un champ "Avez-vous déjà fait une déclaration de revenus ?" dans le formulaire avant de tenter l'API.</li>
+                <li>✅ <strong>VPS :</strong> Installer un script de rotation de logs agressif et un backup automatique vers un S3 ou Dropbox externe.</li>
+                <li>✅ <strong>BILLING :</strong> Créer une alerte (email ou pastille rouge) sur le dashboard si des leçons du mois précédent ne sont pas encore envoyées à l'URSSAF.</li>
+                <li>✅ <strong>SYNC :</strong> Transformer `syncUrssafPaymentRequests` en une tâche planifiée (Cron) plutôt que purement manuelle.</li>
+            </ul>
+        </div>
+
+        <footer>
+            Généré le 4 mai 2026 par Antigravity | Projet JC Trompette
+        </footer>
+    </div>
+</body>
+</html>

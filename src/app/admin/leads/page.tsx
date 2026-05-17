@@ -1,5 +1,6 @@
 import { convertLeadToStudentAction } from '@/app/admin/actions';
 import { EXPERIENCE_LABELS, listLeads, type LeadRecord } from '@/lib/crm';
+import { DeleteLeadButton } from '@/components/admin/leads/DeleteLeadButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export default async function AdminLeadsPage() {
   const summaryCards = [
     { label: 'Total leads', value: leads.length, tone: 'bg-white' },
     { label: 'Nouveaux', value: countByStage(leads, 'new'), tone: 'bg-stone-50' },
-    { label: 'Contactes', value: countByStage(leads, 'contacted') + countByStage(leads, 'scheduled'), tone: 'bg-amber-50' },
+    { label: 'Contactés', value: countByStage(leads, 'contacted') + countByStage(leads, 'scheduled'), tone: 'bg-amber-50' },
     { label: 'Convertis eleves', value: countByStage(leads, 'student'), tone: 'bg-sky-50' },
   ];
 
@@ -126,9 +127,9 @@ export default async function AdminLeadsPage() {
                   </div>
                 </div>
 
-                <div className="w-full max-w-[220px] shrink-0 lg:text-right">
+                <div className="w-full max-w-[220px] shrink-0 lg:text-right flex flex-col gap-2.5">
                   {lead.stage === 'student' ? (
-                    <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-4 text-sm font-semibold text-sky-700">
+                    <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-center text-sm font-semibold text-sky-700">
                       Lead deja converti
                     </div>
                   ) : (
@@ -142,6 +143,7 @@ export default async function AdminLeadsPage() {
                       </button>
                     </form>
                   )}
+                  <DeleteLeadButton leadId={lead.id} />
                 </div>
               </div>
 
