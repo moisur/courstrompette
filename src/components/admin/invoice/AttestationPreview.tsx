@@ -21,6 +21,9 @@ const AttestationPreview = ({ data }: AttestationPreviewProps) => {
         <p className="font-semibold">{data.companyName}</p>
         <p>{data.companyAddress}</p>
         <p>N°SIRET: {data.siret}</p>
+        {data.showAgreementInfo && data.agreementNumber && (
+          <p className="font-semibold text-gray-800">N° d&apos;agrément SAP: {data.agreementNumber}</p>
+        )}
       </div>
 
       <div className="mb-10 text-right">
@@ -76,10 +79,22 @@ const AttestationPreview = ({ data }: AttestationPreviewProps) => {
       )}
 
       <div className="mt-10 text-center text-xs text-gray-600">
-        <p>
+        {data.showAgreementInfo && data.agreementNumber && (
+          <p className="mb-2 font-bold text-gray-800">
+            Organisme agréé / déclaré Services à la Personne sous le numéro {data.agreementNumber}.
+          </p>
+        )}
+        <p className="mb-4">
           Ces prestations ouvrent droit au credit d impot de 50% selon l article 199 sexdecies du Code
           General des Impots, sous reserve de modification de la legislation.
         </p>
+        
+        {data.paymentMethod && (
+          <p className="mt-4 font-bold uppercase tracking-wider text-[10px] text-gray-500">
+            Mode de règlement des factures : {data.paymentMethod}
+          </p>
+        )}
+
         <div className="mt-16 text-right">
           <p>Fait a Paris, le {new Date().toLocaleDateString("fr-FR")}</p>
           <p className="mt-8">Signature :</p>

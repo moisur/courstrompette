@@ -17,7 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CoursePack, Lesson } from "@/hooks/use-student-detail";
-import { AlertTriangle, Check, CreditCard, ExternalLink, ReceiptText, Trash2, X } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle, CreditCard, Loader2, ReceiptText, Send, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StudentLessonsSectionProps {
@@ -75,41 +75,8 @@ function getUrssafLessonStatus(lesson: Lesson) {
 function hasActiveUrssafRequest(lesson: Lesson) {
   if (!lesson.urssafPaymentRequest) return false;
   const code = lesson.urssafPaymentRequest.statutCode ?? "";
-  // Active = anything that's not already cancelled or in error
   const cancelledCodes = ["110", "111", "112", "113"];
   return !cancelledCodes.includes(code);
-}
-
-function buildAnnulationMailto(lesson: Lesson) {
-  const req = lesson.urssafPaymentRequest;
-  if (!req) return "";
-
-  const subject = encodeURIComponent(
-    `Demande d'annulation de demande de paiement — SIRET 75292984400039`
-  );
-
-  const body = encodeURIComponent(
-    `Bonjour,
-
-Je souhaite demander l'annulation de la demande de paiement suivante :
-
-• SIRET du prestataire : 75292984400039
-• Numéro de facture (numFactureTiers) : ${req.numFactureTiers}
-• ID de la demande de paiement : ${req.idDemandePaiement || "Non encore attribué"}
-• Statut actuel : ${req.statutLabel || "Inconnu"} (code ${req.statutCode || "—"})
-• Montant TTC : ${Number(lesson.amount).toFixed(2)} EUR
-• Date du cours : ${new Date(lesson.date).toLocaleDateString("fr-FR")}
-
-Motif de l'annulation : [À compléter]
-
-Je vous remercie par avance pour le traitement de cette demande.
-
-Cordialement,
-Jean-Christophe Yervant
-jc@courstrompette.fr`
-  );
-
-  return `mailto:avance-immediate@urssaf.fr?cc=jc@courstrompette.fr&subject=${subject}&body=${body}`;
 }
 
 export function StudentLessonsSection({
@@ -120,12 +87,58 @@ export function StudentLessonsSection({
   onDeleteLesson,
 }: StudentLessonsSectionProps) {
   const [urssafWarningLesson, setUrssafWarningLesson] = useState<Lesson | null>(null);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleDeleteClick = (lesson: Lesson) => {
     if (hasActiveUrssafRequest(lesson)) {
       setUrssafWarningLesson(lesson);
+      
+      const req = lesson.urssafPaymentRequest;
+      const dateStr = new Date(lesson.date).toLocaleDateString("fr-FR");
+      const amountStr = Number(lesson.amount).toFixed(2);
+      
+      const initialSubject = `Demande d'annulation de demande de paiement — SIRET 75292984400039 — ${req?.numFactureTiers || ""}`;
+      const initialBody = `Bonjour,\n\nJe souhaite demander l'annulation de la demande de paiement suivante :\n\n• SIRET du prestataire : 75292984400039\n• Numéro de facture (numFactureTiers) : ${req?.numFactureTiers || ""}\n• ID de la demande de paiement : ${req?.idDemandePaiement || "Non encore attribué"}\n• Statut actuel : ${req?.statutLabel || "Inconnu"} (code ${req?.statutCode || "—"})\n• Montant TTC : ${amountStr} EUR\n• Date du cours : ${dateStr}\n\nMotif de l'annulation : Cours annulé / erreur de saisie\n\nJe vous remercie par avance pour le traitement de cette demande.\n\nCordialement,\nJean-Christophe Yervant\njc@courstrompette.fr\nTél : 06 63 73 89 02`;
+      
+      setEmailSubject(initialSubject);
+      setEmailBody(initialBody);
+      setSendResult(null);
     } else {
       onDeleteLesson(lesson.id);
+    }
+  };
+
+  const handleSendCancelRequest = async () => {
+    if (!urssafWarningLesson?.urssafPaymentRequest) return;
+
+    setIsSending(true);
+    setSendResult(null);
+
+    try {
+      const res = await fetch("/api/admin/urssaf/cancel-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          numFactureTiers: urssafWarningLesson.urssafPaymentRequest.numFactureTiers,
+          subject: emailSubject,
+          emailBody: emailBody,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSendResult({ success: true, message: data.message || "Email envoyé avec succès !" });
+      } else {
+        setSendResult({ success: false, message: data.error || "Erreur lors de l'envoi" });
+      }
+    } catch {
+      setSendResult({ success: false, message: "Erreur réseau. Vérifiez votre connexion." });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -242,77 +255,99 @@ export function StudentLessonsSection({
       </div>
 
       {/* URSSAF Annulation Warning Dialog */}
-      <Dialog open={Boolean(urssafWarningLesson)} onOpenChange={(open) => !open && setUrssafWarningLesson(null)}>
-        <DialogContent className="sm:max-w-[560px] border-none bg-white">
+      <Dialog open={Boolean(urssafWarningLesson)} onOpenChange={(open) => { if (!open) { setUrssafWarningLesson(null); setSendResult(null); } }}>
+        <DialogContent className="sm:max-w-[640px] border-none bg-white max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100">
               <AlertTriangle className="h-7 w-7 text-amber-600" />
             </div>
             <DialogTitle className="text-center text-xl font-black text-stone-900">
-              Cours lié à une demande URSSAF
+              Demande d&apos;annulation URSSAF
             </DialogTitle>
             <DialogDescription className="text-center text-sm text-stone-500">
-              Ce cours a déjà été transmis à l&apos;URSSAF via une demande de paiement.
-              Vous ne pouvez pas le supprimer directement.
+              Ce cours est lié à une facture URSSAF active. Vous devez soumettre une demande d&apos;annulation.
+              Vous pouvez relire et modifier le mail ci-dessous avant envoi.
             </DialogDescription>
           </DialogHeader>
 
-          {urssafWarningLesson && (
+          {urssafWarningLesson && !sendResult?.success && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
-                <p className="text-[11px] font-black uppercase tracking-widest text-amber-700">Demande concernée</p>
-                <div className="mt-3 space-y-1.5 text-sm text-stone-700">
-                  <p>
-                    <span className="font-semibold text-stone-500">Facture :</span>{" "}
-                    <span className="font-mono font-bold">{urssafWarningLesson.urssafPaymentRequest?.numFactureTiers}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-stone-500">ID API :</span>{" "}
-                    <span className="font-mono">{urssafWarningLesson.urssafPaymentRequest?.idDemandePaiement || "Non attribué"}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-stone-500">Statut :</span>{" "}
-                    <span className="font-bold">
-                      {urssafWarningLesson.urssafPaymentRequest?.statutLabel || "Inconnu"}{" "}
-                      ({urssafWarningLesson.urssafPaymentRequest?.statutCode || "—"})
-                    </span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-stone-500">Montant :</span>{" "}
-                    <span className="font-bold">{Number(urssafWarningLesson.amount).toFixed(2)} EUR</span>
-                  </p>
+              <div className="space-y-3 rounded-2xl border border-stone-200 bg-stone-50 px-5 py-4">
+                <div>
+                  <label className="text-[11px] font-black uppercase tracking-widest text-stone-500 block mb-1">Destinataire</label>
+                  <div className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm font-semibold text-stone-700">
+                    avance-immediate@urssaf.fr <span className="text-stone-400 font-normal">(en copie : jc@courstrompette.fr)</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-black uppercase tracking-widest text-stone-500 block mb-1">Objet du mail</label>
+                  <input
+                    type="text"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    className="w-full rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm font-bold text-stone-800 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-black uppercase tracking-widest text-stone-500 block mb-1">Corps du mail (Éditable)</label>
+                  <textarea
+                    value={emailBody}
+                    onChange={(e) => setEmailBody(e.target.value)}
+                    className="w-full rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700 font-mono placeholder:text-stone-400 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+                    rows={12}
+                  />
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 px-5 py-4">
-                <p className="text-sm font-semibold text-stone-800">
-                  Pour annuler cette demande, vous devez contacter l&apos;URSSAF par email.
-                </p>
-                <p className="mt-2 text-xs text-stone-500">
-                  Cliquez sur le bouton ci-dessous pour ouvrir un email pré-rempli avec toutes les
-                  informations nécessaires. N&apos;oubliez pas de compléter le motif d&apos;annulation avant d&apos;envoyer.
-                </p>
+              {sendResult && !sendResult.success && (
+                <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                  ❌ {sendResult.message}
+                </div>
+              )}
+            </div>
+          )}
+
+          {sendResult?.success && (
+            <div className="space-y-4 py-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <CheckCircle className="h-8 w-8 text-emerald-600" />
               </div>
+              <p className="text-center text-lg font-bold text-stone-900">Email envoyé avec succès !</p>
+              <p className="text-center text-sm text-stone-500">
+                Votre demande d&apos;annulation a été envoyée à l&apos;URSSAF.
+                Une copie de confirmation a été envoyée à jc@courstrompette.fr.
+              </p>
             </div>
           )}
 
           <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Button
               variant="outline"
-              onClick={() => setUrssafWarningLesson(null)}
+              onClick={() => { setUrssafWarningLesson(null); setSendResult(null); }}
               className="rounded-full border-stone-200"
             >
               Fermer
             </Button>
-            {urssafWarningLesson && (
-              <a
-                href={buildAnnulationMailto(urssafWarningLesson)}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-600 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-amber-700"
-                onClick={() => setUrssafWarningLesson(null)}
+            {!sendResult?.success && urssafWarningLesson && (
+              <Button
+                onClick={handleSendCancelRequest}
+                disabled={isSending}
+                className="rounded-full bg-amber-600 px-6 font-bold text-white hover:bg-amber-700 disabled:opacity-50"
               >
-                <ExternalLink size={16} />
-                Envoyer la demande d&apos;annulation
-              </a>
+                {isSending ? (
+                  <>
+                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    Envoi en cours...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} className="mr-2" />
+                    Envoyer la demande d&apos;annulation
+                  </>
+                )}
+              </Button>
             )}
           </DialogFooter>
         </DialogContent>
