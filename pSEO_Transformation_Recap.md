@@ -1,3 +1,4 @@
+codex --model gpt-5.5 
 # Récapitulatif : Diagnostic SEO & Stratégie pSEO
 
 Ce document résume l'état actuel de `courstrompette` et la trajectoire pour le transformer en moteur de croissance organique.

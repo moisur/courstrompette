@@ -32,6 +32,7 @@ jobs:
             git pull origin master
             npm ci --include=dev --legacy-peer-deps
             npx --no-install prisma generate
+            npx --no-install prisma db push
             npm run build
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save

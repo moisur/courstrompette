@@ -453,6 +453,29 @@ export async function submitSingleLessonAsUrssafDP(studentId: string, lessonId: 
   };
 }
 
+function buildMilestoneTimestamps(
+  newCode: string | null,
+  existing: {
+    integreeAt: Date | null;
+    valideeAt: Date | null;
+    preleveeAt: Date | null;
+    paidAt: Date | null;
+    errorAt: Date | null;
+  },
+) {
+  const now = new Date();
+  const updates: Record<string, Date> = {};
+
+  // Only set each milestone ONCE (first time we see that status)
+  if (newCode === "10" && !existing.integreeAt) updates.integreeAt = now;
+  if (newCode === "30" && !existing.valideeAt) updates.valideeAt = now;
+  if (newCode === "50" && !existing.preleveeAt) updates.preleveeAt = now;
+  if (["70", "120", "270"].includes(newCode ?? "") && !existing.paidAt) updates.paidAt = now;
+  if (isErrorStatus(newCode) && !existing.errorAt) updates.errorAt = now;
+
+  return updates;
+}
+
 export async function syncUrssafPaymentRequests(filters?: { studentId?: string }) {
   const requests = await prisma.urssafPaymentRequest.findMany({
     where: {
@@ -484,6 +507,17 @@ export async function syncUrssafPaymentRequests(filters?: { studentId?: string }
     const statutLabel = buildStatusLabel(statutCode, paymentInfo?.statut?.libelle ?? null);
     const idDemandePaiement = paymentInfo?.idDemandePaiement ?? request.idDemandePaiement ?? null;
 
+    const statusChanged = statutCode !== request.statutCode;
+    const milestoneUpdates = statutCode
+      ? buildMilestoneTimestamps(statutCode, {
+          integreeAt: request.integreeAt ?? null,
+          valideeAt: request.valideeAt ?? null,
+          preleveeAt: request.preleveeAt ?? null,
+          paidAt: request.paidAt ?? null,
+          errorAt: request.errorAt ?? null,
+        })
+      : {};
+
     await prisma.$transaction(async (tx) => {
       await tx.urssafPaymentRequest.update({
         where: { id: request.id },
@@ -493,8 +527,23 @@ export async function syncUrssafPaymentRequests(filters?: { studentId?: string }
           statutLabel,
           lastSyncedAt: new Date(),
           rawLastResponse: data as Prisma.InputJsonValue,
+          ...milestoneUpdates,
         },
       });
+
+      // Create an immutable history entry when status changes
+      if (statusChanged && statutCode) {
+        await tx.urssafStatusHistory.create({
+          data: {
+            paymentRequestId: request.id,
+            previousCode: request.statutCode,
+            previousLabel: request.statutLabel,
+            newCode: statutCode,
+            newLabel: statutLabel,
+            rawResponse: data as Prisma.InputJsonValue,
+          },
+        });
+      }
 
       if (isSettledStatus(statutCode)) {
         await tx.lesson.updateMany({
@@ -519,3 +568,4 @@ export async function syncUrssafPaymentRequests(filters?: { studentId?: string }
 
   return synced;
 }
+

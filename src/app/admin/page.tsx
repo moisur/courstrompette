@@ -5,9 +5,11 @@ import {
   getTimelineSnapshots,
   listLeads,
   listStudents,
+  getUrssafAlerts,
   type LeadRecord,
   type StudentRecord,
 } from '@/lib/crm';
+import { HealthWidget } from '@/components/admin/HealthWidget';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,11 +19,12 @@ const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
 });
 
 export default async function AdminDashboardPage() {
-  const [stats, leads, students, snapshots] = await Promise.all([
+  const [stats, leads, students, snapshots, urssafAlerts] = await Promise.all([
     getCrmStats(),
     listLeads(),
     listStudents(),
     getTimelineSnapshots(),
+    getUrssafAlerts(),
   ]);
   const latestLeads = leads.slice(0, 5);
   const latestStudents = students.slice(0, 3);
@@ -35,6 +38,28 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
+      {urssafAlerts.unsentCount > 0 && (
+        <div className="flex items-center justify-between rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-600">
+              <span className="text-xl font-bold">!</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-red-900">Leçons URSSAF oubliées</h3>
+              <p className="text-sm text-red-700">
+                Il reste <span className="font-bold">{urssafAlerts.unsentCount}</span> leçons du mois dernier qui n&apos;ont pas encore été envoyées à l&apos;URSSAF.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/urssaf-suivi"
+            className="rounded-full bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+          >
+            Régulariser maintenant
+          </Link>
+        </div>
+      )}
+
       <section className="rounded-3xl border border-stone-200 bg-white p-8 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="max-w-2xl space-y-3">
@@ -185,25 +210,29 @@ export default async function AdminDashboardPage() {
           )}
         </div>
 
-        <aside className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-stone-900">Derniers eleves</h3>
-          {latestStudents.length === 0 ? (
-            <p className="mt-4 text-sm text-stone-500">Aucun eleve pour le moment.</p>
-          ) : (
-            <div className="mt-4 space-y-4">
-              {latestStudents.map((student: StudentRecord) => (
-                <div key={student.id} className="rounded-2xl border border-stone-200 px-4 py-4">
-                  <p className="font-semibold text-stone-900">{student.name}</p>
-                  <p className="mt-1 text-sm text-stone-500">
-                    {student.email || 'Sans email'} - {student.phone}
-                  </p>
-                  <p className="mt-2 text-xs text-stone-400">
-                    Ajoute le {dateFormatter.format(new Date(student.createdAt))}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+        <aside className="space-y-6">
+          <HealthWidget />
+          
+          <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-stone-900">Derniers eleves</h3>
+            {latestStudents.length === 0 ? (
+              <p className="mt-4 text-sm text-stone-500">Aucun eleve pour le moment.</p>
+            ) : (
+              <div className="mt-4 space-y-4">
+                {latestStudents.map((student: StudentRecord) => (
+                  <div key={student.id} className="rounded-2xl border border-stone-200 px-4 py-4">
+                    <p className="font-semibold text-stone-900">{student.name}</p>
+                    <p className="mt-1 text-sm text-stone-500">
+                      {student.email || 'Sans email'} - {student.phone}
+                    </p>
+                    <p className="mt-2 text-xs text-stone-400">
+                      Ajoute le {dateFormatter.format(new Date(student.createdAt))}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </aside>
       </section>
     </div>

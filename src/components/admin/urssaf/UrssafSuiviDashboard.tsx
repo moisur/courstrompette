@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock, Landmark, Loader2, RefreshCw, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, History, Landmark, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/client-api";
 
@@ -14,6 +14,15 @@ type UrssafClientRecord = {
   createdAt: string;
   studentId: string | null;
   studentName: string | null;
+};
+
+type StatusHistoryEntry = {
+  id: string;
+  previousCode: string | null;
+  previousLabel: string | null;
+  newCode: string;
+  newLabel: string | null;
+  changedAt: string;
 };
 
 type UrssafStoredRequestRecord = {
@@ -33,6 +42,11 @@ type UrssafStoredRequestRecord = {
   dateFinEmploi: string;
   submittedAt?: string | null;
   lastSyncedAt?: string | null;
+  integreeAt?: string | null;
+  valideeAt?: string | null;
+  preleveeAt?: string | null;
+  paidAt?: string | null;
+  errorAt?: string | null;
   createdAt: string;
   lessons: Array<{
     id: string;
@@ -41,6 +55,7 @@ type UrssafStoredRequestRecord = {
     comment?: string | null;
     isPaid: boolean;
   }>;
+  statusHistory: StatusHistoryEntry[];
 };
 
 function getStatusTone(code?: string | null) {
@@ -82,6 +97,17 @@ function isError(code?: string | null) {
   return Boolean(code && (code.startsWith("ERR_") || ["40", "60", "110", "111", "112", "113", "260"].includes(code)));
 }
 
+function formatDate(iso?: string | null) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 type StudentDPGroup = {
   studentId: string;
   studentName: string;
@@ -91,6 +117,120 @@ type StudentDPGroup = {
   requests: UrssafStoredRequestRecord[];
 };
 
+// ─── Timeline component for each DP ────────────────────────────
+function DPTimeline({ req }: { req: UrssafStoredRequestRecord }) {
+  const [showHistory, setShowHistory] = useState(false);
+
+  const milestones: Array<{ label: string; date: string | null; icon: React.ReactNode; tone: string }> = [
+    {
+      label: "Soumise",
+      date: req.submittedAt ?? null,
+      icon: <Clock size={12} />,
+      tone: req.submittedAt ? "bg-blue-500" : "bg-stone-300",
+    },
+    {
+      label: "Intégrée",
+      date: req.integreeAt ?? null,
+      icon: <Clock size={12} />,
+      tone: req.integreeAt ? "bg-amber-500" : "bg-stone-300",
+    },
+    {
+      label: "Validée",
+      date: req.valideeAt ?? null,
+      icon: <CheckCircle2 size={12} />,
+      tone: req.valideeAt ? "bg-emerald-500" : "bg-stone-300",
+    },
+    {
+      label: "Prélevée",
+      date: req.preleveeAt ?? null,
+      icon: <CheckCircle2 size={12} />,
+      tone: req.preleveeAt ? "bg-emerald-600" : "bg-stone-300",
+    },
+    {
+      label: "Payée",
+      date: req.paidAt ?? null,
+      icon: <CheckCircle2 size={12} />,
+      tone: req.paidAt ? "bg-green-600" : "bg-stone-300",
+    },
+  ];
+
+  // Add error milestone if present
+  if (req.errorAt) {
+    milestones.push({
+      label: "Erreur",
+      date: req.errorAt,
+      icon: <XCircle size={12} />,
+      tone: "bg-rose-500",
+    });
+  }
+
+  return (
+    <div className="mt-3 space-y-3">
+      {/* Visual milestone timeline */}
+      <div className="flex items-center gap-1">
+        {milestones.map((m, i) => (
+          <div key={m.label} className="flex items-center">
+            <div className="flex flex-col items-center">
+              <div
+                className={`flex h-6 w-6 items-center justify-center rounded-full text-white ${m.tone}`}
+                title={m.date ? `${m.label}: ${formatDate(m.date)}` : `${m.label}: en attente`}
+              >
+                {m.icon}
+              </div>
+              <span className="mt-1 text-[9px] font-bold uppercase tracking-wide text-stone-500">
+                {m.label}
+              </span>
+              {m.date && (
+                <span className="text-[8px] text-stone-400">
+                  {formatDate(m.date)}
+                </span>
+              )}
+            </div>
+            {i < milestones.length - 1 && (
+              <div
+                className={`mx-1 h-0.5 w-6 sm:w-10 ${
+                  m.date ? "bg-emerald-300" : "bg-stone-200"
+                }`}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Status history toggle */}
+      {req.statusHistory && req.statusHistory.length > 0 && (
+        <div>
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-stone-600 transition-colors hover:bg-stone-100"
+          >
+            <History size={12} />
+            {showHistory ? "Masquer" : "Voir"} l&apos;historique ({req.statusHistory.length} transition{req.statusHistory.length > 1 ? "s" : ""})
+          </button>
+
+          {showHistory && (
+            <div className="mt-2 ml-2 space-y-1 border-l-2 border-stone-200 pl-4">
+              {req.statusHistory.map((h) => (
+                <div key={h.id} className="flex items-center gap-2 text-[11px]">
+                  <span className="font-mono text-stone-400">{formatDate(h.changedAt)}</span>
+                  <span className="text-stone-500">
+                    {h.previousLabel ?? h.previousCode ?? "—"}
+                  </span>
+                  <span className="text-stone-400">→</span>
+                  <span className={`font-semibold ${getStatusTone(h.newCode).includes("emerald") ? "text-emerald-700" : getStatusTone(h.newCode).includes("rose") ? "text-rose-700" : "text-amber-700"}`}>
+                    {h.newLabel ?? getStatusLabel(h.newCode)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main dashboard ────────────────────────────────────────────
 export function UrssafSuiviDashboard() {
   const [clients, setClients] = useState<UrssafClientRecord[]>([]);
   const [requests, setRequests] = useState<UrssafStoredRequestRecord[]>([]);
@@ -267,8 +407,8 @@ export function UrssafSuiviDashboard() {
                 <div className="divide-y divide-stone-100">
                   {group.requests.map((req) => (
                     <div key={req.id} className="px-6 py-4">
-                      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="space-y-1.5">
+                      <div className="space-y-1.5">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-sm font-bold text-stone-900">{req.numFactureTiers}</span>
                             <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase ${getStatusTone(req.statutCode)}`}>
@@ -276,29 +416,32 @@ export function UrssafSuiviDashboard() {
                               {getStatusLabel(req.statutCode)}
                             </span>
                           </div>
-                          <div className="flex flex-wrap gap-4 text-xs text-stone-500">
-                            <span>Montant : <strong className="text-stone-700">{Number(req.amountTtc).toFixed(2)} EUR</strong></span>
-                            {req.idDemandePaiement && (
-                              <span>API ID : <span className="font-mono text-stone-600">{req.idDemandePaiement.slice(0, 20)}...</span></span>
-                            )}
-                            {req.submittedAt && (
-                              <span>Soumis le {new Date(req.submittedAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
-                            )}
-                            {req.lastSyncedAt && (
-                              <span>Sync : {new Date(req.lastSyncedAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
-                            )}
-                          </div>
-                          {req.lessons.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-1">
-                              {req.lessons.map((lesson) => (
-                                <span key={lesson.id} className="rounded bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-600">
-                                  {new Date(lesson.date).toLocaleDateString("fr-FR")} · {Number(lesson.amount)} EUR
-                                  {lesson.isPaid && " ✓"}
-                                </span>
-                              ))}
-                            </div>
+                          <span className="text-sm font-bold text-stone-700">{Number(req.amountTtc).toFixed(2)} EUR</span>
+                        </div>
+                        <div className="flex flex-wrap gap-4 text-xs text-stone-500">
+                          {req.idDemandePaiement && (
+                            <span>API ID : <span className="font-mono text-stone-600">{req.idDemandePaiement.slice(0, 20)}...</span></span>
+                          )}
+                          {req.submittedAt && (
+                            <span>Soumis le {formatDate(req.submittedAt)}</span>
+                          )}
+                          {req.lastSyncedAt && (
+                            <span>Sync : {formatDate(req.lastSyncedAt)}</span>
                           )}
                         </div>
+                        {req.lessons.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {req.lessons.map((lesson) => (
+                              <span key={lesson.id} className="rounded bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-600">
+                                {new Date(lesson.date).toLocaleDateString("fr-FR")} · {Number(lesson.amount)} EUR
+                                {lesson.isPaid && " ✓"}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Timeline de suivi */}
+                        <DPTimeline req={req} />
                       </div>
                     </div>
                   ))}

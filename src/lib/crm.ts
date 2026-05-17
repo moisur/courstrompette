@@ -397,3 +397,24 @@ export async function getTimelineSnapshots(referenceDate = new Date()): Promise<
     };
   });
 }
+
+export async function getUrssafAlerts() {
+  const now = new Date();
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const unsentCount = await prisma.lesson.count({
+    where: {
+      date: {
+        gte: lastMonthStart,
+        lt: lastMonthEnd,
+      },
+      paymentMethod: 'URSSAF',
+      urssafPaymentRequestId: null,
+    },
+  });
+
+  return {
+    unsentCount,
+  };
+}

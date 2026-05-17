@@ -173,8 +173,15 @@ model UrssafPaymentRequest {
   dateFinEmploi    DateTime     @map("date_fin_emploi")
   submittedAt      DateTime?    @map("submitted_at")
   lastSyncedAt     DateTime?    @map("last_synced_at")
+  // Milestone timestamps — filled automatically on first transition to each status
+  integreeAt       DateTime?    @map("integree_at")
+  valideeAt        DateTime?    @map("validee_at")
+  preleveeAt       DateTime?    @map("prelevee_at")
+  paidAt           DateTime?    @map("paid_at")
+  errorAt          DateTime?    @map("error_at")
   rawLastResponse  Json?        @map("raw_last_response")
   lessons          Lesson[]
+  statusHistory    UrssafStatusHistory[]
   createdAt        DateTime     @default(now()) @map("created_at")
   updatedAt        DateTime     @updatedAt @map("updated_at")
 
@@ -182,4 +189,20 @@ model UrssafPaymentRequest {
   @@index([urssafClientId], map: "idx_urssaf_payment_requests_urssaf_client_id")
   @@index([statutCode], map: "idx_urssaf_payment_requests_statut_code")
   @@map("urssaf_payment_requests")
+}
+
+model UrssafStatusHistory {
+  id              String   @id @default(uuid())
+  paymentRequestId String  @map("payment_request_id")
+  paymentRequest  UrssafPaymentRequest @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+  previousCode    String?  @map("previous_code")
+  previousLabel   String?  @map("previous_label")
+  newCode         String   @map("new_code")
+  newLabel        String?  @map("new_label")
+  changedAt       DateTime @default(now()) @map("changed_at")
+  rawResponse     Json?    @map("raw_response")
+
+  @@index([paymentRequestId], map: "idx_urssaf_status_history_request_id")
+  @@index([changedAt], map: "idx_urssaf_status_history_changed_at")
+  @@map("urssaf_status_history")
 }

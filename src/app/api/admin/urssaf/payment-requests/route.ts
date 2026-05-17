@@ -38,6 +38,17 @@ export async function GET() {
         },
         orderBy: { date: "asc" },
       },
+      statusHistory: {
+        select: {
+          id: true,
+          previousCode: true,
+          previousLabel: true,
+          newCode: true,
+          newLabel: true,
+          changedAt: true,
+        },
+        orderBy: { changedAt: "asc" },
+      },
     },
   });
 
@@ -63,6 +74,11 @@ export async function GET() {
       dateFinEmploi: requestItem.dateFinEmploi.toISOString(),
       submittedAt: requestItem.submittedAt?.toISOString() ?? null,
       lastSyncedAt: requestItem.lastSyncedAt?.toISOString() ?? null,
+      integreeAt: requestItem.integreeAt?.toISOString() ?? null,
+      valideeAt: requestItem.valideeAt?.toISOString() ?? null,
+      preleveeAt: requestItem.preleveeAt?.toISOString() ?? null,
+      paidAt: requestItem.paidAt?.toISOString() ?? null,
+      errorAt: requestItem.errorAt?.toISOString() ?? null,
       createdAt: requestItem.createdAt.toISOString(),
       lessons: requestItem.lessons.map((lesson) => ({
         id: lesson.id,
@@ -71,6 +87,15 @@ export async function GET() {
         comment: lesson.comment,
         isPaid: lesson.isPaid,
       })),
+      statusHistory: requestItem.statusHistory.map((h) => ({
+        id: h.id,
+        previousCode: h.previousCode,
+        previousLabel: h.previousLabel,
+        newCode: h.newCode,
+        newLabel: h.newLabel,
+        changedAt: h.changedAt.toISOString(),
+      })),
     })),
   );
 }
+
