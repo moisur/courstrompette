@@ -29,6 +29,7 @@ jobs:
             . ./.env.production
             set +a
 
+            git reset --hard
             git pull origin master
             npm ci --include=dev --legacy-peer-deps
             npx --no-install prisma generate
