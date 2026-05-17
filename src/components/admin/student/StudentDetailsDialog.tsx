@@ -26,6 +26,7 @@ import { InvoiceData } from "@/lib/types/invoice";
 import { CheckCircle2, FileDown, Landmark, Plus, RotateCcw, ShieldCheck, UserCircle2, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, toErrorMessage } from "@/lib/client-api";
+import { SignEaseTool } from "@/components/admin/signature/SignEaseLoader";
 
 interface StudentDetailsDialogProps {
   studentId: string | null;
@@ -114,6 +115,8 @@ export function StudentDetailsDialog({
   const [isDeletingStudent, setIsDeletingStudent] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+  const [signTargetPdf, setSignTargetPdf] = useState<{ file: File; name: string } | null>(null);
+  const [isGeneratingPdfForSigning, setIsGeneratingPdfForSigning] = useState(false);
   const [packPaymentLessonId, setPackPaymentLessonId] = useState<string | null>(null);
   const [selectedPackId, setSelectedPackId] = useState("");
   const [isApplyingPack, setIsApplyingPack] = useState(false);
@@ -182,6 +185,42 @@ export function StudentDetailsDialog({
       toast({ variant: "destructive", title: "Erreur", description: "Echec de generation PDF" });
     } finally {
       setIsGeneratingPdf(false);
+    }
+  };
+
+  const handleSignPdfAction = async (type: "invoice" | "attestation") => {
+    if (!invoiceData) return;
+
+    setIsGeneratingPdfForSigning(true);
+    try {
+      const elementId = type === "invoice" ? "invoice-preview" : "attestation-preview";
+      const filename = `${type}-${student?.name}-${new Date().toISOString().split("T")[0]}.pdf`;
+      
+      const html2pdf = (await import("html2pdf.js")).default;
+      const element = document.getElementById(elementId);
+      if (!element) throw new Error("Cible PDF introuvable");
+
+      // Generate the PDF blob inside the browser
+      const pdfBlob = await html2pdf()
+        .set({
+          margin: [1, 1, 1, 1],
+          filename,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+          jsPDF: { unit: "cm", format: "a4", orientation: "portrait" },
+        })
+        .from(element)
+        .output("blob");
+
+      // Instantiate a standard HTML5 File object
+      const file = new File([pdfBlob], filename, { type: "application/pdf" });
+      setSignTargetPdf({ file, name: filename });
+      toast({ title: "Succes", description: "Le document est pret pour la signature" });
+    } catch (error) {
+      console.error("Echec de generation pour signature:", error);
+      toast({ variant: "destructive", title: "Erreur", description: "Echec de generation du document pour signature" });
+    } finally {
+      setIsGeneratingPdfForSigning(false);
     }
   };
 
@@ -642,16 +681,26 @@ export function StudentDetailsDialog({
                 <TabsContent value="invoice" className="mt-0 h-full">
                   <div className="flex h-full flex-col lg:flex-row">
                     <div className="flex-1 overflow-y-auto border-r border-stone-200 bg-white p-6">
-                      <div className="mb-6 flex items-center justify-between">
+                      <div className="mb-6 flex flex-wrap items-center gap-2 justify-between">
                         <h3 className="text-xl font-black leading-none text-stone-900">Modifier la facture</h3>
-                        <Button
-                          onClick={() => void handleDownload("invoice")}
-                          disabled={!invoiceData || isGeneratingPdf}
-                          className="h-10 rounded-full bg-amber-600 px-6 font-bold text-white hover:bg-amber-700"
-                        >
-                          <FileDown size={18} className="mr-2" />
-                          {isGeneratingPdf ? "Generation..." : "Telecharger PDF"}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => void handleDownload("invoice")}
+                            disabled={!invoiceData || isGeneratingPdf || isGeneratingPdfForSigning}
+                            className="h-10 rounded-full bg-stone-100 border border-stone-200 px-5 font-bold text-stone-700 hover:bg-stone-50"
+                          >
+                            <FileDown size={17} className="mr-1.5" />
+                            {isGeneratingPdf ? "..." : "Telecharger"}
+                          </Button>
+                          <Button
+                            onClick={() => void handleSignPdfAction("invoice")}
+                            disabled={!invoiceData || isGeneratingPdf || isGeneratingPdfForSigning}
+                            className="h-10 rounded-full bg-amber-600 px-6 font-bold text-white hover:bg-amber-700 shadow-sm flex items-center gap-1.5"
+                          >
+                            <CheckCircle2 size={16} />
+                            {isGeneratingPdfForSigning ? "Preparation..." : "Signer le PDF"}
+                          </Button>
+                        </div>
                       </div>
                       <InvoiceForm
                         onUpdate={setInvoiceData}
@@ -688,16 +737,26 @@ export function StudentDetailsDialog({
                 <TabsContent value="attestation" className="mt-0 h-full">
                   <div className="flex h-full flex-col lg:flex-row">
                     <div className="flex-1 overflow-y-auto border-r border-stone-200 bg-white p-6">
-                      <div className="mb-6 flex items-center justify-between">
+                      <div className="mb-6 flex flex-wrap items-center gap-2 justify-between">
                         <h3 className="text-xl font-black leading-none text-stone-900">Attestation fiscale</h3>
-                        <Button
-                          onClick={() => void handleDownload("attestation")}
-                          disabled={!invoiceData || isGeneratingPdf}
-                          className="h-10 rounded-full bg-stone-900 px-6 font-bold text-white hover:bg-stone-800"
-                        >
-                          <FileDown size={18} className="mr-2" />
-                          {isGeneratingPdf ? "Generation..." : "Telecharger PDF"}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => void handleDownload("attestation")}
+                            disabled={!invoiceData || isGeneratingPdf || isGeneratingPdfForSigning}
+                            className="h-10 rounded-full bg-stone-100 border border-stone-200 px-5 font-bold text-stone-700 hover:bg-stone-50"
+                          >
+                            <FileDown size={17} className="mr-1.5" />
+                            {isGeneratingPdf ? "..." : "Telecharger"}
+                          </Button>
+                          <Button
+                            onClick={() => void handleSignPdfAction("attestation")}
+                            disabled={!invoiceData || isGeneratingPdf || isGeneratingPdfForSigning}
+                            className="h-10 rounded-full bg-stone-900 px-6 font-bold text-white hover:bg-stone-800 shadow-sm flex items-center gap-1.5"
+                          >
+                            <CheckCircle2 size={16} />
+                            {isGeneratingPdfForSigning ? "Preparation..." : "Signer le PDF"}
+                          </Button>
+                        </div>
                       </div>
                       <InvoiceForm
                         onUpdate={setInvoiceData}
@@ -1095,6 +1154,26 @@ export function StudentDetailsDialog({
               {isDeletingStudent ? "Suppression..." : "Supprimer definitivement"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Signature PDF integree */}
+      <Dialog open={!!signTargetPdf} onOpenChange={(open) => { if (!open) setSignTargetPdf(null); }}>
+        <DialogContent className="max-w-5xl h-[85vh] w-[95vw] overflow-y-auto bg-stone-50 border-none rounded-3xl p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl font-black text-stone-900 flex items-center gap-2">
+              Signer le document genere
+            </DialogTitle>
+            <DialogDescription className="text-xs text-stone-500">
+              Glissez-deposez votre signature sur le document ci-dessous, ajustez sa taille si besoin, puis cliquez sur &quot;Appliquer la signature &amp; Telecharger&quot;.
+            </DialogDescription>
+          </DialogHeader>
+
+          {signTargetPdf && (
+            <div className="flex-1 overflow-y-auto">
+              <SignEaseTool initialPdfFile={signTargetPdf.file} />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>

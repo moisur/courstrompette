@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { PDFDocument } from "pdf-lib";
 import { Document, Page, pdfjs } from "react-pdf";
 import SignatureCanvas from "react-signature-canvas";
@@ -19,10 +20,17 @@ import {
   Minimize2
 } from "lucide-react";
 
-// Set up pdfjs worker using standard local worker or stable unpkg CDN
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Set up pdfjs worker locally via same-origin Next.js webpack bundling to comply with CSP policies
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
 
-export function SignEaseTool() {
+export interface SignEaseToolProps {
+  initialPdfFile?: File | null;
+}
+
+export function SignEaseTool({ initialPdfFile = null }: SignEaseToolProps) {
   // Signature management states
   const [savedSignatureUrl, setSavedSignatureUrl] = useState<string | null>(null);
   const [savedSignatureExists, setSavedSignatureExists] = useState(false);
@@ -30,8 +38,8 @@ export function SignEaseTool() {
   const [isLoadingSignature, setIsLoadingSignature] = useState(true);
   
   // PDF states
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<File | null>(initialPdfFile);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(initialPdfFile ? URL.createObjectURL(initialPdfFile) : null);
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pdfDimensions, setPdfDimensions] = useState<{ width: number; height: number } | null>(null);
@@ -53,6 +61,20 @@ export function SignEaseTool() {
   useEffect(() => {
     fetchSignature();
   }, []);
+
+  // Sync initial PDF file changes and manage Object URLs cleanly to prevent memory leaks
+  useEffect(() => {
+    if (initialPdfFile) {
+      const url = URL.createObjectURL(initialPdfFile);
+      setPdfFile(initialPdfFile);
+      setPdfUrl(url);
+      setCurrentPage(1);
+      setOverlayPlaced(false);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    }
+  }, [initialPdfFile]);
 
   const fetchSignature = async () => {
     setIsLoadingSignature(true);
@@ -253,7 +275,7 @@ export function SignEaseTool() {
       
       // 6. Save PDF and download
       const signedPdfBytes = await pdfDoc.save();
-      const signedBlob = new Blob([signedPdfBytes], { type: "application/pdf" });
+      const signedBlob = new Blob([signedPdfBytes as any], { type: "application/pdf" });
       const signedUrl = URL.createObjectURL(signedBlob);
       
       const link = document.createElement("a");
@@ -302,9 +324,12 @@ export function SignEaseTool() {
               <div className="space-y-4">
                 <div className="rounded-2xl border border-stone-100 bg-stone-50/50 p-4 flex flex-col items-center justify-center">
                   <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">Signature Enregistrée</p>
-                  <img 
+                  <Image 
                     src={savedSignatureUrl} 
                     alt="Signature admin" 
+                    width={200}
+                    height={100}
+                    unoptimized
                     className="max-h-24 object-contain max-w-full mix-blend-multiply filter contrast-125"
                   />
                 </div>
@@ -549,9 +574,12 @@ export function SignEaseTool() {
                       <X size={10} />
                     </button>
 
-                    <img 
+                    <Image 
                       src={savedSignatureUrl} 
                       alt="Signature placement overlay" 
+                      width={150}
+                      height={75}
+                      unoptimized
                       className="w-full h-full object-contain mix-blend-multiply pointer-events-none select-none"
                     />
                   </div>
