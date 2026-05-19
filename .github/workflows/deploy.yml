@@ -20,7 +20,7 @@ jobs:
 
             TIMESTAMP=$(date +%s)
             LIVE_DIR="/var/www/courstrompette"
-            BUILD_DIR="/var/www/courstrompette_build_$TIMESTAMP"
+            BUILD_DIR="/home/djiss/courstrompette_build_$TIMESTAMP"
 
             if [ ! -f $LIVE_DIR/.env.production ]; then
               echo ".env.production missing in $LIVE_DIR" >&2
