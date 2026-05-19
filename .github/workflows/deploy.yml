@@ -15,51 +15,98 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY_TROMPETTE }}
+          command_timeout: 10m
           script: |
             set -e
 
-            TIMESTAMP=$(date +%s)
             LIVE_DIR="/var/www/courstrompette"
-            BUILD_DIR="/home/djiss/courstrompette_build_$TIMESTAMP"
 
+            # ============================================================
+            # PHASE 0 : Nettoyage agressif pour libérer de l'espace disque
+            # ============================================================
+            echo "=== Phase 0 : Libération d'espace disque ==="
+
+            # Supprimer tous les anciens dossiers de build ratés
+            echo "Suppression des dossiers de build temporaires..."
+            rm -rf /home/djiss/courstrompette_build_* 2>/dev/null || true
+
+            # Vider les logs PM2 (peuvent peser plusieurs Go)
+            echo "Vidage des logs PM2..."
+            pm2 flush 2>/dev/null || true
+
+            # Nettoyer le cache npm
+            echo "Nettoyage du cache npm..."
+            npm cache clean --force 2>/dev/null || true
+
+            # Compacter le dépôt git (supprime les objets inaccessibles)
+            echo "Compactage du dépôt git..."
+            cd $LIVE_DIR
+            git gc --aggressive --prune=now 2>/dev/null || true
+
+            # Supprimer les anciens caches Next.js
+            echo "Purge du cache Next.js..."
+            rm -rf $LIVE_DIR/.next/cache 2>/dev/null || true
+
+            # Afficher l'espace disque disponible
+            echo "Espace disque après nettoyage :"
+            df -h / | tail -1
+
+            # ============================================================
+            # PHASE 1 : Vérification
+            # ============================================================
             if [ ! -f $LIVE_DIR/.env.production ]; then
               echo ".env.production missing in $LIVE_DIR" >&2
               exit 1
             fi
 
-            echo "Création du dossier de build temporaire..."
-            cp -a $LIVE_DIR $BUILD_DIR
-            cd $BUILD_DIR
+            cd $LIVE_DIR
 
+            # Charger les variables d'environnement
             set -a
             . ./.env.production
             set +a
 
-            echo "Récupération du nouveau code..."
-            git reset --hard
-            git pull origin master
+            # ============================================================
+            # PHASE 2 : Mise à jour du code (build in-place, pas de copie)
+            # ============================================================
+            echo "=== Phase 2 : Récupération du nouveau code ==="
+            git fetch origin master
+            git reset --hard origin/master
 
-            echo "Installation des dépendances..."
+            echo "=== Phase 3 : Installation des dépendances ==="
             NODE_OPTIONS="--max-old-space-size=1024" npm install --include=dev --no-audit --no-fund --legacy-peer-deps
             npx --no-install prisma generate
 
-            echo "Compilation de Next.js..."
-            NODE_OPTIONS="--max-old-space-size=1024" NEXT_TELEMETRY_DISABLED=1 npm run build
+            # ============================================================
+            # PHASE 3 : Compilation (avec sauvegarde du .next pour rollback)
+            # ============================================================
+            echo "=== Phase 4 : Compilation de Next.js ==="
 
-            # Si le script arrive ici, c'est que le build a RÉUSSI !
-            echo "Build réussi ! Remplacement en toute sécurité..."
-            
-            # Synchronisation rapide vers le dossier live (sans --delete pour conserver les anciens chunks statiques et éviter les ChunkLoadErrors)
-            rsync -a --exclude='.env*' --exclude='.git' $BUILD_DIR/ $LIVE_DIR/
-            
-            cd $LIVE_DIR
-            echo "Mise à jour de la base de données..."
+            # Sauvegarder l'ancien .next pour pouvoir faire un rollback en cas d'échec
+            if [ -d .next ]; then
+              mv .next .next_backup 2>/dev/null || true
+            fi
+
+            if NODE_OPTIONS="--max-old-space-size=1024" NEXT_TELEMETRY_DISABLED=1 npm run build; then
+              echo "✅ Build réussi !"
+              rm -rf .next_backup 2>/dev/null || true
+            else
+              echo "❌ Build échoué, restauration de l'ancienne version..."
+              rm -rf .next 2>/dev/null || true
+              if [ -d .next_backup ]; then
+                mv .next_backup .next
+              fi
+              exit 1
+            fi
+
+            # ============================================================
+            # PHASE 4 : Base de données et redémarrage
+            # ============================================================
+            echo "=== Phase 5 : Mise à jour de la base de données ==="
             npx --no-install prisma db push
 
-            echo "Redémarrage de PM2..."
+            echo "=== Phase 6 : Redémarrage de PM2 ==="
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
 
-            echo "Nettoyage..."
-            rm -rf $BUILD_DIR
-            echo "Déploiement terminé avec succès !"
+            echo "🚀 Déploiement terminé avec succès !"
