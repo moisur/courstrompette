@@ -18,22 +18,48 @@ jobs:
           script: |
             set -e
 
-            cd /var/www/courstrompette
+            TIMESTAMP=$(date +%s)
+            LIVE_DIR="/var/www/courstrompette"
+            BUILD_DIR="/var/www/courstrompette_build_$TIMESTAMP"
 
-            if [ ! -f .env.production ]; then
-              echo ".env.production missing in /var/www/courstrompette" >&2
+            if [ ! -f $LIVE_DIR/.env.production ]; then
+              echo ".env.production missing in $LIVE_DIR" >&2
               exit 1
             fi
+
+            echo "Création du dossier de build temporaire..."
+            cp -a $LIVE_DIR $BUILD_DIR
+            cd $BUILD_DIR
 
             set -a
             . ./.env.production
             set +a
 
+            echo "Récupération du nouveau code..."
             git reset --hard
             git pull origin master
+
+            echo "Installation des dépendances..."
             npm ci --include=dev --legacy-peer-deps
             npx --no-install prisma generate
-            npx --no-install prisma db push
+
+            echo "Compilation de Next.js..."
             NODE_OPTIONS="--max-old-space-size=2048" npm run build
+
+            # Si le script arrive ici, c'est que le build a RÉUSSI !
+            echo "Build réussi ! Remplacement en toute sécurité..."
+            
+            # Synchronisation rapide vers le dossier live (sans --delete pour conserver les anciens chunks statiques et éviter les ChunkLoadErrors)
+            rsync -a --exclude='.env*' --exclude='.git' $BUILD_DIR/ $LIVE_DIR/
+            
+            cd $LIVE_DIR
+            echo "Mise à jour de la base de données..."
+            npx --no-install prisma db push
+
+            echo "Redémarrage de PM2..."
             pm2 startOrReload ecosystem.config.cjs --update-env
             pm2 save
+
+            echo "Nettoyage..."
+            rm -rf $BUILD_DIR
+            echo "Déploiement terminé avec succès !"

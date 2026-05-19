@@ -27,7 +27,22 @@ Appliquez les headers de sécurité dans `next.config.mjs`.
 # Cette étape sera faite via l'éditeur de code (déjà prévu dans le plan)
 ```
 
-## 3. Hardening Serveur (SSH)
+## 3. Déploiement Sécurisé (Zero-Downtime & OOM Protection)
+Un déploiement qui crashe (ex: manque de RAM "SIGKILL") peut rendre le site indisponible. Il faut toujours compiler la nouvelle version dans un dossier temporaire avant de remplacer la version en ligne.
+
+1. **Limiter l'usage mémoire de Next.js** (`next.config.mjs`) :
+   ```javascript
+   experimental: {
+     webpackBuildWorker: false,
+   }
+   ```
+
+2. **Stratégie Build-then-Swap** (ex: `.github/workflows/deploy.yml`) :
+   - Cloner le code dans un dossier temporaire (`/var/www/courstrompette_build`).
+   - Compiler avec une limite de RAM : `NODE_OPTIONS="--max-old-space-size=2048" npm run build`
+   - Si le build réussit, utiliser `rsync -a --delete` pour remplacer le dossier en ligne. Si le build échoue, le dossier temporaire est supprimé et le site en ligne n'est jamais impacté.
+
+## 4. Hardening Serveur (SSH)
 Connectez-vous au serveur (`ssh root@46.62.243.117`) et exécutez ces commandes :
 
 ### A. Mise à jour système
@@ -102,13 +117,13 @@ Ne laissez jamais le port 22 ouvert à tout le monde en IPv6.
    sudo ufw delete [NUMERO]
    ```
 
-## 4. Protection DDoS & WAF (Cloudflare)
+## 5. Protection DDoS & WAF (Cloudflare)
 Si vous avez ajouté le domaine à Cloudflare :
 1. Activez le mode **"Under Attack"** si nécessaire.
 2. Vérifiez que le **SSL/TLS** est en mode "Full (Strict)".
 3. Activez les règles **WAF** de base (gratuites).
 
-## 5. Audit Final
+## 6. Audit Final
 Relancez les audits pour valider.
 
 ```powershell
