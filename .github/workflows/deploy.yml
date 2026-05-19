@@ -40,7 +40,7 @@ jobs:
             git pull origin master
 
             echo "Installation des dépendances..."
-            npm ci --include=dev --legacy-peer-deps
+            NODE_OPTIONS="--max-old-space-size=1024" npm install --include=dev --no-audit --no-fund --legacy-peer-deps
             npx --no-install prisma generate
 
             echo "Compilation de Next.js..."
