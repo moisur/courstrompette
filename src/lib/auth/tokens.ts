@@ -31,7 +31,9 @@ export function signAccessToken(payload: Omit<AccessTokenPayload, "type">): stri
 
 export function verifyAccessToken(token: string): AccessTokenPayload | null {
   try {
-    const decoded = jwt.verify(token, getSecret("JWT_ACCESS_SECRET"));
+    const decoded = jwt.verify(token, getSecret("JWT_ACCESS_SECRET"), {
+      algorithms: ["HS256"],
+    });
     if (typeof decoded !== "object" || decoded === null) {
       return null;
     }

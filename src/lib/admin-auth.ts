@@ -2,7 +2,7 @@ import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export const ADMIN_SESSION_COOKIE = 'courstrompette_admin_session';
-const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 12;
+export const ADMIN_SESSION_TTL_SECONDS = 60 * 60 * 12;
 const ADMIN_LOGIN_WINDOW_MS = 10 * 60 * 1000;
 const ADMIN_LOGIN_MAX_ATTEMPTS = 10;
 
@@ -54,15 +54,19 @@ async function signPayload(payload: string): Promise<string> {
     .replace(/=/g, '');
 }
 
+function safeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 async function verifySignature(payload: string, signature: string): Promise<boolean> {
   const expected = await signPayload(payload);
   if (!expected) return false;
-  
-  // Constant time comparison (simple version for edge)
-  if (payload.length !== expected.length) {
-    // This is not strictly constant time but better than nothing in this context
-  }
-  return expected === signature;
+  return safeCompare(expected, signature);
 }
 
 export async function createSessionToken(email: string): Promise<string> {
@@ -83,7 +87,7 @@ export async function createSessionToken(email: string): Promise<string> {
 export function isAdminAuthConfigured() {
   return Boolean(
     process.env.ADMIN_EMAIL?.trim() &&
-      process.env.ADMIN_PASSWORD?.trim() &&
+      (process.env.ADMIN_PASSWORD_HASH?.trim() || process.env.ADMIN_PASSWORD?.trim()) &&
       process.env.ADMIN_SESSION_SECRET?.trim(),
   );
 }
@@ -139,30 +143,6 @@ export async function requireAdminSession(nextPath?: string | null) {
     redirect(getAdminLoginPath(nextPath));
   }
   return session;
-}
-
-export async function authenticateAdmin(email: string, password: string) {
-  if (!isAdminAuthConfigured()) return false;
-
-  const normalizedEmail = normalizeEmail(email);
-  const expectedEmail = normalizeEmail(getRequiredEnv('ADMIN_EMAIL'));
-  const expectedPassword = getRequiredEnv('ADMIN_PASSWORD');
-
-  if (normalizedEmail !== expectedEmail || password !== expectedPassword) {
-    return false;
-  }
-
-  const token = await createSessionToken(normalizedEmail);
-  
-  (await cookies()).set(ADMIN_SESSION_COOKIE, token, {
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: ADMIN_SESSION_TTL_SECONDS,
-  });
-
-  return true;
 }
 
 export async function clearAdminSession() {

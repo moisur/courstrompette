@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { ShieldCheck, ArrowRight, Lock, Mail, Key } from 'lucide-react';
 
 import {
-  authenticateAdmin,
   clearAdminLoginFailures,
   getAdminSession,
   isAdminAuthConfigured,
@@ -12,6 +11,7 @@ import {
   normalizeAdminNextPath,
   registerAdminLoginFailure,
 } from '@/lib/admin-auth';
+import { authenticateAdmin } from '@/lib/admin-auth-server';
 
 export const metadata: Metadata = {
   title: 'Connexion Admin | JC Trompette',
