@@ -157,16 +157,25 @@ export class UrssafService {
         scope,
       });
 
-      const response = await fetch(URSSAF_OAUTH_TOKEN_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-          Accept: "application/json",
-        },
-        body: body.toString(),
-        cache: "no-store",
-      });
+      let response: Response;
+      try {
+        response = await fetch(URSSAF_OAUTH_TOKEN_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+            Accept: "application/json",
+          },
+          body: body.toString(),
+          cache: "no-store",
+          signal: AbortSignal.timeout(10000),
+        });
+      } catch (error: any) {
+        if (error.name === "TimeoutError" || error.name === "AbortError") {
+          throw new UrssafApiError("La requete d'authentification OAuth URSSAF a expire (Timeout de 10s)", 408, { error: "timeout" });
+        }
+        throw error;
+      }
 
       const payload = (await readPayload(response)) as UrssafOAuthResponse;
 
@@ -218,30 +227,38 @@ export class UrssafService {
   }
 
   private static async request<T>(path: string, init: RequestInit, retryUnauthorized = true): Promise<UrssafRequestResult<T>> {
-    const response = await fetch(`${URSSAF_BASE_URL}${path}`, {
-      ...init,
-      headers: {
-        ...(await this.getHeaders(!retryUnauthorized)),
-        ...(init.headers ?? {}),
-      },
-      cache: "no-store",
-    });
+    try {
+      const response = await fetch(`${URSSAF_BASE_URL}${path}`, {
+        ...init,
+        headers: {
+          ...(await this.getHeaders(!retryUnauthorized)),
+          ...(init.headers ?? {}),
+        },
+        cache: "no-store",
+        signal: AbortSignal.timeout(15000),
+      });
 
-    const data = (await readPayload(response)) as T;
+      const data = (await readPayload(response)) as T;
 
-    if (response.status === 401 && retryUnauthorized) {
-      this.clearTokenCache();
-      return this.request<T>(path, init, false);
+      if (response.status === 401 && retryUnauthorized) {
+        this.clearTokenCache();
+        return this.request<T>(path, init, false);
+      }
+
+      if (!response.ok) {
+        throw new UrssafApiError(getErrorMessage(data, response.status), response.status, data);
+      }
+
+      return {
+        status: response.status,
+        data,
+      };
+    } catch (error: any) {
+      if (error.name === "TimeoutError" || error.name === "AbortError") {
+        throw new UrssafApiError("La requete vers l'URSSAF a expire (Timeout de 15s)", 408, { error: "timeout" });
+      }
+      throw error;
     }
-
-    if (!response.ok) {
-      throw new UrssafApiError(getErrorMessage(data, response.status), response.status, data);
-    }
-
-    return {
-      status: response.status,
-      data,
-    };
   }
 
   static async getClientStatusRequest(idClient: string) {

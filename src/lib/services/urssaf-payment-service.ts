@@ -496,74 +496,79 @@ export async function syncUrssafPaymentRequests(filters?: { studentId?: string }
   }> = [];
 
   for (const request of requests) {
-    const searchPayload = {
-      numFactureTiers: [request.numFactureTiers],
-    };
+    try {
+      const searchPayload = {
+        numFactureTiers: [request.numFactureTiers],
+      };
 
-    const result = await UrssafService.searchPaymentRequestsRequest(searchPayload);
-    const data = result.data as SearchPaymentResponse;
-    const paymentInfo = data.infoDemandePaiements?.[0];
-    const statutCode = paymentInfo?.statut?.code ?? null;
-    const statutLabel = buildStatusLabel(statutCode, paymentInfo?.statut?.libelle ?? null);
-    const idDemandePaiement = paymentInfo?.idDemandePaiement ?? request.idDemandePaiement ?? null;
+      const result = await UrssafService.searchPaymentRequestsRequest(searchPayload);
+      const data = result.data as SearchPaymentResponse;
+      const paymentInfo = data.infoDemandePaiements?.[0];
+      const statutCode = paymentInfo?.statut?.code ?? null;
+      const statutLabel = buildStatusLabel(statutCode, paymentInfo?.statut?.libelle ?? null);
+      const idDemandePaiement = paymentInfo?.idDemandePaiement ?? request.idDemandePaiement ?? null;
 
-    const statusChanged = statutCode !== request.statutCode;
-    const milestoneUpdates = statutCode
-      ? buildMilestoneTimestamps(statutCode, {
-          integreeAt: request.integreeAt ?? null,
-          valideeAt: request.valideeAt ?? null,
-          preleveeAt: request.preleveeAt ?? null,
-          paidAt: request.paidAt ?? null,
-          errorAt: request.errorAt ?? null,
-        })
-      : {};
+      const statusChanged = statutCode !== request.statutCode;
+      const milestoneUpdates = statutCode
+        ? buildMilestoneTimestamps(statutCode, {
+            integreeAt: request.integreeAt ?? null,
+            valideeAt: request.valideeAt ?? null,
+            preleveeAt: request.preleveeAt ?? null,
+            paidAt: request.paidAt ?? null,
+            errorAt: request.errorAt ?? null,
+          })
+        : {};
 
-    await prisma.$transaction(async (tx) => {
-      await tx.urssafPaymentRequest.update({
-        where: { id: request.id },
-        data: {
-          idDemandePaiement,
-          statutCode,
-          statutLabel,
-          lastSyncedAt: new Date(),
-          rawLastResponse: data as Prisma.InputJsonValue,
-          ...milestoneUpdates,
-        },
-      });
-
-      // Create an immutable history entry when status changes
-      if (statusChanged && statutCode) {
-        await tx.urssafStatusHistory.create({
+      await prisma.$transaction(async (tx) => {
+        await tx.urssafPaymentRequest.update({
+          where: { id: request.id },
           data: {
-            paymentRequestId: request.id,
-            previousCode: request.statutCode,
-            previousLabel: request.statutLabel,
-            newCode: statutCode,
-            newLabel: statutLabel,
-            rawResponse: data as Prisma.InputJsonValue,
+            idDemandePaiement,
+            statutCode,
+            statutLabel,
+            lastSyncedAt: new Date(),
+            rawLastResponse: data as Prisma.InputJsonValue,
+            ...milestoneUpdates,
           },
         });
-      }
 
-      if (isSettledStatus(statutCode)) {
-        await tx.lesson.updateMany({
-          where: { urssafPaymentRequestId: request.id },
-          data: { isPaid: true },
-        });
-      } else if (isErrorStatus(statutCode)) {
-        await tx.lesson.updateMany({
-          where: { urssafPaymentRequestId: request.id },
-          data: { isPaid: false },
-        });
-      }
-    });
+        // Create an immutable history entry when status changes
+        if (statusChanged && statutCode) {
+          await tx.urssafStatusHistory.create({
+            data: {
+              paymentRequestId: request.id,
+              previousCode: request.statutCode,
+              previousLabel: request.statutLabel,
+              newCode: statutCode,
+              newLabel: statutLabel,
+              rawResponse: data as Prisma.InputJsonValue,
+            },
+          });
+        }
 
-    synced.push({
-      id: request.id,
-      numFactureTiers: request.numFactureTiers,
-      statutCode,
-      statutLabel,
-    });
+        if (isSettledStatus(statutCode)) {
+          await tx.lesson.updateMany({
+            where: { urssafPaymentRequestId: request.id },
+            data: { isPaid: true },
+          });
+        } else if (isErrorStatus(statutCode)) {
+          await tx.lesson.updateMany({
+            where: { urssafPaymentRequestId: request.id },
+            data: { isPaid: false },
+          });
+        }
+      });
+
+      synced.push({
+        id: request.id,
+        numFactureTiers: request.numFactureTiers,
+        statutCode,
+        statutLabel,
+      });
+    } catch (error) {
+      console.error(`Error syncing URSSAF payment request for invoice ${request.numFactureTiers}:`, error);
+      // Continuer sur la facture suivante
+    }
   }
 
   return synced;
