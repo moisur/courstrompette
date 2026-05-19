@@ -24,6 +24,7 @@ export async function authenticateAdmin(email: string, password: string) {
   const expectedEmail = normalizeEmail(getRequiredEnv('ADMIN_EMAIL'));
 
   if (normalizedEmail !== expectedEmail) {
+    console.log(`[AUTH DEBUG] Échec de connexion : l'email saisi "${normalizedEmail}" ne correspond pas à l'email attendu "${expectedEmail}"`);
     return false;
   }
 
@@ -36,7 +37,7 @@ export async function authenticateAdmin(email: string, password: string) {
     try {
       isPasswordValid = await verifyPassword(password, expectedHash);
     } catch (err) {
-      console.error('Error verifying admin password hash:', err);
+      console.error('[AUTH DEBUG] Erreur lors de la vérification du hash bcrypt :', err);
       return false;
     }
   } else if (expectedClearPassword) {
@@ -47,6 +48,7 @@ export async function authenticateAdmin(email: string, password: string) {
   }
 
   if (!isPasswordValid) {
+    console.log(`[AUTH DEBUG] Échec de connexion : le mot de passe est incorrect pour l'email "${normalizedEmail}"`);
     return false;
   }
 

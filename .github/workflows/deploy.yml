@@ -82,10 +82,6 @@ jobs:
             # ============================================================
             echo "=== Phase 4 : Compilation de Next.js ==="
 
-            # Arrêter toutes les applis PM2 pour libérer la RAM pendant le build
-            echo "Arrêt temporaire de PM2 pour libérer la RAM..."
-            pm2 stop all 2>/dev/null || true
-
             echo "RAM disponible avant le build :"
             free -h | head -2
 
