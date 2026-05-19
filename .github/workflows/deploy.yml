@@ -44,7 +44,7 @@ jobs:
             npx --no-install prisma generate
 
             echo "Compilation de Next.js..."
-            NODE_OPTIONS="--max-old-space-size=2048" npm run build
+            NODE_OPTIONS="--max-old-space-size=1024" npm run build
 
             # Si le script arrive ici, c'est que le build a RÉUSSI !
             echo "Build réussi ! Remplacement en toute sécurité..."
