@@ -82,6 +82,13 @@ jobs:
             # ============================================================
             echo "=== Phase 4 : Compilation de Next.js ==="
 
+            # Arrêter toutes les applis PM2 pour libérer la RAM pendant le build
+            echo "Arrêt temporaire de PM2 pour libérer la RAM..."
+            pm2 stop all 2>/dev/null || true
+
+            echo "RAM disponible avant le build :"
+            free -h | head -2
+
             # Sauvegarder l'ancien .next pour pouvoir faire un rollback en cas d'échec
             if [ -d .next ]; then
               mv .next .next_backup 2>/dev/null || true
@@ -96,6 +103,8 @@ jobs:
               if [ -d .next_backup ]; then
                 mv .next_backup .next
               fi
+              # Redémarrer PM2 même en cas d'échec pour ne pas laisser le site down
+              pm2 startOrReload ecosystem.config.cjs --update-env 2>/dev/null || true
               exit 1
             fi
 
