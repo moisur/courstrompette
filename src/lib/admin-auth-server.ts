@@ -28,8 +28,16 @@ export async function authenticateAdmin(email: string, password: string) {
     return false;
   }
 
-  const expectedHash = process.env.ADMIN_PASSWORD_HASH?.trim();
+  let expectedHash = process.env.ADMIN_PASSWORD_HASH?.trim();
   const expectedClearPassword = process.env.ADMIN_PASSWORD?.trim();
+
+  if (expectedHash && expectedHash.startsWith('base64:')) {
+    try {
+      expectedHash = Buffer.from(expectedHash.slice(7), 'base64').toString('utf8');
+    } catch (err) {
+      console.error('[AUTH DEBUG] Échec du décodage Base64 de ADMIN_PASSWORD_HASH', err);
+    }
+  }
 
   let isPasswordValid = false;
 

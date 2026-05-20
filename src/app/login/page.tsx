@@ -13,6 +13,8 @@ import {
 } from '@/lib/admin-auth';
 import { authenticateAdmin } from '@/lib/admin-auth-server';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Connexion Admin | JC Trompette',
   description: 'Espace sécurisé pour l\'administration de JC Trompette.',
@@ -53,6 +55,15 @@ async function loginAction(formData: FormData) {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const nextPath = normalizeAdminNextPath(params?.next);
+  
+  // LOGS DE DIAGNOSTIC TEMPORAIRES POUR COMPRENDRE CE QUE VOIT NEXT.JS
+  console.log('[AUTH CONFIG DIAGNOSTIC]', {
+    ADMIN_EMAIL_PRESENT: Boolean(process.env.ADMIN_EMAIL?.trim()),
+    ADMIN_PASSWORD_HASH_PRESENT: Boolean(process.env.ADMIN_PASSWORD_HASH?.trim()),
+    ADMIN_PASSWORD_PRESENT: Boolean(process.env.ADMIN_PASSWORD?.trim()),
+    ADMIN_SESSION_SECRET_PRESENT: Boolean(process.env.ADMIN_SESSION_SECRET?.trim()),
+  });
+
   const configured = isAdminAuthConfigured();
   const error = params?.error;
   const session = await getAdminSession();

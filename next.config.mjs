@@ -14,6 +14,9 @@ const nextConfig = {
     webpackBuildWorker: false,
     workerThreads: false,
     cpus: 1,
+    serverActions: {
+      allowedOrigins: ['courstrompette.fr', 'www.courstrompette.fr'],
+    },
   },
   async rewrites() {
     return [
