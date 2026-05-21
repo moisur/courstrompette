@@ -99,6 +99,12 @@ export async function POST(
 
     if (error instanceof Error) {
       console.error("Error submitting URSSAF lessons:", error.message);
+      if (error.message === "URSSAF_PAIRING_NOT_FINALIZED") {
+        return NextResponse.json(
+          { error: "L'appareillage de l'élève n'est pas finalisé (Non prise de connaissance des CGU ou appareillage en attente de validation). L'élève doit d'abord se connecter sur son espace personnel CESU / URSSAF pour accepter les Conditions Générales d'Utilisation (CGU) avant que vous ne puissiez transmettre des demandes de paiement." },
+          { status: 400 }
+        );
+      }
       if (error.message === "URSSAF_STUDENT_NOT_READY") {
         return NextResponse.json({ error: "Eleve non pret pour l'URSSAF" }, { status: 400 });
       }

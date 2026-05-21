@@ -185,6 +185,15 @@ export async function submitPendingUrssafLessonsForStudent(studentId: string, le
     throw new Error("URSSAF_STUDENT_NOT_READY");
   }
 
+  // 1. Vérification dynamique du statut d'appareillage (M020)
+  const statusResult = await UrssafService.getClientStatus(student.urssafClient.id);
+  const statusInfo = statusResult.statutTransmission || (statusResult as any).statut;
+  const pairingCode = statusInfo?.code;
+
+  if (pairingCode !== "APPAREILLAGE_VALIDE") {
+    throw new Error("URSSAF_PAIRING_NOT_FINALIZED");
+  }
+
   if (!student.lessons.length) {
     throw new Error("NO_PENDING_URSSAF_LESSONS");
   }
@@ -347,6 +356,15 @@ export async function submitSingleLessonAsUrssafDP(studentId: string, lessonId: 
 
   if (!student || !student.urssafClient) {
     throw new Error("URSSAF_STUDENT_NOT_READY");
+  }
+
+  // 1. Vérification dynamique du statut d'appareillage (M020)
+  const statusResult = await UrssafService.getClientStatus(student.urssafClient.id);
+  const statusInfo = statusResult.statutTransmission || (statusResult as any).statut;
+  const pairingCode = statusInfo?.code;
+
+  if (pairingCode !== "APPAREILLAGE_VALIDE") {
+    throw new Error("URSSAF_PAIRING_NOT_FINALIZED");
   }
 
   const lesson = await prisma.lesson.findUnique({
