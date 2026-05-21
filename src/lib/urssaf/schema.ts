@@ -29,14 +29,17 @@ export const InscriptionParticulierSchema = z.object({
     communeNaissance: z.object({
       codeCommune: z.string()
         .min(2, "Minimum 2 caractères")
-        .max(3, "Maximum 3 caractères"),
+        .max(5, "Maximum 5 caractères")
+        .regex(/^[0-9A-Za-z]+$/, "Code commune invalide"),
       libelleCommune: z.string()
         .min(1, "Libellé de la commune requis")
         .max(50, "Maximum 50 caractères")
     }).optional()
   }).superRefine((val, ctx) => {
     if (val.codePaysNaissance === '99100') {
-      if (!val.departementNaissance || val.departementNaissance === '') {
+      const hasFullInseeCommuneCode = val.communeNaissance?.codeCommune?.length === 5;
+
+      if ((!val.departementNaissance || val.departementNaissance === '') && !hasFullInseeCommuneCode) {
         ctx.addIssue({ code: 'custom', path: ['departementNaissance'], message: 'Requis pour une naissance en France' });
       }
       if (!val.communeNaissance?.codeCommune) {

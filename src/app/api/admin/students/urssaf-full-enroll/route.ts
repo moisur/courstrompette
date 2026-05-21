@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { InscriptionParticulierSchema } from "@/lib/urssaf/schema";
+import { normalizeUrssafBirthPlace } from "@/lib/urssaf/normalize";
 import { UrssafService } from "@/lib/services/urssaf-service";
 import { Prisma } from "@prisma/client";
 
@@ -12,7 +13,7 @@ export async function POST(req: Request) {
     const { studentData, urssafData } = body;
     
     // Validate URSSAF data with existing schema
-    const validatedUrssaf = InscriptionParticulierSchema.parse(urssafData);
+    const validatedUrssaf = normalizeUrssafBirthPlace(InscriptionParticulierSchema.parse(urssafData));
     
     // 2. Create student in DB (Internal)
     // We use prenoms + nomNaissance for the display name

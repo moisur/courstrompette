@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { InscriptionParticulierSchema, InscriptionParticulierDTO } from "@/lib/urssaf/schema";
 import { getFriendlyErrorMessage } from "@/lib/urssaf/errors";
+import { normalizeUrssafBirthPlace } from "@/lib/urssaf/normalize";
+import { VoieTypeCombobox } from "@/components/admin/urssaf/VoieTypeCombobox";
 
 // Extended schema to include courstrompette specific fields
 const FullOnboardingSchema = z.object({
@@ -101,6 +103,7 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
   const onSubmit = async (data: FullOnboardingDTO) => {
     setIsSubmitting(true);
     setServerErrors([]);
+    const normalizedUrssaf = normalizeUrssafBirthPlace(data.urssaf);
     
     try {
       const response = await fetch("/api/admin/students/urssaf-full-enroll", {
@@ -114,7 +117,7 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
             notes: data.notes,
             address: data.address,
           },
-          urssafData: data.urssaf
+          urssafData: normalizedUrssaf
         })
       });
 
@@ -378,8 +381,8 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                         name="urssaf.lieuNaissance.communeNaissance.codeCommune"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-[10px] font-black uppercase text-stone-400">Code Comm.</FormLabel>
-                            <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={3} placeholder="101" {...field} /></FormControl>
+                            <FormLabel className="text-[10px] font-black uppercase text-stone-400">Code Comm. INSEE</FormLabel>
+                            <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={5} placeholder="69101" {...field} /></FormControl>
                           </FormItem>
                         )}
                       />
@@ -424,7 +427,14 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[10px] font-black uppercase text-stone-400">Type</FormLabel>
-                          <FormControl><Input className="rounded-xl border-stone-200 uppercase" placeholder="R" {...field} /></FormControl>
+                          <FormControl>
+                            <VoieTypeCombobox
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              placeholder="Rue, avenue, impasse..."
+                            />
+                          </FormControl>
                         </FormItem>
                       )}
                     />

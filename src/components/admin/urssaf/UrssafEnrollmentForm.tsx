@@ -5,6 +5,7 @@ import { useForm, type Path } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InscriptionParticulierSchema, InscriptionParticulierDTO } from "@/lib/urssaf/schema";
 import { getFriendlyErrorMessage } from "@/lib/urssaf/errors";
+import { normalizeUrssafBirthPlace } from "@/lib/urssaf/normalize";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { VoieTypeCombobox } from "@/components/admin/urssaf/VoieTypeCombobox";
 import { AlertCircle, CheckCircle2, ChevronRight, User, MapPin, Landmark, Phone, Mail } from "lucide-react";
 
 interface UrssafEnrollmentFormProps {
@@ -286,28 +288,29 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
     setClientId(null);
     setLastResponsePayload(null);
     setLastResponseStatus(null);
+    const normalizedData = normalizeUrssafBirthPlace(data);
 
     const payload = {
-      ...data,
-      dateNaissance: new Date(data.dateNaissance).toISOString(),
-      nomUsage: data.nomUsage || undefined,
+      ...normalizedData,
+      dateNaissance: new Date(normalizedData.dateNaissance).toISOString(),
+      nomUsage: normalizedData.nomUsage || undefined,
       lieuNaissance: {
-        ...data.lieuNaissance,
-        communeNaissance: data.lieuNaissance.codePaysNaissance === '99100' 
-          ? data.lieuNaissance.communeNaissance 
+        ...normalizedData.lieuNaissance,
+        communeNaissance: normalizedData.lieuNaissance.codePaysNaissance === '99100' 
+          ? normalizedData.lieuNaissance.communeNaissance 
           : undefined,
-        departementNaissance: data.lieuNaissance.codePaysNaissance === '99100'
-          ? data.lieuNaissance.departementNaissance
+        departementNaissance: normalizedData.lieuNaissance.codePaysNaissance === '99100'
+          ? normalizedData.lieuNaissance.departementNaissance
           : undefined
       },
       adressePostale: {
-        ...data.adressePostale,
-        numeroVoie: data.adressePostale.numeroVoie || undefined,
-        lettreVoie: data.adressePostale.lettreVoie || undefined,
-        codeTypeVoie: data.adressePostale.codeTypeVoie || undefined,
-        libelleVoie: data.adressePostale.libelleVoie || undefined,
-        complement: data.adressePostale.complement || undefined,
-        lieuDit: data.adressePostale.lieuDit || undefined,
+        ...normalizedData.adressePostale,
+        numeroVoie: normalizedData.adressePostale.numeroVoie || undefined,
+        lettreVoie: normalizedData.adressePostale.lettreVoie || undefined,
+        codeTypeVoie: normalizedData.adressePostale.codeTypeVoie || undefined,
+        libelleVoie: normalizedData.adressePostale.libelleVoie || undefined,
+        complement: normalizedData.adressePostale.complement || undefined,
+        lieuDit: normalizedData.adressePostale.lieuDit || undefined,
       }
     };
 
@@ -539,7 +542,7 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[10px] font-black uppercase text-stone-400">Code Commune</FormLabel>
-                        <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={3} placeholder="056" {...field} /></FormControl>
+                        <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={5} placeholder="75115" {...field} /></FormControl>
                         <FormMessage className="text-[10px]" />
                       </FormItem>
                     )}
@@ -587,48 +590,14 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[10px] font-black uppercase text-stone-400">Type Voie</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger className="rounded-xl border-stone-200">
-                            <SelectValue placeholder="Type de voie..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-[280px]">
-                          <SelectItem value="R">R — Rue</SelectItem>
-                          <SelectItem value="AV">AV — Avenue</SelectItem>
-                          <SelectItem value="BD">BD — Boulevard</SelectItem>
-                          <SelectItem value="ALL">ALL — Allée</SelectItem>
-                          <SelectItem value="CH">CH — Chemin</SelectItem>
-                          <SelectItem value="PL">PL — Place</SelectItem>
-                          <SelectItem value="IMP">IMP — Impasse</SelectItem>
-                          <SelectItem value="RTE">RTE — Route</SelectItem>
-                          <SelectItem value="PAS">PAS — Passage</SelectItem>
-                          <SelectItem value="SQ">SQ — Square</SelectItem>
-                          <SelectItem value="Q">Q — Quai</SelectItem>
-                          <SelectItem value="CRS">CRS — Cours</SelectItem>
-                          <SelectItem value="FG">FG — Faubourg</SelectItem>
-                          <SelectItem value="LOT">LOT — Lotissement</SelectItem>
-                          <SelectItem value="RES">RES — Résidence</SelectItem>
-                          <SelectItem value="CL">CL — Clos</SelectItem>
-                          <SelectItem value="BAT">BAT — Bâtiment</SelectItem>
-                          <SelectItem value="C">C — Carrefour</SelectItem>
-                          <SelectItem value="CHE">CHE — Cheminement</SelectItem>
-                          <SelectItem value="CI">CI — Cité</SelectItem>
-                          <SelectItem value="COR">COR — Corniche</SelectItem>
-                          <SelectItem value="DOM">DOM — Domaine</SelectItem>
-                          <SelectItem value="ESP">ESP — Esplanade</SelectItem>
-                          <SelectItem value="GR">GR — Grande Rue</SelectItem>
-                          <SelectItem value="HAM">HAM — Hameau</SelectItem>
-                          <SelectItem value="LD">LD — Lieu-dit</SelectItem>
-                          <SelectItem value="MTE">MTE — Montée</SelectItem>
-                          <SelectItem value="PAR">PAR — Parc</SelectItem>
-                          <SelectItem value="PRO">PRO — Promenade</SelectItem>
-                          <SelectItem value="SEN">SEN — Sentier</SelectItem>
-                          <SelectItem value="TRA">TRA — Traverse</SelectItem>
-                          <SelectItem value="VIA">VIA — Via</SelectItem>
-                          <SelectItem value="VO">VO — Voie</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <VoieTypeCombobox
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          placeholder="Rue, avenue, impasse..."
+                        />
+                      </FormControl>
                       <FormMessage className="text-[10px]" />
                     </FormItem>
                   )}
