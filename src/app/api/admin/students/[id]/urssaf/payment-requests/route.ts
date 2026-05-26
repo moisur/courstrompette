@@ -79,6 +79,7 @@ export async function POST(
       numFactureTiers: result.request.numFactureTiers,
       statutCode: result.request.statutCode,
       statutLabel: result.request.statutLabel,
+      amountTtc: Number(result.request.amountTtc),
       response: result.response,
     });
   } catch (error) {

@@ -14,11 +14,33 @@ interface ApiRequestOptions extends RequestInit {
   redirectOnUnauthorized?: boolean;
 }
 
-function getErrorMessage(payload: unknown, fallback: string) {
+function getErrorMessage(payload: unknown, fallback: string): string {
+  if (!payload) return fallback;
+
+  // 1. Cas d'un tableau de payload (ex: format URSSAF)
   if (Array.isArray(payload) && payload.length > 0) {
     const first = payload[0];
     if (first && typeof first === "object") {
       const candidate = first as Record<string, unknown>;
+
+      // Vérification des erreurs imbriquées (ex: candidate.errors[0].message)
+      if (Array.isArray(candidate.errors) && candidate.errors.length > 0) {
+        const nestedFirst = candidate.errors[0];
+        if (nestedFirst && typeof nestedFirst === "object") {
+          const nested = nestedFirst as Record<string, unknown>;
+          if (typeof nested.message === "string" && nested.message.trim()) {
+            return nested.message;
+          }
+          if (typeof nested.description === "string" && nested.description.trim()) {
+            return nested.description;
+          }
+          if (typeof nested.code === "string" && nested.code.trim()) {
+            return nested.code;
+          }
+        }
+      }
+
+      // Propriétés directes de l'élément de l'URSSAF
       if (typeof candidate.message === "string" && candidate.message.trim()) {
         return candidate.message;
       }
@@ -28,13 +50,44 @@ function getErrorMessage(payload: unknown, fallback: string) {
       if (typeof candidate.code === "string" && candidate.code.trim()) {
         return candidate.code;
       }
+      if (typeof candidate.statut === "string" && candidate.statut.trim()) {
+        return candidate.statut;
+      }
     }
   }
 
-  if (payload && typeof payload === "object" && "error" in payload) {
-    const error = (payload as any).error;
-    if (typeof error === "string" && error.trim()) {
-      return error;
+  // 2. Cas d'un objet standard
+  if (typeof payload === "object") {
+    const obj = payload as Record<string, unknown>;
+
+    // Champ 'error' direct (souvent renvoyé par nos routes d'API)
+    if ("error" in obj) {
+      const error = obj.error;
+      if (typeof error === "string" && error.trim()) {
+        return error;
+      }
+    }
+
+    // Tableau d'erreurs direct 'errors'
+    if (Array.isArray(obj.errors) && obj.errors.length > 0) {
+      const firstErr = obj.errors[0];
+      if (firstErr && typeof firstErr === "object") {
+        const nested = firstErr as Record<string, unknown>;
+        if (typeof nested.message === "string" && nested.message.trim()) {
+          return nested.message;
+        }
+        if (typeof nested.description === "string" && nested.description.trim()) {
+          return nested.description;
+        }
+      }
+    }
+
+    // Champs standards
+    if (typeof obj.message === "string" && obj.message.trim()) {
+      return obj.message;
+    }
+    if (typeof obj.description === "string" && obj.description.trim()) {
+      return obj.description;
     }
   }
 

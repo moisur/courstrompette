@@ -327,21 +327,26 @@ export function StudentDetailsDialog({
         numFactureTiers?: string | null;
         statutCode?: string | null;
         statutLabel?: string | null;
+        amountTtc?: number | null;
       }>(`/api/admin/students/${studentId}/urssaf/payment-requests`, {
         method: "POST",
       });
       await Promise.all([refresh(), loadUrssafRequests()]);
       onRefresh?.();
+
+      const formattedAmount = result.amountTtc !== undefined && result.amountTtc !== null
+        ? `${result.amountTtc.toFixed(2)} €`
+        : "";
+      const statusText = result.statutLabel || result.statutCode || "Transmise";
+
       toast({
-        title: "Succes",
-        description: result.numFactureTiers
-          ? `Demande URSSAF envoyee: ${result.numFactureTiers}${result.statutCode ? ` (${result.statutCode})` : ""}`
-          : "Les cours URSSAF en attente ont ete transmis.",
+        title: "Transmission URSSAF réussie",
+        description: `Demande de paiement ${formattedAmount ? `de ${formattedAmount} ` : ""}envoyée avec succès ! Référence facture : ${result.numFactureTiers ?? "Inconnue"} (Statut : ${statusText})`,
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Erreur",
+        title: "Erreur de transmission URSSAF",
         description: toErrorMessage(error, "Impossible de transmettre les cours URSSAF"),
       });
     } finally {
