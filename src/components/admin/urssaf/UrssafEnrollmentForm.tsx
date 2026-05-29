@@ -137,7 +137,7 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
       adresseMail: initialData?.email || "",
       adressePostale: {
         numeroVoie: "",
-        lettreVoie: "",
+        lettreVoie: "none",
         codeTypeVoie: "",
         libelleVoie: "",
         complement: "",
@@ -306,7 +306,7 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
       adressePostale: {
         ...normalizedData.adressePostale,
         numeroVoie: normalizedData.adressePostale.numeroVoie || undefined,
-        lettreVoie: normalizedData.adressePostale.lettreVoie || undefined,
+        lettreVoie: (normalizedData.adressePostale.lettreVoie && normalizedData.adressePostale.lettreVoie !== 'none') ? normalizedData.adressePostale.lettreVoie : undefined,
         codeTypeVoie: normalizedData.adressePostale.codeTypeVoie || undefined,
         libelleVoie: normalizedData.adressePostale.libelleVoie || undefined,
         complement: normalizedData.adressePostale.complement || undefined,
@@ -590,14 +590,14 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[10px] font-black uppercase text-stone-400">Indice (B, T...)</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || "none"} value={field.value || "none"}>
                         <FormControl>
                           <SelectTrigger className="rounded-xl border-stone-200">
                             <SelectValue placeholder="-" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Aucun</SelectItem>
+                          <SelectItem value="none">Aucun</SelectItem>
                           <SelectItem value="B">B (Bis)</SelectItem>
                           <SelectItem value="T">T (Ter)</SelectItem>
                           <SelectItem value="Q">Q (Quater)</SelectItem>

@@ -81,7 +81,7 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
         adresseMail: "",
         adressePostale: {
           numeroVoie: "",
-          lettreVoie: "",
+          lettreVoie: "none",
           codeTypeVoie: "R",
           libelleVoie: "",
           complement: "",
@@ -103,7 +103,16 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
   const onSubmit = async (data: FullOnboardingDTO) => {
     setIsSubmitting(true);
     setServerErrors([]);
-    const normalizedUrssaf = normalizeUrssafBirthPlace(data.urssaf);
+    const tempUrssaf = normalizeUrssafBirthPlace(data.urssaf);
+    const normalizedUrssaf = {
+      ...tempUrssaf,
+      adressePostale: {
+        ...tempUrssaf.adressePostale,
+        lettreVoie: (tempUrssaf.adressePostale.lettreVoie && tempUrssaf.adressePostale.lettreVoie !== 'none')
+          ? tempUrssaf.adressePostale.lettreVoie
+          : undefined
+      }
+    };
     
     try {
       const response = await fetch("/api/admin/students/urssaf-full-enroll", {
@@ -428,14 +437,14 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[10px] font-black uppercase text-stone-400">Indice (B, T...)</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                          <Select onValueChange={field.onChange} defaultValue={field.value || "none"} value={field.value || "none"}>
                             <FormControl>
                               <SelectTrigger className="rounded-xl border-stone-200">
                                 <SelectValue placeholder="-" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">Aucun</SelectItem>
+                              <SelectItem value="none">Aucun</SelectItem>
                               <SelectItem value="B">B (Bis)</SelectItem>
                               <SelectItem value="T">T (Ter)</SelectItem>
                               <SelectItem value="Q">Q (Quater)</SelectItem>
