@@ -25,27 +25,29 @@ export const InscriptionParticulierSchema = z.object({
 
   lieuNaissance: z.object({
     codePaysNaissance: z.string().length(5, "Code pays sur 5 caractères"),
-    departementNaissance: z.string().length(3, "Code département sur 3 caractères").optional().or(z.literal('')),
+    departementNaissance: z.string().max(3, "Code département sur 3 caractères max").optional().or(z.literal('')),
     communeNaissance: z.object({
       codeCommune: z.string()
-        .min(2, "Minimum 2 caractères")
         .max(5, "Maximum 5 caractères")
-        .regex(/^[0-9A-Za-z]+$/, "Code commune invalide"),
+        .regex(/^[0-9A-Za-z]*$/, "Code commune invalide")
+        .optional()
+        .or(z.literal('')),
       libelleCommune: z.string()
-        .min(1, "Libellé de la commune requis")
         .max(50, "Maximum 50 caractères")
+        .optional()
+        .or(z.literal(''))
     }).optional()
   }).superRefine((val, ctx) => {
     if (val.codePaysNaissance === '99100') {
-      const hasFullInseeCommuneCode = val.communeNaissance?.codeCommune?.length === 5;
+      const hasFullInseeCommuneCode = val.communeNaissance?.codeCommune && val.communeNaissance.codeCommune.length === 5;
 
       if ((!val.departementNaissance || val.departementNaissance === '') && !hasFullInseeCommuneCode) {
         ctx.addIssue({ code: 'custom', path: ['departementNaissance'], message: 'Requis pour une naissance en France' });
       }
-      if (!val.communeNaissance?.codeCommune) {
-        ctx.addIssue({ code: 'custom', path: ['communeNaissance', 'codeCommune'], message: 'Le code commune est requis pour la France' });
+      if (!val.communeNaissance?.codeCommune || val.communeNaissance.codeCommune.length < 2) {
+        ctx.addIssue({ code: 'custom', path: ['communeNaissance', 'codeCommune'], message: 'Le code commune est requis pour la France (min 2 car.)' });
       }
-      if (!val.communeNaissance?.libelleCommune) {
+      if (!val.communeNaissance?.libelleCommune || val.communeNaissance.libelleCommune.trim() === '') {
         ctx.addIssue({ code: 'custom', path: ['communeNaissance', 'libelleCommune'], message: 'Le libellé commune est requis pour la France' });
       }
     }

@@ -727,6 +727,61 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
           </div>
 
           <div className="pt-6">
+            {/* CLIENT-SIDE VALIDATION ERRORS */}
+            {Object.keys(form.formState.errors).length > 0 && (
+              <div className="mb-6 bg-amber-50 border border-amber-200 p-4 rounded-2xl text-amber-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle size={18} className="text-amber-600" />
+                  <p className="text-sm font-black uppercase tracking-tight text-amber-900">Veuillez corriger les erreurs de saisie :</p>
+                </div>
+                <ul className="text-xs space-y-1 list-disc list-inside">
+                  {(() => {
+                    const getErrors = (obj: any, path: string[] = []): { path: string; message: string }[] => {
+                      if (!obj) return [];
+                      if (typeof obj === 'object' && 'message' in obj && typeof obj.message === 'string') {
+                        const pathStr = path
+                          .map(p => {
+                            if (p === 'civilite') return 'Civilité';
+                            if (p === 'nomNaissance') return 'Nom de naissance';
+                            if (p === 'nomUsage') return 'Nom d\'usage';
+                            if (p === 'prenoms') return 'Prénoms';
+                            if (p === 'dateNaissance') return 'Date de naissance';
+                            if (p === 'lieuNaissance') return 'Lieu de naissance';
+                            if (p === 'codePaysNaissance') return 'Pays de naissance';
+                            if (p === 'departementNaissance') return 'Département de naissance';
+                            if (p === 'communeNaissance') return 'Commune de naissance';
+                            if (p === 'codeCommune') return 'Code commune / INSEE';
+                            if (p === 'libelleCommune') return 'Ville';
+                            if (p === 'numeroTelephonePortable') return 'Portable';
+                            if (p === 'adresseMail') return 'Email';
+                            if (p === 'adressePostale') return 'Adresse';
+                            if (p === 'numeroVoie') return 'N° de voie';
+                            if (p === 'codeTypeVoie') return 'Type de voie';
+                            if (p === 'libelleVoie') return 'Nom de la voie';
+                            if (p === 'codePostal') return 'Code postal';
+                            if (p === 'codePays') return 'Pays';
+                            if (p === 'coordonneeBancaire') return 'Coordonnées bancaires';
+                            if (p === 'bic') return 'BIC';
+                            if (p === 'iban') return 'IBAN';
+                            if (p === 'titulaire') return 'Titulaire';
+                            return p;
+                          })
+                          .filter(Boolean)
+                          .join(' > ');
+                        return [{ path: pathStr, message: obj.message }];
+                      }
+                      return Object.entries(obj).flatMap(([key, value]) => getErrors(value, [...path, key]));
+                    };
+                    return getErrors(form.formState.errors).map((err, i) => (
+                      <li key={i}>
+                        <span className="font-bold">{err.path} :</span> {err.message}
+                      </li>
+                    ));
+                  })()}
+                </ul>
+              </div>
+            )}
+
             {submitState === 'error' && (
               <div className="mb-6 bg-red-50 border border-red-100 p-4 rounded-2xl text-red-700">
                 <div className="flex items-center gap-2 mb-2">
