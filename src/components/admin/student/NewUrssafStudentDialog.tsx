@@ -407,15 +407,41 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                   <MapPin size={18} className="text-amber-600" />
                   <h3 className="font-black text-stone-900 uppercase tracking-tighter">Adresse URSSAF</h3>
                 </div>
+
                 <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-3">
+                  <div className="col-span-2">
                     <FormField
                       control={form.control}
                       name="urssaf.adressePostale.numeroVoie"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-[10px] font-black uppercase text-stone-400">N°</FormLabel>
-                          <FormControl><Input className="rounded-xl border-stone-200" placeholder="8" {...field} /></FormControl>
+                          <FormControl><Input className="rounded-xl border-stone-200" placeholder="1" {...field} /></FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="urssaf.adressePostale.lettreVoie"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[10px] font-black uppercase text-stone-400">Indice (B, T...)</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                            <FormControl>
+                              <SelectTrigger className="rounded-xl border-stone-200">
+                                <SelectValue placeholder="-" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="">Aucun</SelectItem>
+                              <SelectItem value="B">B (Bis)</SelectItem>
+                              <SelectItem value="T">T (Ter)</SelectItem>
+                              <SelectItem value="Q">Q (Quater)</SelectItem>
+                              <SelectItem value="C">C (Quinquiès)</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </FormItem>
                       )}
                     />
@@ -439,7 +465,7 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                       )}
                     />
                   </div>
-                  <div className="col-span-6">
+                  <div className="col-span-5">
                     <FormField
                       control={form.control}
                       name="urssaf.adressePostale.libelleVoie"
@@ -452,6 +478,7 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                     />
                   </div>
                 </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}

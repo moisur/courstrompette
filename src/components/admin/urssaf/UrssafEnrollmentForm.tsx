@@ -571,19 +571,44 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
             </div>
 
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-3">
+              <div className="col-span-2">
                 <FormField
                   control={form.control}
                   name="adressePostale.numeroVoie"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[10px] font-black uppercase text-stone-400">N°</FormLabel>
-                      <FormControl><Input className="rounded-xl border-stone-200 font-mono" {...field} /></FormControl>
+                      <FormControl><Input className="rounded-xl border-stone-200 font-mono" placeholder="1" {...field} /></FormControl>
                     </FormItem>
                   )}
                 />
               </div>
-              <div className="col-span-9 lg:col-span-4">
+              <div className="col-span-2">
+                <FormField
+                  control={form.control}
+                  name="adressePostale.lettreVoie"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[10px] font-black uppercase text-stone-400">Indice (B, T...)</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                        <FormControl>
+                          <SelectTrigger className="rounded-xl border-stone-200">
+                            <SelectValue placeholder="-" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="">Aucun</SelectItem>
+                          <SelectItem value="B">B (Bis)</SelectItem>
+                          <SelectItem value="T">T (Ter)</SelectItem>
+                          <SelectItem value="Q">Q (Quater)</SelectItem>
+                          <SelectItem value="C">C (Quinquiès)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="col-span-8 lg:col-span-3">
                 <FormField
                   control={form.control}
                   name="adressePostale.codeTypeVoie"
