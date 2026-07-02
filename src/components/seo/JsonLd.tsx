@@ -10,10 +10,17 @@ const JsonLd = ({ data }: JsonLdProps) => {
     // Vos données globales statiques (Organization, Website...)
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Cours De Trompette Paris",
+        "@type": "LocalBusiness",
+        "name": "Cours de trompette à Paris (+150 élèves transformés) !",
         "url": "https://courstrompette.fr",
         "logo": "https://courstrompette.fr/icon.png",
+        "description": "Cours de trompette à Paris, à domicile ou en ligne. Méthode unique JC — débutants, amateurs et pros. 1er cours offert.",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Paris",
+            "postalCode": "75011",
+            "addressCountry": "FR"
+        },
         "sameAs": [],
         "contactPoint": {
             "@type": "ContactPoint",
@@ -27,7 +34,7 @@ const JsonLd = ({ data }: JsonLdProps) => {
     const webSiteJsonLd = {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Cours De Trompette",
+        "name": "Cours de trompette à Paris (+150 élèves transformés) !",
         "url": "https://courstrompette.fr",
         "potentialAction": {
             "@type": "SearchAction",

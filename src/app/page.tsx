@@ -1,8 +1,8 @@
 import Cours from "@/components/cours"
 
 export const metadata = {
-  title: "Cours de Trompette à Paris, en Ligne ou à Domicile | Jean Christophe Yervant",
-  description: "Les cours de trompette à Paris ou en ligne avec Jean Christophe Yervant. Méthode JC : jouez votre premier morceau en 10 séances. Cours pour débutants amateurs et professionnels.",
+  title: "Apprenez la trompette à Paris – Aigus, technique, musicalité | JC Yervant",
+  description: "Débloquez vos aigus, gagnez en puissance et jouez votre 1er morceau en 10 séances. Méthode unique JC – débutants, amateurs et pros. Cours à Paris, domicile ou en ligne. Places limitées.",
   verification: {
     google: "jBElafHqU3eAux7x5QbUblWVpm3kVEjzME6ZKlXzglU",
   },

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description:
       'Decouvrez nos cours de Trompette pour apprendre a jouer de la trompette a votre rythme avec Jean Christophe Yervant, le meilleur professeur de trompette.',
     url: 'https://courstrompette.fr/',
-    siteName: 'Cours de Trompette',
+    siteName: 'Cours de trompette à Paris (+150 élèves transformés) !',
     locale: 'fr_FR',
     type: 'website',
   },
