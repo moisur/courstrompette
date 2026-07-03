@@ -60,8 +60,13 @@ const ContactSection: React.FC = () => {
             <p className="text-stone-500 text-sm">
               © {new Date().getFullYear()} JC Trompette. Tous droits réservés.
             </p>
-            <p className="text-stone-600 text-xs flex gap-4">
+            <p className="text-stone-600 text-xs flex flex-wrap gap-x-4 gap-y-1">
               <Link href="/paris" className="hover:text-amber-500 transition-colors">Cours de trompette à Paris</Link>
+              <Link href="/cours-trompette-debutant" className="hover:text-amber-500 transition-colors">Cours débutant</Link>
+              <Link href="/cours-trompette-adulte" className="hover:text-amber-500 transition-colors">Cours adulte</Link>
+              <Link href="/cours-trompette-en-ligne" className="hover:text-amber-500 transition-colors">Cours en ligne</Link>
+              <Link href="/cours-trompette-enfant" className="hover:text-amber-500 transition-colors">Cours enfant</Link>
+              <Link href="/cours-trompette-jazz" className="hover:text-amber-500 transition-colors">Cours jazz</Link>
               <Link href="/service-a-la-personne" className="hover:text-amber-500 transition-colors">Avance immédiate (Service à la personne)</Link>
             </p>
           </div>

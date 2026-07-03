@@ -13,11 +13,14 @@ interface HeaderProps {
 export default function Header({ menuItems }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showBlogMenu, setShowBlogMenu] = useState(false)
+  const [showCoursMenu, setShowCoursMenu] = useState(false)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeLevel, setActiveLevel] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const blogMenuRef = useRef<HTMLLIElement>(null)
+  const coursMenuRef = useRef<HTMLLIElement>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const coursTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const pathname = usePathname()
   const { openModal } = useBooking();
@@ -61,6 +64,7 @@ export default function Header({ menuItems }: HeaderProps) {
   const closeMenu = () => {
     setIsMenuOpen(false)
     setShowBlogMenu(false)
+    setShowCoursMenu(false)
     setActiveCategory(null)
     setActiveLevel(null)
   }
@@ -77,6 +81,19 @@ export default function Header({ menuItems }: HeaderProps) {
       setShowBlogMenu(false)
       setActiveCategory(null)
       setActiveLevel(null)
+    }, 500)
+  }
+
+  const handleCoursMouseEnter = () => {
+    if (coursTimeoutRef.current) {
+      clearTimeout(coursTimeoutRef.current)
+    }
+    setShowCoursMenu(true)
+  }
+
+  const handleCoursMouseLeave = () => {
+    coursTimeoutRef.current = setTimeout(() => {
+      setShowCoursMenu(false)
     }, 500)
   }
 
@@ -100,6 +117,9 @@ export default function Header({ menuItems }: HeaderProps) {
         setActiveCategory(null)
         setActiveLevel(null)
       }
+      if (coursMenuRef.current && !coursMenuRef.current.contains(event.target as Node)) {
+        setShowCoursMenu(false)
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside)
@@ -108,6 +128,9 @@ export default function Header({ menuItems }: HeaderProps) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
+      if (coursTimeoutRef.current) {
+        clearTimeout(coursTimeoutRef.current)
+      }
     }
   }, [])
 
@@ -115,7 +138,8 @@ export default function Header({ menuItems }: HeaderProps) {
     pathname === '/' ||
     pathname === '/paris' ||
     pathname?.startsWith('/paris/') ||
-    pathname === '/service-a-la-personne';
+    pathname === '/service-a-la-personne' ||
+    pathname?.startsWith('/cours-trompette-');
 
   const isTransparentHeader = !isScrolled && supportsTransparentHeader;
   const isSolidContext = isScrolled || isMenuOpen || !isTransparentHeader;
@@ -151,6 +175,66 @@ export default function Header({ menuItems }: HeaderProps) {
             <button onClick={closeMenu} className="text-stone-800">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
+          </li>
+
+          {/* Nos Cours Dropdown */}
+          <li
+            ref={coursMenuRef}
+            className="relative group"
+            onMouseEnter={handleCoursMouseEnter}
+            onMouseLeave={handleCoursMouseLeave}
+          >
+            <button className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors flex items-center gap-1`}>
+              Nos Cours
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {showCoursMenu && (
+              <ul
+                className="absolute left-1/2 -translate-x-1/2 mt-2 w-64 bg-white shadow-lg rounded-xl py-2 z-50 border border-stone-100 hidden md:block"
+                onMouseEnter={() => {
+                  if (coursTimeoutRef.current) clearTimeout(coursTimeoutRef.current);
+                }}
+                onMouseLeave={handleCoursMouseLeave}
+              >
+                {/* Bridge to prevent gap */}
+                <div className="absolute -top-3 left-0 right-0 h-3" />
+                <li>
+                  <Link href="/cours-trompette-debutant" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
+                    🎺 Cours Débutant
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cours-trompette-adulte" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
+                    🎯 Cours Adulte
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cours-trompette-en-ligne" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
+                    💻 Cours en Ligne / Visio
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cours-trompette-enfant" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
+                    👶 Cours Enfant
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cours-trompette-jazz" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
+                    🎷 Cours Jazz & Impro
+                  </Link>
+                </li>
+              </ul>
+            )}
+            {/* Mobile: show links directly */}
+            <ul className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} mt-2 space-y-2 pl-4`}>
+              <li><Link href="/cours-trompette-debutant" onClick={closeMenu} className="block text-stone-600 text-sm">🎺 Cours Débutant</Link></li>
+              <li><Link href="/cours-trompette-adulte" onClick={closeMenu} className="block text-stone-600 text-sm">🎯 Cours Adulte</Link></li>
+              <li><Link href="/cours-trompette-en-ligne" onClick={closeMenu} className="block text-stone-600 text-sm">💻 Cours en Ligne</Link></li>
+              <li><Link href="/cours-trompette-enfant" onClick={closeMenu} className="block text-stone-600 text-sm">👶 Cours Enfant</Link></li>
+              <li><Link href="/cours-trompette-jazz" onClick={closeMenu} className="block text-stone-600 text-sm">🎷 Cours Jazz</Link></li>
+            </ul>
           </li>
 
           <li><Link href="/#about" onClick={closeMenu} className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors`}>À propos</Link></li>
