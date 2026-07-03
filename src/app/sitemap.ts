@@ -19,6 +19,31 @@ const STATIC_PAGES = [
         changeFrequency: 'monthly' as const,
         priority: 0.7,
     },
+    {
+        url: `${BASE_URL}/cours-trompette-adulte`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+    },
+    {
+        url: `${BASE_URL}/cours-trompette-debutant`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+    },
+    {
+        url: `${BASE_URL}/cours-trompette-en-ligne`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+    },
+    {
+        url: `${BASE_URL}/cours-trompette-enfant`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+    },
+    {
+        url: `${BASE_URL}/cours-trompette-jazz`,
+        changeFrequency: 'weekly' as const,
+        priority: 0.85,
+    },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

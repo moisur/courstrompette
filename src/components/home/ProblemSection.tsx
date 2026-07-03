@@ -5,7 +5,14 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import jc from '@/../public/jc.webp';
 
-const problems = [
+export interface ProblemItem {
+    emoji: string;
+    title: string;
+    description: string;
+    accent?: string;
+}
+
+const defaultProblems: ProblemItem[] = [
     {
         emoji: "😫",
         title: "Pratique Stagnante",
@@ -26,7 +33,13 @@ const problems = [
     }
 ];
 
-export function ProblemSection({ locationName }: { locationName?: string }) {
+interface ProblemSectionProps {
+    locationName?: string;
+    problems?: ProblemItem[];
+}
+
+export function ProblemSection({ locationName, problems }: ProblemSectionProps) {
+    const list = problems || defaultProblems;
     return (
         <section id="problem" className="py-16 md:py-32 bg-stone-50/50 relative overflow-hidden">
             {/* Background decoration */}
@@ -49,7 +62,7 @@ export function ProblemSection({ locationName }: { locationName?: string }) {
                         </div>
 
                         <div className="grid gap-6">
-                            {problems.map((problem, index) => (
+                            {list.map((problem, index) => (
                                 <div
                                     key={index}
                                     className="animate-fade-in-up"

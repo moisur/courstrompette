@@ -5,14 +5,22 @@ import { Card } from '@/components/ui/card';
 import { Check } from 'lucide-react';
 import pkoi from '@/../public/3.webp';
 
-const benefits = [
+const defaultBenefits = [
     "Un accompagnement patient et professionnel",
     "Des conseils techniques précis et applicables",
     "Une progression structurée, étape par étape",
     "L'assurance de ne pas développer de mauvaises habitudes"
 ];
 
-export function WhyMethodSection({ locationName }: { locationName?: string }) {
+interface WhyMethodSectionProps {
+    locationName?: string;
+    benefits?: string[];
+    title?: React.ReactNode;
+    subtitle?: React.ReactNode;
+}
+
+export function WhyMethodSection({ locationName, benefits, title, subtitle }: WhyMethodSectionProps) {
+    const list = benefits || defaultBenefits;
     return (
         <section id="why-method" className="py-12 md:py-24 bg-white relative overflow-hidden">
             {/* Decorative Background Elements */}
@@ -27,7 +35,7 @@ export function WhyMethodSection({ locationName }: { locationName?: string }) {
                         La méthode JC
                     </span>
                     <h2 className="text-4xl md:text-6xl font-serif text-stone-900 leading-tight">
-                        Pourquoi choisir la <span className="italic text-amber-600">méthode JC</span> {locationName && `à ${locationName}`}
+                        {title || <>Pourquoi choisir la <span className="italic text-amber-600">méthode JC</span> {locationName && `à ${locationName}`}</>}
                     </h2>
                     <div className="w-24 h-1.5 bg-amber-600 mx-auto rounded-full opacity-30 mt-6 md:mt-8" />
                 </div>
@@ -53,7 +61,7 @@ export function WhyMethodSection({ locationName }: { locationName?: string }) {
                     <div className="space-y-8">
                         <div>
                             <h3 className="text-2xl md:text-3xl font-serif text-stone-900 leading-tight mb-6">
-                                En voulant tout faire seul, on perds un temps précieux.
+                                {subtitle || "En voulant tout faire seul, on perds un temps précieux."}
                             </h3>
                             <div className="text-lg text-stone-600 font-light leading-relaxed">
                                 <p className="first-letter:text-7xl first-letter:font-serif first-letter:text-stone-900 first-letter:font-bold first-letter:float-left first-letter:mr-4 first-letter:mt-[-8px] first-letter:leading-[0.8]">
@@ -69,7 +77,7 @@ export function WhyMethodSection({ locationName }: { locationName?: string }) {
                                 "Mais franchement, qu'est-ce que j'aurais aimé trouver un guide comme moi..."
                             </p>
                             <ul className="space-y-4">
-                                {benefits.map((benefit, index) => (
+                                {list.map((benefit, index) => (
                                     <li key={index} className="flex items-start gap-4 group">
                                         <div className="mt-0.5 bg-amber-100 p-1 rounded-full border border-amber-200 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
                                             <Check className="w-4 h-4 text-amber-700 group-hover:text-white" />

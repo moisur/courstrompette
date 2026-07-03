@@ -1,0 +1,273 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useBooking } from "@/context/BookingContext";
+import { ArrowRight } from "lucide-react";
+import dynamic from 'next/dynamic';
+
+// Above the fold - Static imports
+import { HeroSection } from '@/components/home/HeroSection';
+import { AboutMethodSection } from '@/components/home/AboutMethodSection';
+
+// Below the fold - Dynamic imports
+const ProblemSection = dynamic(() => import('@/components/home/ProblemSection').then(mod => mod.ProblemSection));
+const TeacherSection = dynamic(() => import('@/components/home/TeacherSection').then(mod => mod.TeacherSection));
+const BiographySection = dynamic(() => import('@/components/home/BiographySection').then(mod => mod.BiographySection));
+const StorySection = dynamic(() => import('@/components/home/StorySection').then(mod => mod.StorySection));
+const WhyMethodSection = dynamic(() => import('@/components/home/WhyMethodSection').then(mod => mod.WhyMethodSection));
+const MethodFeaturesSection = dynamic(() => import('@/components/home/MethodFeaturesSection').then(mod => mod.MethodFeaturesSection));
+const TestimonialsSection = dynamic(() => import('@/components/home/TestimonialsSection').then(mod => mod.TestimonialsSection));
+const GuaranteeSection = dynamic(() => import('@/components/home/GuaranteeSection').then(mod => mod.GuaranteeSection));
+const DisappearSection = dynamic(() => import('@/components/home/DisappearSection').then(mod => mod.DisappearSection));
+const FAQSection = dynamic(() => import('@/components/home/FAQSection').then(mod => mod.FAQSection));
+const NotVirtuosoSection = dynamic(() => import('@/components/home/NotVirtuosoSection').then(mod => mod.NotVirtuosoSection));
+const IntermediateSection = dynamic(() => import('@/components/home/IntermediateSection').then(mod => mod.IntermediateSection));
+const MasterclassSection = dynamic(() => import('@/components/home/MasterclassSection').then(mod => mod.MasterclassSection));
+
+// Other components
+const Method = dynamic(() => import('./Method'));
+const Mission = dynamic(() => import('./Mission'));
+const Puissance = dynamic(() => import('./Puissance'));
+const TrumpetPricingPage = dynamic(() => import('./TrumpetPricingPage'));
+const AccessoiresTrompette = dynamic(() => import('./blog/AccessoireRecommandes'));
+const Formulaire = dynamic(() => import('./Formulaire'));
+
+// Shared components
+import { Popup } from '@/components/shared';
+import InlineCTA from '@/components/blog/InlineCTA';
+
+export interface ProblemItem {
+  emoji: string;
+  title: string;
+  description: string;
+  accent?: string;
+}
+
+export interface FAQItem {
+  question: string;
+  answer: React.ReactNode;
+}
+
+interface CoursProfilProps {
+  heroTitle: React.ReactNode;
+  heroSubtitle?: string;
+  problems?: ProblemItem[];
+  whyTitle?: React.ReactNode;
+  whySubtitle?: React.ReactNode;
+  benefits?: string[];
+  faqItems?: FAQItem[];
+  locationName?: string;
+  zipCode?: string;
+}
+
+export default function CoursProfil({
+  heroTitle,
+  heroSubtitle,
+  problems,
+  whyTitle,
+  whySubtitle,
+  benefits,
+  faqItems,
+  locationName,
+  zipCode
+}: CoursProfilProps) {
+  const { openModal, isOpen } = useBooking();
+  const [showPopup, setShowPopup] = useState(false);
+  const [showExitPopup, setShowExitPopup] = useState(false);
+  const [hasShownExitPopup, setHasShownExitPopup] = useState(false);
+
+  // Fermer les popups quand le modal de réservation est ouvert
+  useEffect(() => {
+    if (isOpen) {
+      setShowPopup(false);
+      setShowExitPopup(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isOpen) {
+        setShowPopup(true);
+      }
+    }, 20000);
+
+    const handleMouseLeave = (event: MouseEvent) => {
+      if (event.clientY <= 0 && !hasShownExitPopup && !isOpen) {
+        setShowExitPopup(true);
+        setHasShownExitPopup(true);
+      }
+    };
+
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [hasShownExitPopup, isOpen]);
+
+  return (
+    <div className="font-sans text-gray-800">
+      {/* Hero Section */}
+      <HeroSection title={heroTitle} subtitle={heroSubtitle} />
+
+      {/* About the Method */}
+      <AboutMethodSection locationName={locationName} />
+
+      {/* Method Component */}
+      <Method />
+
+      {/* Problem Section */}
+      <ProblemSection locationName={locationName} problems={problems} />
+      
+      {/* Custom CTA: Before Masterclass */}
+      <div className="container mx-auto px-6 max-w-4xl my-8 md:my-12">
+        <div className="bg-white border border-stone-100 rounded-[2rem] p-6 md:p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden space-y-6">
+          {/* Decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50 pointer-events-none"></div>
+
+          <h2 className="text-2xl md:text-3xl font-serif text-stone-900 leading-tight relative z-10">
+            Vous cherchez à progresser à la trompette ? <br className="hidden md:block" />
+            <span className="italic text-amber-600">Vous êtes exactement là où il faut.</span>
+          </h2>
+
+          <div className="space-y-6 relative z-10">
+            <p className="text-lg text-stone-700 font-medium">
+              Je peux changer le cours de votre vie musicale.
+            </p>
+
+            <div>
+              <button
+                onClick={openModal}
+                className="inline-flex items-center bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold py-3 px-8 rounded-full border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all duration-300 transform hover:-translate-y-1 group"
+              >
+                Coaching Personnalisé
+                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
+
+            <p className="text-base text-stone-500 font-light max-w-2xl mx-auto leading-relaxed">
+              Sans la bonne méthode, on stagne. Mon objectif est de vous remettre sur la bonne voie.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Teacher Section */}
+      <TeacherSection locationName={locationName} />
+
+      {/* Biography Section */}
+      <BiographySection locationName={locationName} />
+
+      {/* Not Virtuoso Section */}
+      <NotVirtuosoSection locationName={locationName} />
+
+      {/* Story Section */}
+      <StorySection locationName={locationName} />
+
+      {/* Mission Component */}
+      <Mission />
+
+      {/* Why Method Section */}
+      <WhyMethodSection locationName={locationName} benefits={benefits} title={whyTitle} subtitle={whySubtitle} />
+
+      {/* Method Features Section */}
+      <MethodFeaturesSection locationName={locationName} />
+
+      {/* Testimonials Section */}
+      <TestimonialsSection />
+
+      {/* CTA 1: Before Intermediate */}
+      <div className="container mx-auto px-6 max-w-6xl">
+        <InlineCTA
+          text={<span>Vous maîtrisez les bases ? <span className="italic text-amber-600">Passez à la vitesse supérieure !</span></span>}
+          buttonText="Je veux progresser"
+        />
+      </div>
+
+      {/* Intermediate Section */}
+      <IntermediateSection locationName={locationName} />
+
+      {/* Guarantee Section */}
+      <GuaranteeSection locationName={locationName} />
+
+      {/* Puissance Component */}
+      <Puissance />
+
+      {/* Disappear Section */}
+      <DisappearSection locationName={locationName} />
+
+      {/* Pricing */}
+      <TrumpetPricingPage />
+
+      {/* Custom CTA: Before Masterclass */}
+      <div className="container mx-auto px-6 max-w-4xl my-8 md:my-12">
+        <div className="bg-white border border-stone-100 rounded-[2rem] p-6 md:p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden space-y-6">
+          {/* Decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50 pointer-events-none"></div>
+
+          <h2 className="text-2xl md:text-3xl font-serif text-stone-900 leading-tight relative z-10">
+            Prêt à passer à l&apos;action ? <br className="hidden md:block" />
+            <span className="italic text-amber-600">Débloquons votre potentiel ensemble.</span>
+          </h2>
+
+          <div className="space-y-6 relative z-10">
+            <p className="text-lg text-stone-700 font-medium">
+              Je peux changer le cours de votre vie musicale.
+            </p>
+
+            <div>
+              <button
+                onClick={openModal}
+                className="inline-flex items-center bg-gradient-to-r from-amber-600 to-amber-500 text-white font-bold py-3 px-8 rounded-full border-2 border-stone-900 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] hover:shadow-[6px_6px_0px_0px_rgba(28,25,23,1)] transition-all duration-300 transform hover:-translate-y-1 group"
+              >
+                Coaching Personnalisé
+                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
+
+            <p className="text-base text-stone-500 font-light max-w-2xl mx-auto leading-relaxed">
+              Sans la bonne méthode, on stagne. Mon objectif est de vous remettre sur la bonne voie.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Masterclass Section */}
+      <MasterclassSection locationName={locationName} />
+
+      {/* Accessories */}
+      <AccessoiresTrompette />
+
+      {/* Booking Form */}
+      <Formulaire />
+
+      {/* FAQ Section */}
+      <FAQSection locationName={locationName} faqItems={faqItems} />
+
+      {/* Elfsight Widget */}
+      <div
+        className="elfsight-app-bb687b25-4aa4-4b59-bb2b-16fd7b98a74d"
+        data-elfsight-app-lazy
+      />
+
+      {/* Timer Popup */}
+      <Popup
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        title="☝️ Ne manquez pas cette opportunité !"
+        description="Réservez votre cours gratuit maintenant et commencez votre voyage musical dès aujourd'hui."
+        ctaText="Réserver mon cours gratuit !"
+      />
+
+      {/* Exit Intent Popup */}
+      <Popup
+        isOpen={showExitPopup}
+        onClose={() => setShowExitPopup(false)}
+        title="☝️ Attendez !"
+        description="Êtes-vous sûr de vouloir partir ? Si vous réservez maintenant, votre premier cours est GRATUIT !"
+        ctaText="Rester et réserver mon cours"
+      />
+    </div>
+  );
+}

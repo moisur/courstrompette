@@ -1,12 +1,18 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from 'lucide-react';
 
-interface FAQSectionProps {
-    locationName?: string;
+export interface FAQItem {
+    question: string;
+    answer: React.ReactNode;
 }
 
-export function FAQSection({ locationName }: FAQSectionProps) {
-    const faqItems = [
+interface FAQSectionProps {
+    locationName?: string;
+    faqItems?: FAQItem[];
+}
+
+export function FAQSection({ locationName, faqItems }: FAQSectionProps) {
+    const defaultFaqItems = [
         {
             question: "Comment se passe une séance ?",
             answer: (
@@ -48,10 +54,11 @@ export function FAQSection({ locationName }: FAQSectionProps) {
             answer: "Oui ! Je propose des sessions en petit groupe pour travailler des thématiques précises (range, endurance, improvisation). Contactez-moi pour les prochaines dates."
         }
     ];
+    const list = faqItems || defaultFaqItems;
     return (
         <section id="faq" className="py-12 md:py-24 bg-stone-50">
             <div className="container mx-auto px-6 max-w-3xl">
-
+ 
                 {/* En-tête */}
                 <div className="text-center mb-16">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-6">
@@ -62,10 +69,10 @@ export function FAQSection({ locationName }: FAQSectionProps) {
                     </h2>
                     <div className="w-24 h-1 bg-amber-600 mx-auto rounded-full opacity-60"></div>
                 </div>
-
+ 
                 {/* FAQ Accordion */}
                 <Accordion type="single" collapsible className="w-full space-y-4">
-                    {faqItems.map((item, index) => (
+                    {list.map((item, index) => (
                         <AccordionItem
                             key={index}
                             value={`item-${index + 1}`}
