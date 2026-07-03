@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BlogCategory } from '@/app/types/blog'
 import { useBooking } from '@/context/BookingContext'
+import { GraduationCap, User, Laptop, Baby, Music, ChevronDown } from 'lucide-react'
 
 interface HeaderProps {
   menuItems: BlogCategory[];
@@ -186,9 +187,7 @@ export default function Header({ menuItems }: HeaderProps) {
           >
             <button className={`block px-2 text-base font-medium ${hoverColor} ${isMenuOpen ? 'text-stone-800' : textColor} transition-colors flex items-center gap-1`}>
               Nos Cours
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <ChevronDown className="h-4 w-4" />
             </button>
             {showCoursMenu && (
               <ul
@@ -201,39 +200,69 @@ export default function Header({ menuItems }: HeaderProps) {
                 {/* Bridge to prevent gap */}
                 <div className="absolute -top-3 left-0 right-0 h-3" />
                 <li>
-                  <Link href="/cours-trompette-debutant" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
-                    🎺 Cours Débutant
+                  <Link href="/cours-trompette-debutant" onClick={closeMenu} className="px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors flex items-center gap-3">
+                    <GraduationCap className="h-5 w-5 text-amber-600 shrink-0" />
+                    <span>Cours Débutant</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/cours-trompette-adulte" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
-                    🎯 Cours Adulte
+                  <Link href="/cours-trompette-adulte" onClick={closeMenu} className="px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors flex items-center gap-3">
+                    <User className="h-5 w-5 text-amber-600 shrink-0" />
+                    <span>Cours Adulte</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/cours-trompette-en-ligne" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
-                    💻 Cours en Ligne / Visio
+                  <Link href="/cours-trompette-en-ligne" onClick={closeMenu} className="px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors flex items-center gap-3">
+                    <Laptop className="h-5 w-5 text-amber-600 shrink-0" />
+                    <span>Cours en Ligne / Visio</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/cours-trompette-enfant" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
-                    👶 Cours Enfant
+                  <Link href="/cours-trompette-enfant" onClick={closeMenu} className="px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors flex items-center gap-3">
+                    <Baby className="h-5 w-5 text-amber-600 shrink-0" />
+                    <span>Cours Enfant</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/cours-trompette-jazz" onClick={closeMenu} className="block px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors">
-                    🎷 Cours Jazz & Impro
+                  <Link href="/cours-trompette-jazz" onClick={closeMenu} className="px-4 py-3 hover:bg-amber-50 text-stone-700 font-medium transition-colors flex items-center gap-3">
+                    <Music className="h-5 w-5 text-amber-600 shrink-0" />
+                    <span>Cours Jazz & Impro</span>
                   </Link>
                 </li>
               </ul>
             )}
             {/* Mobile: show links directly */}
             <ul className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'} mt-2 space-y-2 pl-4`}>
-              <li><Link href="/cours-trompette-debutant" onClick={closeMenu} className="block text-stone-600 text-sm">🎺 Cours Débutant</Link></li>
-              <li><Link href="/cours-trompette-adulte" onClick={closeMenu} className="block text-stone-600 text-sm">🎯 Cours Adulte</Link></li>
-              <li><Link href="/cours-trompette-en-ligne" onClick={closeMenu} className="block text-stone-600 text-sm">💻 Cours en Ligne</Link></li>
-              <li><Link href="/cours-trompette-enfant" onClick={closeMenu} className="block text-stone-600 text-sm">👶 Cours Enfant</Link></li>
-              <li><Link href="/cours-trompette-jazz" onClick={closeMenu} className="block text-stone-600 text-sm">🎷 Cours Jazz</Link></li>
+              <li>
+                <Link href="/cours-trompette-debutant" onClick={closeMenu} className="text-stone-600 text-sm flex items-center gap-2 py-1">
+                  <GraduationCap className="h-4 w-4 text-amber-600" />
+                  <span>Cours Débutant</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/cours-trompette-adulte" onClick={closeMenu} className="text-stone-600 text-sm flex items-center gap-2 py-1">
+                  <User className="h-4 w-4 text-amber-600" />
+                  <span>Cours Adulte</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/cours-trompette-en-ligne" onClick={closeMenu} className="text-stone-600 text-sm flex items-center gap-2 py-1">
+                  <Laptop className="h-4 w-4 text-amber-600" />
+                  <span>Cours en Ligne</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/cours-trompette-enfant" onClick={closeMenu} className="text-stone-600 text-sm flex items-center gap-2 py-1">
+                  <Baby className="h-4 w-4 text-amber-600" />
+                  <span>Cours Enfant</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/cours-trompette-jazz" onClick={closeMenu} className="text-stone-600 text-sm flex items-center gap-2 py-1">
+                  <Music className="h-4 w-4 text-amber-600" />
+                  <span>Cours Jazz</span>
+                </Link>
+              </li>
             </ul>
           </li>
 
