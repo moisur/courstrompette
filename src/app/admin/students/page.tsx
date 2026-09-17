@@ -43,6 +43,7 @@ export default async function AdminStudentsPage() {
     archived: student.archived,
     declared: student.declared,
     hasUrssafClient: Boolean(student.urssafClient),
+    agendaName: student.agendaName,
     lead: student.lead,
     user: student.user,
   }));

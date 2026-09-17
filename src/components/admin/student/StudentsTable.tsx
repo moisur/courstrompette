@@ -26,6 +26,7 @@ export interface StudentRecord {
   archived: boolean;
   declared: boolean;
   hasUrssafClient: boolean;
+  agendaName?: string | null;
   lead: {
     id: string;
     name: string;
@@ -93,6 +94,7 @@ export function StudentsTable({ initialStudents }: StudentsTableProps) {
 
         const haystack = [
           student.name,
+          student.agendaName,
           student.email,
           student.phone,
           student.lead?.name,
@@ -243,9 +245,20 @@ export function StudentsTable({ initialStudents }: StudentsTableProps) {
                         </div>
                         <div>
                           <p className="font-black text-stone-900 group-hover:text-amber-700">{student.name}</p>
-                          <p className="text-xs text-stone-500">
-                            {student.experience ? EXPERIENCE_LABELS[student.experience] || student.experience : "Niveau a confirmer"}
-                          </p>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                            <p className="text-xs text-stone-500">
+                              {student.experience ? EXPERIENCE_LABELS[student.experience] || student.experience : "Niveau a confirmer"}
+                            </p>
+                            {student.agendaName ? (
+                              <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.2 text-[10px] font-bold text-amber-800" title={`Titre dans votre calendrier : ${student.agendaName}`}>
+                                📅 « {student.agendaName} »
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center rounded-md border border-dashed border-stone-200 bg-stone-50 px-1.5 py-0.2 text-[10px] font-medium text-stone-400" title="Aucun mot-clé d'agenda défini">
+                                📅 Non relié
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </TableCell>
