@@ -308,9 +308,10 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
         numeroVoie: normalizedData.adressePostale.numeroVoie || undefined,
         lettreVoie: (normalizedData.adressePostale.lettreVoie && normalizedData.adressePostale.lettreVoie !== 'none') ? normalizedData.adressePostale.lettreVoie : undefined,
         codeTypeVoie: normalizedData.adressePostale.codeTypeVoie || undefined,
-        libelleVoie: normalizedData.adressePostale.libelleVoie || undefined,
+        libelleVoie: normalizedData.adressePostale.libelleVoie?.toUpperCase() || undefined,
         complement: normalizedData.adressePostale.complement || undefined,
         lieuDit: normalizedData.adressePostale.lieuDit || undefined,
+        libelleCommune: normalizedData.adressePostale.libelleCommune?.toUpperCase(),
       }
     };
 

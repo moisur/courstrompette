@@ -36,6 +36,7 @@ const INITIAL_FORM = {
   declared: false,
   courseDay: "",
   courseHour: "",
+  agendaName: "",
   notes: "",
   createLogin: false,
 };
@@ -74,6 +75,7 @@ export function NewStudentDialog({ open, onOpenChange, onCreated }: NewStudentDi
           declared: form.declared,
           courseDay: form.courseDay.trim() || null,
           courseHour: form.courseHour.trim() || null,
+          agendaName: form.agendaName.trim() || null,
           notes: form.notes.trim() || null,
           createLogin: form.createLogin,
         }),
@@ -196,6 +198,16 @@ export function NewStudentDialog({ open, onOpenChange, onCreated }: NewStudentDi
                 value={form.courseHour}
                 onChange={(event) => updateField("courseHour", event.target.value)}
                 className="rounded-2xl border-stone-200 bg-stone-50"
+              />
+            </label>
+
+            <label className="space-y-2 md:col-span-2">
+              <span className="text-[11px] font-black uppercase tracking-widest text-amber-700">Titre dans mon agenda</span>
+              <Input
+                value={form.agendaName}
+                onChange={(event) => updateField("agendaName", event.target.value)}
+                placeholder="Ex: Nicolas trompette ou Guillaume (nom exact tel qu'écrit dans votre calendrier)"
+                className="rounded-2xl border-amber-200 bg-amber-50/40 focus:border-amber-500"
               />
             </label>
           </div>

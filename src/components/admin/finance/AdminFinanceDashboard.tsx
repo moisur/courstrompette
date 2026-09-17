@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { AddLessonDialog } from "@/components/admin/lesson/AddLessonDialog";
+import { PendingAgendaLessonsCard } from "./PendingAgendaLessonsCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -22,6 +23,9 @@ interface FinanceStudent {
   rate: number;
   declared: boolean;
   archived: boolean;
+  hasUrssafClient?: boolean;
+  courseDay?: string | null;
+  courseHour?: string | null;
 }
 
 interface FinanceLesson {
@@ -207,6 +211,11 @@ export function AdminFinanceDashboard({
             </div>
           </div>
         </div>
+
+        <PendingAgendaLessonsCard
+          students={initialStudents}
+          onLessonRecorded={() => router.refresh()}
+        />
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[repeat(7,minmax(110px,1fr))_minmax(260px,1.8fr)]">
           <Card className="border-stone-200 shadow-sm">

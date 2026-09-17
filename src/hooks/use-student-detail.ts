@@ -17,6 +17,8 @@ export interface Student {
   notes?: string | null;
   courseDay?: string | null;
   courseHour?: string | null;
+  agendaName?: string | null;
+  courseFrequency?: string | null;
   email?: string | null;
   lead?: {
     id: string;
@@ -88,6 +90,8 @@ export interface StudentUpdateValues {
   notes?: string | null;
   courseDay?: string | null;
   courseHour?: string | null;
+  agendaName?: string | null;
+  courseFrequency?: string | null;
 }
 
 export function useStudentDetail(studentId: string) {

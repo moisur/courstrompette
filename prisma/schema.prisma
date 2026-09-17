@@ -52,6 +52,10 @@ model Student {
   legacyActive         Boolean?              @map("active")
   courseDay            String?               @map("course_day")
   courseHour           String?               @map("course_hour")
+  courseFrequency      String?               @default("WEEKLY") @map("course_frequency")
+  agendaName           String?               @map("agenda_name")
+  agendaAliases        String[]              @default([]) @map("agenda_aliases")
+  agendaUids           String[]              @default([]) @map("agenda_uids")
   lessons              Lesson[]
   coursePacks          CoursePack[]
   lead                 Lead?
@@ -206,3 +210,15 @@ model UrssafStatusHistory {
   @@index([changedAt], map: "idx_urssaf_status_history_changed_at")
   @@map("urssaf_status_history")
 }
+
+model AgendaIgnoredEvent {
+  id        String    @id @default(uuid())
+  eventUid  String    @unique @map("event_uid")
+  title     String?
+  date      DateTime?
+  reason    String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("agenda_ignored_events")
+}
+

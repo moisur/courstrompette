@@ -16,7 +16,7 @@ function splitFrenchCommuneInseeCode(codeCommune: string) {
 
   return {
     departementNaissance: code.slice(0, 2).padStart(3, "0"),
-    codeCommune: code.slice(2),
+    codeCommune: code, // keep full 5-digit INSEE code (e.g. "75056" for Paris)
   };
 }
 

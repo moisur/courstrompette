@@ -131,6 +131,7 @@ export function StudentDetailsDialog({
     address: "",
     courseDay: "",
     courseHour: "",
+    agendaName: "",
     rate: "",
     notes: "",
   });
@@ -146,6 +147,7 @@ export function StudentDetailsDialog({
       address: student.address ?? "",
       courseDay: student.courseDay ?? "",
       courseHour: student.courseHour ?? "",
+      agendaName: student.agendaName ?? "",
       rate: student.rate ? String(student.rate) : "",
       notes: student.notes ?? "",
     });
@@ -232,6 +234,7 @@ export function StudentDetailsDialog({
       address: profileForm.address.trim() || null,
       courseDay: profileForm.courseDay.trim() || null,
       courseHour: profileForm.courseHour.trim() || null,
+      agendaName: profileForm.agendaName.trim() || null,
       notes: profileForm.notes.trim() || null,
       rate: profileForm.rate.trim() || undefined,
     });
@@ -600,6 +603,16 @@ export function StudentDetailsDialog({
                           onChange={(event) => updateProfileField("rate", event.target.value)}
                           inputMode="decimal"
                           className="h-11 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 text-sm font-medium text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
+                        />
+                      </label>
+
+                      <label className="space-y-2">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-amber-700">Titre dans mon agenda</span>
+                        <input
+                          value={profileForm.agendaName}
+                          onChange={(event) => updateProfileField("agendaName", event.target.value)}
+                          placeholder="Ex: Nicolas trompette ou Guillaume"
+                          className="h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/40 px-4 text-sm font-medium text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
                         />
                       </label>
                     </div>

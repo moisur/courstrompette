@@ -13,6 +13,11 @@ export default async function AdminFinancesPage() {
         rate: true,
         declared: true,
         archived: true,
+        courseDay: true,
+        courseHour: true,
+        urssafClient: {
+          select: { id: true },
+        },
       },
     }),
     prisma.lesson.findMany({
@@ -42,6 +47,7 @@ export default async function AdminFinancesPage() {
         initialStudents={students.map((student) => ({
           ...student,
           rate: Number(student.rate),
+          hasUrssafClient: Boolean(student.urssafClient),
         }))}
         initialLessons={lessons.map((lesson) => ({
           ...lesson,

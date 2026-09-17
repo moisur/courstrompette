@@ -21,6 +21,8 @@ export interface CreateStudentInput {
   notes?: string | null;
   courseDay?: string | null;
   courseHour?: string | null;
+  courseFrequency?: string | null;
+  agendaName?: string | null;
   email?: string;
   createLogin?: boolean;
 }
@@ -119,6 +121,8 @@ export async function createStudent(input: CreateStudentInput) {
         notes: input.notes?.trim() || matchedLead?.message || "",
         courseDay: input.courseDay ?? undefined,
         courseHour: input.courseHour ?? undefined,
+        courseFrequency: input.courseFrequency ?? undefined,
+        agendaName: input.agendaName ?? undefined,
         userId: userId ?? undefined,
       },
       include: studentUserSelect,
@@ -158,6 +162,8 @@ export async function updateStudent(id: string, data: Partial<CreateStudentInput
   if (data.notes !== undefined) updateData.notes = data.notes;
   if (data.courseDay !== undefined) updateData.courseDay = data.courseDay;
   if (data.courseHour !== undefined) updateData.courseHour = data.courseHour;
+  if (data.courseFrequency !== undefined) updateData.courseFrequency = data.courseFrequency;
+  if (data.agendaName !== undefined) updateData.agendaName = data.agendaName;
   if (data.declared !== undefined) updateData.declared = data.declared;
   if (data.archived !== undefined) updateData.archived = data.archived;
 

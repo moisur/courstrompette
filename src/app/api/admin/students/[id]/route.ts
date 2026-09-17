@@ -14,6 +14,8 @@ function mapStudentResponse(student: {
   notes: string | null;
   courseDay: string | null;
   courseHour: string | null;
+  courseFrequency?: string | null;
+  agendaName?: string | null;
   user: {
     email: string | null;
     isActive: boolean;
@@ -29,6 +31,8 @@ function mapStudentResponse(student: {
     ...student,
     email: student.user?.email ?? student.lead?.email ?? null,
     experience: student.lead?.experience ?? null,
+    agendaName: (student as any).agendaName ?? null,
+    courseFrequency: (student as any).courseFrequency ?? "WEEKLY",
   };
 }
 
@@ -85,7 +89,7 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { declared, archived, name, rate, phone, address, courseDay, courseHour, notes } = body;
+    const { declared, archived, name, rate, phone, address, courseDay, courseHour, notes, agendaName, courseFrequency } = body;
 
     const updated = await prisma.student.update({
       where: { id },
@@ -97,6 +101,8 @@ export async function PATCH(
         address,
         courseDay,
         courseHour,
+        agendaName,
+        courseFrequency,
         notes,
         rate: rate === "" || rate === null || typeof rate === "undefined" ? undefined : Number(rate),
       },

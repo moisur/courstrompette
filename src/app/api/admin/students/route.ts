@@ -16,6 +16,8 @@ function mapStudentRecord(student: {
   notes: string | null;
   courseDay: string | null;
   courseHour: string | null;
+  courseFrequency?: string | null;
+  agendaName?: string | null;
   user: {
     email: string | null;
     isActive: boolean;
@@ -44,6 +46,8 @@ function mapStudentRecord(student: {
     notes: student.notes,
     courseDay: student.courseDay,
     courseHour: student.courseHour,
+    courseFrequency: student.courseFrequency ?? null,
+    agendaName: student.agendaName ?? null,
     email: student.user?.email ?? student.lead?.email ?? null,
     experience: student.lead?.experience ?? null,
     user: student.user,
@@ -116,6 +120,8 @@ export async function POST(request: Request) {
       notes: typeof body.notes === "string" ? body.notes.trim() || null : null,
       courseDay: typeof body.courseDay === "string" ? body.courseDay.trim() || null : null,
       courseHour: typeof body.courseHour === "string" ? body.courseHour.trim() || null : null,
+      courseFrequency: typeof body.courseFrequency === "string" ? body.courseFrequency.trim() || null : null,
+      agendaName: typeof body.agendaName === "string" ? body.agendaName.trim() || null : null,
       email: typeof body.email === "string" ? body.email.trim() : undefined,
       createLogin: Boolean(body.createLogin),
     });
