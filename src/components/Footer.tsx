@@ -42,14 +42,14 @@ const ContactSection: React.FC = () => {
 
           {/* Email */}
           <a
-            href="mailto:yervantj@gmail.com"
+            href="mailto:jc@courstrompette.fr"
             className="group text-center p-6 rounded-xl hover:bg-stone-800 transition-colors"
           >
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-stone-800 group-hover:bg-amber-500/10 mb-4 transition-colors">
               <Mail className="w-6 h-6 text-stone-400 group-hover:text-amber-500 transition-colors" />
             </div>
             <h3 className="text-lg font-medium text-white mb-2">Email</h3>
-            <p className="text-stone-400">yervantj@gmail.com</p>
+            <p className="text-stone-400">jc@courstrompette.fr</p>
           </a>
 
         </div>
