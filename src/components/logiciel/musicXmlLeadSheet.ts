@@ -1,7 +1,7 @@
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
 
-import { PISTONS, transposeConcertPitchToBb } from './irealMusicUtils';
+import { noteAt, nIdx, PISTONS, transposeConcertPitchToBb } from './irealMusicUtils';
 
 export interface ParsedMelodyEvent {
   kind: 'note' | 'rest';
@@ -62,17 +62,21 @@ function normalizeServedAssetPath(path: string): string {
 }
 
 function getFallbackServedPath(path: string): string | null {
-  if (!COMPRESSED_SCORE_RE.test(path)) {
-    return null;
+  if (path.startsWith('/Wikifonia.windows-safe/')) {
+    const filename = path
+      .replace(/^\/Wikifonia\.windows-safe\/(?:Wikifonia\/)?/i, '')
+      .replace(/\.mxl(?:\.\d+)?$/i, '.musicxml');
+    return `/Wikifonia.rendered/${filename}`;
   }
 
-  if (!path.startsWith('/Wikifonia.windows-safe/')) {
-    return null;
+  if (path.startsWith('/Wikifonia.rendered/')) {
+    const filename = path
+      .replace(/^\/Wikifonia\.rendered\//i, '')
+      .replace(/\.(musicxml|xml)$/i, '.mxl');
+    return `/Wikifonia.windows-safe/Wikifonia/${filename}`;
   }
 
-  return path
-    .replace('/Wikifonia.windows-safe/', '/Wikifonia.rendered/')
-    .replace(/\.mxl(?:\.\d+)?$/i, '.musicxml');
+  return null;
 }
 
 function normalizeZipEntryPath(entryPath: string): string {
@@ -205,7 +209,18 @@ function getDots(note: Record<string, unknown>): number {
 
 function getTieFlags(note: Record<string, unknown>): { tieStart: boolean; tieStop: boolean } {
   const tieNodes = toArray(note.tie);
-  const notationTies = toArray((note.notations as Record<string, unknown> | undefined)?.tied);
+  const notationNodes = toArray(note.notations);
+  const notationTies: unknown[] = [];
+
+  for (const notationItem of notationNodes) {
+    if (notationItem && typeof notationItem === 'object') {
+      const itemRecord = notationItem as Record<string, unknown>;
+      if ('tied' in itemRecord) {
+        notationTies.push(...toArray(itemRecord.tied));
+      }
+    }
+  }
+
   const allNodes = [...tieNodes, ...notationTies];
 
   let tieStart = false;
@@ -216,7 +231,11 @@ function getTieFlags(note: Record<string, unknown>): { tieStart: boolean; tieSto
       continue;
     }
 
-    const type = (node as Record<string, unknown>).type;
+    const type =
+      (node as Record<string, unknown>).type ??
+      (node as Record<string, unknown>)['@_type'] ??
+      (node as Record<string, unknown>).orientation;
+
     if (type === 'start') {
       tieStart = true;
     } else if (type === 'stop') {
@@ -313,28 +332,53 @@ function pickPrimaryVoice(measures: Record<string, unknown>[]): string {
 }
 
 export async function loadMusicXmlText(path: string): Promise<string> {
-  const requestedPath = normalizeServedAssetPath(path);
-  let response = await fetch(requestedPath, { cache: 'no-store' });
-  let resolvedPath = requestedPath;
+  const candidatePaths: string[] = [];
 
-  if (!response.ok && response.status === 404) {
-    const fallbackPath = getFallbackServedPath(requestedPath);
-    if (fallbackPath) {
-      const fallbackResponse = await fetch(fallbackPath, { cache: 'no-store' });
-      if (fallbackResponse.ok) {
-        response = fallbackResponse;
-        resolvedPath = fallbackPath;
-      }
+  const addCandidate = (candidate: string) => {
+    if (candidate && !candidatePaths.includes(candidate)) {
+      candidatePaths.push(candidate);
+    }
+  };
+
+  addCandidate(path);
+  addCandidate(normalizeServedAssetPath(path));
+
+  try {
+    addCandidate(decodeURIComponent(path));
+  } catch {
+    // ignore
+  }
+
+  const fallback = getFallbackServedPath(path);
+  if (fallback) {
+    addCandidate(fallback);
+    addCandidate(normalizeServedAssetPath(fallback));
+    try {
+      addCandidate(decodeURIComponent(fallback));
+    } catch {
+      // ignore
     }
   }
 
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+  // Server-side filesystem fallback API
+  addCandidate(`/api/wikifonia-file?path=${encodeURIComponent(path)}`);
+
+  let lastStatus = 404;
+  for (const candidatePath of candidatePaths) {
+    try {
+      const response = await fetch(candidatePath, { cache: 'no-store' });
+      if (response.ok) {
+        return COMPRESSED_SCORE_RE.test(candidatePath)
+          ? readMusicXmlFromArchive(await response.arrayBuffer())
+          : response.text();
+      }
+      lastStatus = response.status;
+    } catch {
+      // Try next candidate
+    }
   }
 
-  return COMPRESSED_SCORE_RE.test(resolvedPath)
-    ? readMusicXmlFromArchive(await response.arrayBuffer())
-    : response.text();
+  throw new Error(`HTTP ${lastStatus}`);
 }
 
 export function parseMusicXmlLeadSheet(xmlContent: string): ParsedLeadSheet {
@@ -519,3 +563,53 @@ export async function loadParsedLeadSheet(path: string): Promise<ParsedLeadSheet
   return parseMusicXmlLeadSheet(xmlText);
 }
 
+/**
+ * Returns a new ParsedLeadSheet with every note shifted by `semitones` concert-pitch semitones.
+ * The Bb-instrument transposition (+2) is re-applied on top of the shift, so the displayed
+ * notes and fingerings stay consistent with what a trumpet player reads.
+ * Pass semitones=0 to get back an equivalent copy with no changes.
+ */
+export function transposeLeadSheet(leadSheet: ParsedLeadSheet, semitones: number): ParsedLeadSheet {
+  if (semitones === 0) return leadSheet;
+
+  const transposeMeasure = (measure: ParsedLeadSheetMeasure): ParsedLeadSheetMeasure => ({
+    ...measure,
+    melody: measure.melody.map((event): ParsedMelodyEvent => {
+      if (event.kind !== 'note' || event.concertMidi === undefined) {
+        return event;
+      }
+
+      const shiftedMidi = event.concertMidi + semitones;
+      const octave = Math.floor(shiftedMidi / 12) - 1;
+      const noteIndex = ((shiftedMidi % 12) + 12) % 12;
+      // Determine concert step/alter from shiftedMidi to re-run Bb transposition
+      const sharpKeys = [1, 3, 6, 8, 10]; // semitone indices that are sharps/flats
+      const useFlatSpelling = !sharpKeys.includes(noteIndex) ? false : true;
+      const noteName = noteAt(noteIndex, useFlatSpelling);
+      const step = noteName[0];
+      const alter = noteName.length > 1 ? (noteName[1] === '#' ? 1 : -1) : 0;
+
+      const transposed = transposeConcertPitchToBb(step, alter, octave);
+      const fingering = PISTONS[transposed.key] ?? '';
+      const concertFrequency = 440 * Math.pow(2, (shiftedMidi - 69) / 12);
+
+      return {
+        ...event,
+        concertMidi: shiftedMidi,
+        concertFrequency,
+        displayKey: transposed.key,
+        vexKey: transposed.vexKey,
+        accidental: transposed.accidental,
+        fingering,
+      };
+    }),
+  });
+
+  const transposedMeasures = leadSheet.measures.map(transposeMeasure);
+
+  return {
+    ...leadSheet,
+    measures: transposedMeasures,
+    melodyTrack: transposedMeasures,
+  };
+}

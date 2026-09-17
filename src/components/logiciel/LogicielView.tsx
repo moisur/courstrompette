@@ -1,5 +1,6 @@
 "use client"
 import { SOULFUL_BOP_PHRASES } from './soulfulBopPhrases';
+import { KONNAKOL_RHYTHMS, KONNAKOL_METADATA, KONNAKOL_RHYTHMS_LIST } from './konnakolRhythms';
 import IrealChordViewer from './IrealChordViewer';
 
 import { Button } from '@/components/ui/button';
@@ -47,7 +48,7 @@ interface Favorite {
   rootNote: string;
   scaleType: string;
   theoryMode?: TheoryMode;
-  exerciseCategory: 'generator' | 'repertoire' | 'bop' | 'midi';
+  exerciseCategory: 'generator' | 'repertoire' | 'bop' | 'midi' | 'rhythm';
   exerciseType: string;
   tempo: number;
   volume: number;
@@ -754,10 +755,78 @@ const REPERTOIRE_SONGS: { [key: string]: ExerciseNote[] } = {
     { key: 'E4', duration: 'h' }, { key: 'F#4', duration: 'q' }, { key: 'G4', duration: 'h' },
     { key: 'F#4', duration: 'q' }, { key: 'E4', duration: 'q' }, { key: 'D4', duration: 'q' },
     { key: 'C#4', duration: 'h' }, { key: 'D4', duration: 'q' }, { key: 'E4', duration: 'w' },
+  ],
+  'Panthère Rose (Thème)': [
+    // Mesure 1 (Motif d'intro jazz)
+    { key: 'B4/r', duration: 'q' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'F#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    // Mesure 2 (Phrase chromatique & blues)
+    { key: 'E4', duration: '8' }, { key: 'F#4', duration: '8' }, { key: 'G4', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'E4', duration: '8' }, { key: 'Bb4', duration: 'q' }, { key: 'A4', duration: '8' },
+    // Mesure 3
+    { key: 'G4', duration: '8' }, { key: 'E4', duration: '8' }, { key: 'D4', duration: 'q' },
+    { key: 'E4', duration: 'h' },
+    // Mesure 4 (Répétition motif)
+    { key: 'B4/r', duration: 'q' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'F#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    // Mesure 5 (Montée vers C5)
+    { key: 'E4', duration: '8' }, { key: 'F#4', duration: '8' }, { key: 'G4', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'E4', duration: '8' }, { key: 'C5', duration: 'q' }, { key: 'B4', duration: '8' },
+    // Mesure 6
+    { key: 'E4', duration: 'w' },
+    // Mesure 7 (Motif)
+    { key: 'B4/r', duration: 'q' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'F#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    // Mesure 8
+    { key: 'E4', duration: '8' }, { key: 'F#4', duration: '8' }, { key: 'G4', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'E4', duration: '8' }, { key: 'Bb4', duration: 'q' }, { key: 'A4', duration: '8' },
+    // Mesure 9
+    { key: 'G4', duration: '8' }, { key: 'E4', duration: '8' }, { key: 'D4', duration: 'q' },
+    { key: 'E4', duration: 'h' },
+    // Mesure 10 (Pont rythmique)
+    { key: 'B4/r', duration: '8' }, { key: 'E4', duration: '8' }, { key: 'G4', duration: '8' }, { key: 'A4', duration: '8' },
+    { key: 'Bb4', duration: '8' }, { key: 'B4', duration: '8' }, { key: 'B4', duration: 'q' },
+    // Mesure 11 (Accents staccato)
+    { key: 'B4', duration: 'q' }, { key: 'B4', duration: 'q' }, { key: 'B4', duration: 'q' }, { key: 'B4/r', duration: 'q' },
+    // Mesure 12
+    { key: 'A4', duration: '8' }, { key: 'G4', duration: '8' }, { key: 'E4', duration: '8' }, { key: 'D4', duration: '8' },
+    { key: 'E4', duration: 'h' },
+    // Mesure 13 [Partie B]
+    { key: 'C5', duration: 'h' }, { key: 'B4', duration: 'q' },
+    { key: 'B4/r', duration: '8' }, { key: 'G4', duration: '8' },
+    // Mesure 14
+    { key: 'E4', duration: 'h' }, { key: 'B4/r', duration: 'h' },
+    // Mesure 15 (Descente chromatique)
+    { key: 'C5', duration: 'q' }, { key: 'B4', duration: 'q' }, { key: 'Bb4', duration: 'q' }, { key: 'A4', duration: 'q' },
+    // Mesure 16
+    { key: 'G4', duration: 'q' }, { key: 'E4', duration: 'q' }, { key: 'D4', duration: 'h' },
+    // Mesure 17 (Rappel motif)
+    { key: 'B4/r', duration: 'q' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'F#4', duration: '8' },
+    { key: 'B4/r', duration: '8' }, { key: 'D#4', duration: '8' },
+    // Mesure 18 (Descente jazz)
+    { key: 'C5', duration: '8' }, { key: 'B4', duration: '8' }, { key: 'Bb4', duration: '8' }, { key: 'A4', duration: '8' },
+    { key: 'Ab4', duration: '8' }, { key: 'G4', duration: '8' }, { key: 'E4', duration: 'q' },
+    // Mesure 19
+    { key: 'D4', duration: 'q' }, { key: 'E4', duration: 'h' }, { key: 'B4/r', duration: 'q' },
+    // Mesure 20 (Final)
+    { key: 'C5', duration: 'q' }, { key: 'B4', duration: 'q' },
+    { key: 'G4', duration: '8' }, { key: 'E4', duration: '8' }, { key: 'E4', duration: 'h' }
   ]
 };
 
-const SONGS_EXERCISES = [...Object.keys(EXERCISE_PATTERNS), ...Object.keys(REPERTOIRE_SONGS), ...Object.keys(SOULFUL_BOP_PHRASES)];
+const REPERTOIRE_AUDIO_TRACKS: { [key: string]: string } = {
+  'Panthère Rose (Thème)': '/audio/pink-panther.wav',
+};
+
+const SONGS_EXERCISES = [...Object.keys(EXERCISE_PATTERNS), ...Object.keys(REPERTOIRE_SONGS), ...Object.keys(SOULFUL_BOP_PHRASES), ...Object.keys(KONNAKOL_RHYTHMS)];
 
 const MIDI_FILES = [
   "Fur Elise.mid"
@@ -775,7 +844,39 @@ const getFingeringText = (pistonString: string): string => {
   return pistonString.split('').map((p, i) => (p === '1' ? (i + 1).toString() : '')).filter(Boolean).join('');
 };
 
-const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; exerciseType: string; showFingerings: boolean }> = ({ notes, activeNoteIndex, exerciseType, showFingerings }) => {
+interface MetricConfig {
+  timeSignature: string;
+  beatsPerMeasure: number;
+}
+
+const getExerciseMetric = (category: string, type: string): MetricConfig => {
+  if (category === 'rhythm' && KONNAKOL_METADATA[type]) {
+    const meta = KONNAKOL_METADATA[type];
+    return {
+      timeSignature: meta.timeSignature || `${meta.subdivisions}/8`,
+      beatsPerMeasure: meta.beatsPerMeasure || (meta.subdivisions * 0.5)
+    };
+  }
+  return { timeSignature: '4/4', beatsPerMeasure: 4.0 };
+};
+
+const NotationView: React.FC<{
+  notes: ExerciseNote[];
+  activeNoteIndex: number;
+  exerciseType: string;
+  showFingerings: boolean;
+  timeSignature?: string;
+  beatsPerMeasure?: number;
+  exerciseCategory?: string;
+}> = ({
+  notes,
+  activeNoteIndex,
+  exerciseType,
+  showFingerings,
+  timeSignature = '4/4',
+  beatsPerMeasure = 4.0,
+  exerciseCategory
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousHighlightRef = useRef<string | null>(null);
 
@@ -788,10 +889,10 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
     // --- 0. CONFIGURATION ---
     const isClarke = exerciseType.includes("Clarke");
     const isClarkeEtude3 = exerciseType === 'Clarke Étude III';
-    // Pour l'Étude 3 (que des doubles croches), on force 2 mesures par ligne max
-    const measuresPerLine = isClarkeEtude3 ? 2 : isClarke ? 5 : 2;
-    // On augmente drastiquement la largeur totale pour l'Étude 3
-    const totalWidth = isClarkeEtude3 ? 2400 : isClarke ? 1600 : 900;
+    const isRhythm = exerciseCategory === 'rhythm' || !!KONNAKOL_METADATA[exerciseType];
+    const targetBeats = beatsPerMeasure || 4.0;
+    const measuresPerLine = isClarkeEtude3 ? 2 : isClarke ? 5 : isRhythm ? Math.max(1, Math.min(notes.length > 12 ? 2 : 1, 3)) : 2;
+    const totalWidth = isClarkeEtude3 ? 2400 : isClarke ? 1600 : isRhythm ? Math.max(750, Math.min(1200, notes.length * 85 + 240)) : 900;
 
     // 1. PRÉPARATION DES DONNÉES
     type NoteWithIndex = ExerciseNote & { originalIndex?: number };
@@ -802,14 +903,14 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
     notes.forEach((note, i) => {
       const noteWithIdx = { ...note, originalIndex: i };
       const noteBeats = BEAT_VALUES[note.duration] || 0;
-      if (currentMeasureBeats + noteBeats > 4.01) {
+      if (currentMeasureBeats + noteBeats > targetBeats + 0.01) {
         if (currentMeasureNotes.length > 0) measures.push(currentMeasureNotes);
         currentMeasureNotes = [noteWithIdx];
         currentMeasureBeats = noteBeats;
       } else {
         currentMeasureNotes.push(noteWithIdx);
         currentMeasureBeats += noteBeats;
-        if (currentMeasureBeats > 3.99) {
+        if (currentMeasureBeats > targetBeats - 0.01) {
           measures.push(currentMeasureNotes);
           currentMeasureNotes = [];
           currentMeasureBeats = 0;
@@ -817,11 +918,13 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
       }
     });
     if (currentMeasureNotes.length > 0) {
-      let remaining = 4.0 - currentMeasureBeats;
-      while (remaining >= 0.24) {
-        if (remaining >= 0.99) { currentMeasureNotes.push({ key: 'B4/r', duration: 'q' }); remaining -= 1.0; }
-        else if (remaining >= 0.49) { currentMeasureNotes.push({ key: 'B4/r', duration: '8' }); remaining -= 0.5; }
-        else { currentMeasureNotes.push({ key: 'B4/r', duration: '16' }); remaining -= 0.25; }
+      if (!isRhythm) {
+        let remaining = targetBeats - currentMeasureBeats;
+        while (remaining >= 0.24) {
+          if (remaining >= 0.99) { currentMeasureNotes.push({ key: 'B4/r', duration: 'q' }); remaining -= 1.0; }
+          else if (remaining >= 0.49) { currentMeasureNotes.push({ key: 'B4/r', duration: '8' }); remaining -= 0.5; }
+          else { currentMeasureNotes.push({ key: 'B4/r', duration: '16' }); remaining -= 0.25; }
+        }
       }
       measures.push(currentMeasureNotes);
     }
@@ -847,7 +950,7 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
         currentX = padding; currentY += staveHeight; measuresOnLine = 0;
       }
       const stave = new VF.Stave(currentX, currentY, standardMeasureWidth);
-      if (i === 0) stave.addClef('treble').addTimeSignature('4/4');
+      if (i === 0) stave.addClef('treble').addTimeSignature(timeSignature);
       else if (measuresOnLine === 0) stave.addClef('treble');
       stave.setContext(context).draw();
 
@@ -880,7 +983,12 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
 
       const beamableNotes = vexNotes.filter(vn => !vn.getDuration().includes('r') && vn.getDuration() !== 'w');
       if (beamableNotes.length >= 2) {
-        const beams = VF.Beam.generateBeams(beamableNotes, { groups: [new VF.Fraction(1, 4)] });
+        let beams;
+        try {
+          beams = VF.Beam.generateBeams(beamableNotes);
+        } catch (e) {
+          beams = VF.Beam.generateBeams(beamableNotes, { groups: [new VF.Fraction(1, 4)] });
+        }
         voice.draw(context, stave);
         beams.forEach(b => b.setContext(context).draw());
       } else { voice.draw(context, stave); }
@@ -935,21 +1043,7 @@ const NotationView: React.FC<{ notes: ExerciseNote[]; activeNoteIndex: number; e
     }
   }, [activeNoteIndex]);
 
-  const exerciseCategory = 'generator';
-  const exerciseOptions = exerciseCategory === 'generator'
-    ? GENERATOR_EXERCISES
-    : exerciseCategory === 'repertoire'
-      ? Object.keys(REPERTOIRE_SONGS)
-      : exerciseCategory === 'bop'
-        ? Object.keys(SOULFUL_BOP_PHRASES)
-        : MIDI_FILES;
-  const exerciseLabel = exerciseCategory === 'generator'
-    ? '2. Motif / Ã‰cart'
-    : exerciseCategory === 'repertoire'
-      ? 'Morceau du RÃ©pertoire'
-      : exerciseCategory === 'bop'
-        ? 'Phrase Jazz / Bop'
-        : 'Fichier MIDI';
+
 
   return (
     <div className="w-full rounded-xl border border-slate-200 bg-white shadow-sm p-4 overflow-hidden">
@@ -1000,7 +1094,7 @@ const ScalePractice: React.FC = () => {
   const [rootNote, setRootNote] = useState('C');
   const [scaleType, setScaleType] = useState('Majeure');
   const [theoryMode, setTheoryMode] = useState<TheoryMode>('gamme');
-  const [exerciseCategory, setExerciseCategory] = useState<'generator' | 'repertoire' | 'bop' | 'midi'>('generator');
+  const [exerciseCategory, setExerciseCategory] = useState<'generator' | 'repertoire' | 'bop' | 'midi' | 'rhythm'>('generator');
   const [exerciseType, setExerciseType] = useState('Gamme simple');
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
   const [tempo, setTempo] = useState(60);
@@ -1085,7 +1179,7 @@ const ScalePractice: React.FC = () => {
   const generateScale = useMemo((): ExerciseNote[] => {
     let notes: ExerciseNote[];
 
-    const isRepertoire = !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || exerciseType === 'Fichier MIDI';
+    const isRepertoire = !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || !!KONNAKOL_RHYTHMS[exerciseType] || exerciseType === 'Fichier MIDI';
 
     if (!isRepertoire) {
       const baseNotes = getNotesInSelectedRange(rootNote, scaleType, theoryMode, startNote, endNote);
@@ -1148,25 +1242,31 @@ const ScalePractice: React.FC = () => {
       notes = [...REPERTOIRE_SONGS[exerciseType]];
     } else if (SOULFUL_BOP_PHRASES[exerciseType]) {
       notes = [...SOULFUL_BOP_PHRASES[exerciseType]];
+    } else if (KONNAKOL_RHYTHMS[exerciseType]) {
+      notes = [...KONNAKOL_RHYTHMS[exerciseType]];
     } else {
       // Fallback if needed, though most logic is now handled by the isRepertoire block above
       notes = [{ key: 'C4', duration: 'w' }];
     }
 
     // --- PAD : compléter la dernière mesure avec des silences ---
-    // Cela garantit que l'audio attend les pauses visibles dans VexFlow
-    const totalBeats = notes.reduce((sum, n) => sum + (BEAT_VALUES[n.duration] || 0), 0);
-    let remaining = (Math.ceil(totalBeats / 4) * 4) - totalBeats;
-    if (remaining >= 0.24) {
-      const padded = [...notes];
-      while (remaining >= 0.24) {
-        if (remaining >= 3.99) { padded.push({ key: 'B4/r', duration: 'w' }); remaining -= 4; }
-        else if (remaining >= 1.99) { padded.push({ key: 'B4/r', duration: 'h' }); remaining -= 2; }
-        else if (remaining >= 0.99) { padded.push({ key: 'B4/r', duration: 'q' }); remaining -= 1; }
-        else if (remaining >= 0.49) { padded.push({ key: 'B4/r', duration: '8' }); remaining -= 0.5; }
-        else { padded.push({ key: 'B4/r', duration: '16' }); remaining -= 0.25; }
+    // Uniquement pour les exercices classiques (hors Rythme Konnakol)
+    if (exerciseCategory !== 'rhythm') {
+      const metric = getExerciseMetric(exerciseCategory, exerciseType);
+      const targetBPM = metric.beatsPerMeasure || 4.0;
+      const totalBeats = notes.reduce((sum, n) => sum + (BEAT_VALUES[n.duration] || 0), 0);
+      let remaining = (Math.ceil(totalBeats / targetBPM) * targetBPM) - totalBeats;
+      if (remaining >= 0.24) {
+        const padded = [...notes];
+        while (remaining >= 0.24) {
+          if (remaining >= 3.99) { padded.push({ key: 'B4/r', duration: 'w' }); remaining -= 4; }
+          else if (remaining >= 1.99) { padded.push({ key: 'B4/r', duration: 'h' }); remaining -= 2; }
+          else if (remaining >= 0.99) { padded.push({ key: 'B4/r', duration: 'q' }); remaining -= 1; }
+          else if (remaining >= 0.49) { padded.push({ key: 'B4/r', duration: '8' }); remaining -= 0.5; }
+          else { padded.push({ key: 'B4/r', duration: '16' }); remaining -= 0.25; }
+        }
+        return padded;
       }
-      return padded;
     }
     return notes;
   }, [rootNote, scaleType, theoryMode, startNote, endNote, upDown, exerciseType, midiNotes, midiTranspose]);
@@ -1301,7 +1401,9 @@ const ScalePractice: React.FC = () => {
           playNote(note, startTime, noteDurationSeconds, volumeRef.current);
 
           // Update visuelle
-          const currentB = Math.floor(totalBeatsInMeasure) + 1;
+          const isRhythmCat = exerciseCategory === 'rhythm';
+          const rhythmSubdivisions = KONNAKOL_METADATA[exerciseType]?.subdivisions;
+          const currentB = isRhythmCat && rhythmSubdivisions ? (idx % rhythmSubdivisions) + 1 : Math.floor(totalBeatsInMeasure) + 1;
           const currentM = currentMeasure;
           const delay = (startTime - audioContextRef.current.currentTime) * 1000;
 
@@ -1312,7 +1414,8 @@ const ScalePractice: React.FC = () => {
           }, Math.max(0, delay));
 
           totalBeatsInMeasure += beatDuration;
-          if (totalBeatsInMeasure >= 3.99) {
+          const targetBeatsInMeasure = getExerciseMetric(exerciseCategory, exerciseType).beatsPerMeasure;
+          if (totalBeatsInMeasure >= targetBeatsInMeasure - 0.01) {
             totalBeatsInMeasure = 0;
             currentMeasure++;
 
@@ -1451,7 +1554,7 @@ const ScalePractice: React.FC = () => {
     }
   };
 
-  const isExerciseDisabled = exerciseType === 'Flexibilité - Niveau 1' || !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || exerciseType === 'Fichier MIDI';
+  const isExerciseDisabled = exerciseType === 'Flexibilité - Niveau 1' || !!REPERTOIRE_SONGS[exerciseType] || !!SOULFUL_BOP_PHRASES[exerciseType] || !!KONNAKOL_RHYTHMS[exerciseType] || exerciseType === 'Fichier MIDI';
 
   const exerciseOptions = exerciseCategory === 'generator'
     ? GENERATOR_EXERCISES
@@ -1459,18 +1562,25 @@ const ScalePractice: React.FC = () => {
       ? Object.keys(REPERTOIRE_SONGS)
       : exerciseCategory === 'bop'
         ? Object.keys(SOULFUL_BOP_PHRASES)
-        : MIDI_FILES;
+        : exerciseCategory === 'rhythm'
+          ? Object.keys(KONNAKOL_RHYTHMS)
+          : MIDI_FILES;
   const exerciseLabel = exerciseCategory === 'generator'
-    ? '2. Motif / Ã‰cart'
+    ? '2. Motif / Écart'
     : exerciseCategory === 'repertoire'
-      ? 'Morceau du RÃ©pertoire'
+      ? 'Morceau du Répertoire'
       : exerciseCategory === 'bop'
         ? 'Phrase Jazz / Bop'
-        : 'Fichier MIDI';
+        : exerciseCategory === 'rhythm'
+          ? 'Formule Konnakol (1 à 23)'
+          : 'Fichier MIDI';
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 md:px-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className={cn(
+        "mx-auto space-y-6 transition-all",
+        activeTab === 'ireal' ? "w-full max-w-[1600px] px-1 sm:px-3" : "max-w-6xl"
+      )}>
         {/* Header Section */}
         <div className="text-center space-y-1">
           <h1
@@ -1511,7 +1621,7 @@ const ScalePractice: React.FC = () => {
 
         {activeTab === 'ireal' ? (
           <Card className="bg-white border-slate-200 shadow-xl overflow-hidden rounded-2xl relative">
-            <CardContent className="p-6 md:p-8">
+            <CardContent className="p-3 sm:p-5 md:p-6">
               <IrealChordViewer />
             </CardContent>
           </Card>
@@ -1525,7 +1635,8 @@ const ScalePractice: React.FC = () => {
                   { id: 'generator', label: 'Générateur', icon: Zap },
                   { id: 'repertoire', label: 'Répertoire', icon: Music2 },
                   { id: 'bop', label: 'Phrases Bop', icon: Rocket },
-                  { id: 'midi', label: 'MIDI', icon: FileMusic }
+                  { id: 'midi', label: 'MIDI', icon: FileMusic },
+                  { id: 'rhythm', label: 'Rythme (Konnakol)', icon: Activity }
                 ].map(cat => (
                   <button
                     key={cat.id}
@@ -1536,6 +1647,7 @@ const ScalePractice: React.FC = () => {
                       else if (cat.id === 'repertoire') setExerciseType(Object.keys(REPERTOIRE_SONGS)[0]);
                       else if (cat.id === 'bop') setExerciseType(Object.keys(SOULFUL_BOP_PHRASES)[0]);
                       else if (cat.id === 'midi') setExerciseType('Fichier MIDI');
+                      else if (cat.id === 'rhythm') setExerciseType(Object.keys(KONNAKOL_RHYTHMS)[0]);
                     }}
                     className={cn(
                       "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
@@ -1823,132 +1935,138 @@ const ScalePractice: React.FC = () => {
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
 
+              {/* 3. Tonalité (Uniquement pour le Générateur) */}
               {exerciseCategory === 'generator' && (
                 <div className="mt-1 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
-                  <div className="flex flex-wrap items-end gap-3">
-                    <div className="min-w-[420px] flex-1 space-y-2">
-                      <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">3. Tonalite</Label>
-                      <div className="flex flex-wrap gap-1.5">
-                        {CHROMATIC_NOTES.map((noteOption) => (
-                          <button
-                            key={noteOption}
-                            onClick={() => handleRootNoteSelect(noteOption)}
-                            className={cn(
-                              "h-9 min-w-[54px] rounded-xl px-2 text-[10px] font-black uppercase transition-all border",
-                              rootNote === noteOption
-                                ? "bg-slate-800 text-white border-slate-700 shadow-sm"
-                                : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
-                            )}
-                          >
-                            {NOTE_NAMES[noteOption] || noteOption}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="lg"
+                  <div className="space-y-2">
+                    <Label className="text-[9px] font-black text-orange-600 uppercase tracking-[0.2em]">3. Tonalité</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {CHROMATIC_NOTES.map((noteOption) => (
+                        <button
+                          key={noteOption}
+                          onClick={() => handleRootNoteSelect(noteOption)}
                           className={cn(
-                            "h-12 min-w-[78px] rounded-2xl flex flex-col gap-1 shadow-md transition-all active:scale-95 text-white border-none",
-                            isPlaying ? "bg-amber-500 hover:bg-amber-600" : "bg-orange-600 hover:bg-orange-700"
+                            "h-9 min-w-[54px] rounded-xl px-2 text-[10px] font-black uppercase transition-all border",
+                            rootNote === noteOption
+                              ? "bg-slate-800 text-white border-slate-700 shadow-sm"
+                              : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
                           )}
-                          onClick={togglePlay}
                         >
-                          {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
-                          <span className="text-[8px] font-black uppercase tracking-widest">{isPlaying ? 'Pause' : 'Play'}</span>
-                        </Button>
-                        <Button
-                          size="lg"
-                          variant="outline"
-                          className="h-12 min-w-[64px] rounded-2xl border-slate-200 flex flex-col gap-1 hover:bg-slate-50 transition-all active:scale-95"
-                          onClick={handleStop}
-                        >
-                          <div className="w-3.5 h-3.5 bg-current rounded-sm" />
-                          <span className="text-[8px] font-black uppercase tracking-widest">Stop</span>
-                        </Button>
-                      </div>
+                          {NOTE_NAMES[noteOption] || noteOption}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                      <div className="w-[180px] space-y-2">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-end gap-1">
-                            <span className="text-2xl font-mono font-black text-slate-900 leading-none">{tempo}</span>
-                            <span className="text-[8px] font-bold text-slate-400 mb-0.5 uppercase tracking-widest">BPM</span>
-                          </div>
-                          <Dialog open={isAccelDialogOpen} onOpenChange={setIsAccelDialogOpen}>
-                            <DialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                  "h-7 px-2 text-[8px] font-bold uppercase tracking-widest border border-slate-200 rounded-xl",
-                                  accelConfig.active ? "bg-orange-100 text-orange-700 border-orange-200" : "text-slate-500"
-                                )}
-                              >
-                                <Rocket className="w-3 h-3 mr-1" />
-                                {accelConfig.active ? "Active" : "Accel"}
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[420px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
-                              <DialogHeader>
-                                <DialogTitle className="text-xl font-black flex items-center gap-3 text-slate-800">
-                                  <Rocket className="w-5 h-5 text-orange-500" />
-                                  Testeur de Vitesse
-                                </DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-6 pt-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Depart</Label>
-                                    <Input type="number" value={accelConfig.start} onChange={(e) => setAccelConfig(prev => ({ ...prev, start: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Objectif</Label>
-                                    <Input type="number" value={accelConfig.end} onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
-                                  </div>
-                                </div>
-                                <Button
-                                  onClick={() => {
-                                    setAccelConfig(prev => ({ ...prev, active: !prev.active }));
-                                    setIsAccelDialogOpen(false);
-                                    if (!accelConfig.active) setTempo(accelConfig.start);
-                                  }}
-                                  className="w-full h-14 rounded-xl font-black text-lg bg-orange-600 hover:bg-orange-700"
-                                >
-                                  {accelConfig.active ? "Desactiver" : "Activer l'acceleration"}
-                                </Button>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                        <Slider value={[tempo]} min={40} max={208} onValueChange={(vals) => setTempo(vals[0])} />
-                      </div>
-
-                      <div className="w-[160px] space-y-2">
-                        <div className="flex items-center justify-between text-slate-500">
-                          <div className="flex items-center gap-2">
-                            <Volume2 className="w-3.5 h-3.5" />
-                            <span className="text-[8px] font-bold uppercase tracking-widest">Volume</span>
-                          </div>
-                          <span className="text-[8px] font-mono font-bold">{Math.round(volume * 200)}%</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Slider value={[volume]} max={0.5} step={0.01} onValueChange={(vals) => setVolume(vals[0])} className="flex-1" />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-slate-400 hover:text-orange-600 rounded-xl border border-slate-200 bg-white"
-                            onClick={() => setIsMuted(!isMuted)}
-                          >
-                            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                          </Button>
-                        </div>
-                      </div>
+              {/* Barre de Contrôle Universelle (Play / Stop / BPM / Volume / Stats) - Toujours visible pour TOUS les modes ! */}
+              <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="lg"
+                        className={cn(
+                          "h-12 min-w-[84px] rounded-2xl flex flex-col gap-1 shadow-md transition-all active:scale-95 text-white border-none",
+                          isPlaying ? "bg-amber-500 hover:bg-amber-600" : "bg-orange-600 hover:bg-orange-700"
+                        )}
+                        onClick={togglePlay}
+                      >
+                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
+                        <span className="text-[9px] font-black uppercase tracking-widest">{isPlaying ? 'Pause' : 'Play'}</span>
+                      </Button>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="h-12 min-w-[68px] rounded-2xl border-slate-200 flex flex-col gap-1 hover:bg-slate-50 transition-all active:scale-95"
+                        onClick={handleStop}
+                      >
+                        <div className="w-3.5 h-3.5 bg-current rounded-sm" />
+                        <span className="text-[9px] font-black uppercase tracking-widest">Stop</span>
+                      </Button>
                     </div>
 
-                    <div className="flex items-end gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm">
-                      <div className="space-y-2 w-[130px]">
+                    <div className="w-[180px] space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-end gap-1">
+                          <span className="text-2xl font-mono font-black text-slate-900 leading-none">{tempo}</span>
+                          <span className="text-[8px] font-bold text-slate-400 mb-0.5 uppercase tracking-widest">BPM</span>
+                        </div>
+                        <Dialog open={isAccelDialogOpen} onOpenChange={setIsAccelDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                "h-7 px-2 text-[8px] font-bold uppercase tracking-widest border border-slate-200 rounded-xl",
+                                accelConfig.active ? "bg-orange-100 text-orange-700 border-orange-200" : "text-slate-500"
+                              )}
+                            >
+                              <Rocket className="w-3 h-3 mr-1" />
+                              {accelConfig.active ? "Actif" : "Accel"}
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[420px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
+                            <DialogHeader>
+                              <DialogTitle className="text-xl font-black flex items-center gap-3 text-slate-800">
+                                <Rocket className="w-5 h-5 text-orange-500" />
+                                Testeur de Vitesse
+                              </DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-6 pt-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Départ</Label>
+                                  <Input type="number" value={accelConfig.start} onChange={(e) => setAccelConfig(prev => ({ ...prev, start: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label className="text-[9px] uppercase font-black text-slate-400 ml-1">Objectif</Label>
+                                  <Input type="number" value={accelConfig.end} onChange={(e) => setAccelConfig(prev => ({ ...prev, end: Number(e.target.value) }))} className="h-12 text-xl font-black rounded-xl" />
+                                </div>
+                              </div>
+                              <Button
+                                onClick={() => {
+                                  setAccelConfig(prev => ({ ...prev, active: !prev.active }));
+                                  setIsAccelDialogOpen(false);
+                                  if (!accelConfig.active) setTempo(accelConfig.start);
+                                }}
+                                className="w-full h-14 rounded-xl font-black text-lg bg-orange-600 hover:bg-orange-700"
+                              >
+                                {accelConfig.active ? "Désactiver" : "Activer l'accélération"}
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                      <Slider value={[tempo]} min={40} max={208} onValueChange={(vals) => setTempo(vals[0])} />
+                    </div>
+
+                    <div className="w-[160px] space-y-2">
+                      <div className="flex items-center justify-between text-slate-500">
+                        <div className="flex items-center gap-2">
+                          <Volume2 className="w-3.5 h-3.5" />
+                          <span className="text-[8px] font-bold uppercase tracking-widest">Volume</span>
+                        </div>
+                        <span className="text-[8px] font-mono font-bold">{Math.round(volume * 200)}%</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Slider value={[volume]} max={0.5} step={0.01} onValueChange={(vals) => setVolume(vals[0])} className="flex-1" />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-slate-400 hover:text-orange-600 rounded-xl border border-slate-200 bg-white"
+                          onClick={() => setIsMuted(!isMuted)}
+                        >
+                          {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {exerciseCategory === 'generator' && (
+                      <div className="space-y-1 w-[120px]">
                         <Label className="text-[8px] font-black text-orange-600 uppercase tracking-[0.2em]">Aller-Retour</Label>
                         <button
                           onClick={() => setUpDown(!upDown)}
@@ -1962,34 +2080,34 @@ const ScalePractice: React.FC = () => {
                           {upDown ? "ON" : "OFF"}
                         </button>
                       </div>
+                    )}
 
-                      <div className="space-y-2 w-[150px]">
-                        <Label className="text-[8px] font-black text-orange-600 uppercase tracking-[0.2em]">Favori</Label>
-                        <Button
-                          onClick={saveFavorite}
-                          variant="outline"
-                          className="w-full h-10 border-orange-200 bg-white text-orange-600 font-bold text-[9px] uppercase tracking-widest rounded-xl hover:bg-orange-50 transition-all active:scale-95"
-                        >
-                          <Save className="w-3.5 h-3.5 mr-2" />
-                          Sauvegarder
-                        </Button>
+                    <div className="space-y-1 w-[130px]">
+                      <Label className="text-[8px] font-black text-orange-600 uppercase tracking-[0.2em]">Favori</Label>
+                      <Button
+                        onClick={saveFavorite}
+                        variant="outline"
+                        className="w-full h-10 border-orange-200 bg-white text-orange-600 font-bold text-[9px] uppercase tracking-widest rounded-xl hover:bg-orange-50 transition-all active:scale-95"
+                      >
+                        <Save className="w-3.5 h-3.5 mr-1.5" />
+                        Sauvegarder
+                      </Button>
+                    </div>
+
+                    <div className="bg-slate-900 rounded-xl px-4 py-2 border border-slate-800 shadow-sm flex items-center gap-4 h-12">
+                      <div className="flex flex-col items-center">
+                        <span className="text-[8px] text-slate-500 uppercase">Temps</span>
+                        <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayBeat : "-"}</span>
                       </div>
-
-                      <div className="bg-slate-900 rounded-xl px-4 py-2 border border-slate-800 shadow-sm flex items-center gap-4">
-                        <div className="flex flex-col items-center">
-                          <span className="text-[8px] text-slate-500 uppercase">Temps</span>
-                          <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayBeat : "-"}</span>
-                        </div>
-                        <div className="w-px h-6 bg-slate-800" />
-                        <div className="flex flex-col items-center">
-                          <span className="text-[8px] text-slate-500 uppercase">Mesure</span>
-                          <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayMeasure : "-"}</span>
-                        </div>
+                      <div className="w-px h-6 bg-slate-800" />
+                      <div className="flex flex-col items-center">
+                        <span className="text-[8px] text-slate-500 uppercase">Mesure</span>
+                        <span className="text-lg font-mono text-orange-500 leading-none">{isPlaying ? displayMeasure : "-"}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
 
               {false && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
@@ -2158,12 +2276,13 @@ const ScalePractice: React.FC = () => {
                     <Label className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] ml-1">
                       {exerciseCategory === 'generator' ? '2. Motif / Écart' : 
                        exerciseCategory === 'repertoire' ? 'Morceau du Répertoire' : 
-                       exerciseCategory === 'bop' ? 'Phrase Jazz / Bop' : 'Fichier MIDI'}
+                       exerciseCategory === 'bop' ? 'Phrase Jazz / Bop' : exerciseCategory === 'rhythm' ? 'Formule Rythmique (1 à 23)' : 'Fichier MIDI'}
                     </Label>
                     <div className="flex flex-col gap-1.5 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
                       {(exerciseCategory === 'generator' ? GENERATOR_EXERCISES :
                         exerciseCategory === 'repertoire' ? Object.keys(REPERTOIRE_SONGS) :
                         exerciseCategory === 'bop' ? Object.keys(SOULFUL_BOP_PHRASES) :
+                        exerciseCategory === 'rhythm' ? Object.keys(KONNAKOL_RHYTHMS) :
                         MIDI_FILES).map(e => (
                         <button
                           key={e}
@@ -2322,11 +2441,124 @@ const ScalePractice: React.FC = () => {
 
           {/* Notation View */}
           <div className="space-y-6 pb-20">
+            {/* Konnakol Visualizer Card when in rhythm mode */}
+            {exerciseCategory === 'rhythm' && KONNAKOL_METADATA[exerciseType] && (
+              <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-900/50">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-indigo-900/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 font-black flex items-center justify-center text-xl shadow-lg shadow-orange-500/20 shrink-0">
+                      {KONNAKOL_METADATA[exerciseType].subdivisions}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
+                          Konnakol Solkattu
+                        </span>
+                        <span className="text-xs text-indigo-300 font-mono font-bold">
+                          {KONNAKOL_METADATA[exerciseType].subdivisions} Subdivisions
+                        </span>
+                      </div>
+                      <h3 className="text-xl md:text-2xl font-black text-white mt-1">
+                        {KONNAKOL_METADATA[exerciseType].title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-2xl text-right">
+                    <span className="text-[9px] uppercase font-bold tracking-widest text-indigo-300 block">Formule</span>
+                    <span className="text-sm font-mono font-black text-amber-400">{KONNAKOL_METADATA[exerciseType].formula}</span>
+                  </div>
+                </div>
+
+                {/* Syllables Pills Interactive Display */}
+                <div className="pt-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      Découpage des Syllabes (Pulsations)
+                    </span>
+                    <span className="text-[10px] text-amber-400 font-bold">
+                      {isPlaying ? '▶ Énonciation en cours...' : 'Appuyez sur PLAY pour suivre le tempo'}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    {(() => {
+                      let globalSyllableIndex = 0;
+                      return KONNAKOL_METADATA[exerciseType].words.map((w, wordIdx) => (
+                        <div key={wordIdx} className="bg-white/5 border border-white/10 rounded-2xl p-2.5 flex flex-col gap-2 shadow-inner">
+                          <div className="flex items-center justify-between px-1 gap-2">
+                            <span className="text-[9px] font-mono font-black text-slate-400 uppercase tracking-wider">{w.text}</span>
+                            <span className="text-[8px] font-bold bg-white/10 text-amber-300 px-1.5 py-0.2 rounded-md">{w.count}</span>
+                          </div>
+                          <div className="flex gap-1.5">
+                            {w.syllables.map((syl, sylIdx) => {
+                              const currentIdx = globalSyllableIndex++;
+                              const isActive = isPlaying && activeNoteIndex === currentIdx;
+                              return (
+                                <div
+                                  key={sylIdx}
+                                  className={cn(
+                                    "px-3 py-2 rounded-xl font-mono text-sm md:text-base font-black transition-all duration-100 flex items-center justify-center min-w-[42px]",
+                                    isActive
+                                      ? "bg-amber-400 text-slate-950 scale-110 shadow-lg shadow-amber-400/50 ring-2 ring-white animate-pulse"
+                                      : "bg-slate-800 text-slate-200 border border-slate-700/60"
+                                  )}
+                                >
+                                  {syl}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+
+                {/* Pedagogical Guidance */}
+                <div className="mt-6 pt-4 border-t border-indigo-900/50 flex flex-wrap items-center justify-between gap-3 text-xs text-indigo-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                    <span>Claquez des mains sur chaque 1er temps et récitez les syllabes à voix haute avec le métronome.</span>
+                  </div>
+                  <div className="text-[10px] uppercase font-mono tracking-widest text-amber-400/90 bg-amber-400/10 px-3 py-1 rounded-xl">
+                    Idéal Trompette : Articulation & Débit
+                  </div>
+                </div>
+              </div>
+            )}
+            {REPERTOIRE_AUDIO_TRACKS[exerciseType] && (
+              <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-amber-500/10 border border-pink-200/80 rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500 to-rose-500 text-white flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+                    <Music2 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-black text-slate-800 text-base">Backing Track Audio (WAV)</h4>
+                      <span className="bg-pink-100 text-pink-700 text-[10px] font-black uppercase px-2 py-0.5 rounded-full border border-pink-200">Playback Studio</span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">Jouez par-dessus le véritable accompagnement audio avec votre trompette</p>
+                  </div>
+                </div>
+                <div className="w-full md:w-auto shrink-0">
+                  <audio
+                    controls
+                    src={REPERTOIRE_AUDIO_TRACKS[exerciseType]}
+                    className="w-full md:w-80 h-10 rounded-xl shadow-sm"
+                  />
+                </div>
+              </div>
+            )}
+
             <NotationView
               notes={generateScale}
               activeNoteIndex={activeNoteIndex}
               exerciseType={exerciseType}
               showFingerings={showFingerings}
+              timeSignature={getExerciseMetric(exerciseCategory, exerciseType).timeSignature}
+              beatsPerMeasure={getExerciseMetric(exerciseCategory, exerciseType).beatsPerMeasure}
+              exerciseCategory={exerciseCategory}
             />
 
             {favorites.length > 0 && (

@@ -13,6 +13,7 @@ export interface IrealWikifoniaMatch extends WikifoniaLeadSheetRef {
   irealTitle: string;
   irealComposer: string;
   matchType: 'exact-normalized-title';
+  hasChords?: boolean;
 }
 
 export interface StandaloneWikifoniaEntry extends WikifoniaLeadSheetRef {

@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Maximize2, Minimize2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import Vex from 'vexflow';
 
 import type { ParsedLeadSheet, ParsedLeadSheetMeasure, ParsedMelodyEvent } from './musicXmlLeadSheet';
@@ -355,6 +357,10 @@ interface WikifoniaVexScoreProps {
   tracks: ScoreTrack[];
   playbackState: PlaybackPosition | null;
   isPlaying: boolean;
+  onSelectMeasure?: (measureIndex: number, startBeat?: number) => void;
+  loopEnabled?: boolean;
+  loopStart?: number;
+  loopEnd?: number;
 }
 
 export default function WikifoniaVexScore({
@@ -364,6 +370,10 @@ export default function WikifoniaVexScore({
   tracks,
   playbackState,
   isPlaying,
+  onSelectMeasure,
+  loopEnabled = false,
+  loopStart = 0,
+  loopEnd = 0,
 }: WikifoniaVexScoreProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousHighlightIdsRef = useRef<string[]>([]);
@@ -436,6 +446,44 @@ export default function WikifoniaVexScore({
         const beats = leadMeasure?.beats ?? defaultBeatsPerMeasure ?? leadSheet.beatsPerMeasure;
         const beatType = leadMeasure?.beatType ?? leadSheet.beatType;
 
+        if (loopEnabled && measureIndex >= loopStart && measureIndex <= loopEnd) {
+          try {
+            const svgGroup = (context as unknown as { openGroup: (cls?: string) => SVGElement; closeGroup: () => void }).openGroup?.('vf-loop-highlight');
+            const rectY = topTrackY - 12;
+            const rectHeight = visibleTracks.length > 1 ? bottomTrackY - topTrackY + 80 : 85;
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', String(currentX));
+            rect.setAttribute('y', String(rectY));
+            rect.setAttribute('width', String(measureWidth));
+            rect.setAttribute('height', String(rectHeight));
+            rect.setAttribute('fill', 'rgba(245, 158, 11, 0.12)');
+            rect.setAttribute('stroke', 'rgba(245, 158, 11, 0.4)');
+            rect.setAttribute('stroke-width', '1.5');
+            rect.setAttribute('rx', '4');
+
+            if (svgGroup) {
+              svgGroup.appendChild(rect);
+
+              if (measureIndex === loopStart || measureIndex === loopEnd) {
+                const isStart = measureIndex === loopStart;
+                const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                const badgeX = isStart ? currentX + 6 : currentX + measureWidth - 14;
+                badgeText.setAttribute('x', String(badgeX));
+                badgeText.setAttribute('y', String(rectY + 12));
+                badgeText.setAttribute('fill', '#d97706');
+                badgeText.setAttribute('font-size', '11px');
+                badgeText.setAttribute('font-weight', '900');
+                badgeText.setAttribute('font-family', 'sans-serif');
+                badgeText.textContent = isStart ? 'A' : 'B';
+                svgGroup.appendChild(badgeText);
+              }
+              (context as unknown as { closeGroup: () => void }).closeGroup?.();
+            }
+          } catch {
+            // ignore if SVG group creation fails
+          }
+        }
+
         if (melodyTrack?.visible) {
           const melodyStave = new VF.Stave(currentX, topTrackY, measureWidth);
           if (measureIndex === 0 || systemIndex === 0) {
@@ -461,21 +509,30 @@ export default function WikifoniaVexScore({
               const melodyVoice = new VF.Voice({ num_beats: beats, beat_value: beatType }).setStrict(false);
               melodyVoice.addTickables(melodyVoiceData.notes);
               new VF.Formatter().joinVoices([melodyVoice]).formatToStave([melodyVoice], melodyStave);
-              melodyVoice.draw(context, melodyStave);
-              renderedNotes.push(...melodyVoiceData.renderedNotes);
-              melodyTies.push(...melodyVoiceData.ties);
 
               const beamableNotes = melodyVoiceData.notes.filter(
-                (note) => !note.getDuration().includes('r') && !note.getDuration().startsWith('w')
+                (note) => /^(8|16|32|64)/.test(note.getDuration()) && !note.getDuration().includes('r')
               );
+              let beams: Vex.Flow.Beam[] = [];
               if (beamableNotes.length >= 2) {
                 try {
-                  const beams = VF.Beam.generateBeams(beamableNotes);
-                  beams.forEach((beam) => beam.setContext(context).draw());
+                  beams = VF.Beam.generateBeams(beamableNotes);
                 } catch (error) {
                   console.warn(`Skipped unsupported beams in Wikifonia measure ${measureIndex + 1}.`, error);
                 }
               }
+
+              melodyVoice.draw(context, melodyStave);
+              renderedNotes.push(...melodyVoiceData.renderedNotes);
+              melodyTies.push(...melodyVoiceData.ties);
+
+              beams.forEach((beam) => {
+                try {
+                  beam.setContext(context).draw();
+                } catch (error) {
+                  console.warn(`Skipped beam draw in Wikifonia measure ${measureIndex + 1}.`, error);
+                }
+              });
 
               melodyVoiceData.tuplets.forEach((tuplet) => {
                 try {
@@ -600,6 +657,9 @@ export default function WikifoniaVexScore({
     accompanimentTrack?.visible,
     defaultBeatsPerMeasure,
     leadSheet,
+    loopEnabled,
+    loopEnd,
+    loopStart,
     melodyTrack?.fingeringEnabled,
     melodyTrack?.label,
     melodyTrack?.visible,
@@ -638,26 +698,126 @@ export default function WikifoniaVexScore({
     }
   }, [isPlaying, playbackState]);
 
+  const handleScoreClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || !onSelectMeasure) {
+      return;
+    }
+
+    const target = event.target as HTMLElement | null;
+    const staveNote = target?.closest('.vf-stavenote') as HTMLElement | null;
+
+    if (staveNote && staveNote.dataset.measureIndex !== undefined) {
+      const measureIndex = Number(staveNote.dataset.measureIndex);
+      const startBeat = Number(staveNote.dataset.startBeat ?? 0);
+      onSelectMeasure(measureIndex, startBeat);
+      return;
+    }
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+
+    const allNotes = Array.from(containerRef.current.querySelectorAll<HTMLElement>('.vf-stavenote'));
+    let minDistance = Infinity;
+    let closestMeasure = -1;
+    let closestBeat = 0;
+
+    for (const noteNode of allNotes) {
+      const bbox = noteNode.getBoundingClientRect();
+      const noteX = bbox.left + bbox.width / 2 - rect.left;
+      const noteY = bbox.top + bbox.height / 2 - rect.top;
+
+      const dist = Math.hypot(clickX - noteX, clickY - noteY);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestMeasure = Number(noteNode.dataset.measureIndex ?? 0);
+        closestBeat = Number(noteNode.dataset.startBeat ?? 0);
+      }
+    }
+
+    if (closestMeasure >= 0 && minDistance < 180) {
+      onSelectMeasure(closestMeasure, closestBeat);
+    }
+  };
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const toggleFullscreen = () => {
+    if (!sectionRef.current) return;
+    if (!document.fullscreenElement) {
+      sectionRef.current.requestFullscreen?.().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+      setIsFullscreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <section
+      ref={sectionRef}
+      className={cn(
+        "rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all",
+        isFullscreen && "fixed inset-0 z-[100] rounded-none border-none p-4 overflow-y-auto max-h-screen bg-white"
+      )}
+    >
       <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-              Partition VexFlow
+              Partition VexFlow (Cliquer sur une mesure pour s'y rendre)
             </p>
             <h3 className="text-sm font-bold text-slate-800">
               {leadSheet.title || 'Partition alignee'}
             </h3>
           </div>
-          <span className="rounded-full bg-slate-200 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-600">
-            Melodie Sib + accompagnement
-          </span>
+          <div className="flex items-center gap-2">
+            {loopEnabled ? (
+              <span className="rounded-full bg-amber-100 border border-amber-300 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-800 animate-pulse">
+                🔁 Boucle active: Mesures {loopStart + 1} à {loopEnd + 1}
+              </span>
+            ) : null}
+            <span className="rounded-full bg-slate-200 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+              Melodie Sib + accompagnement
+            </span>
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-700 hover:bg-slate-100 hover:border-orange-300 transition-colors shadow-xs"
+              title={isFullscreen ? "Quitter le plein écran" : "Afficher la partition en plein écran"}
+            >
+              {isFullscreen ? (
+                <>
+                  <Minimize2 className="h-3.5 w-3.5 text-orange-600" />
+                  <span>Quitter Plein Écran</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="h-3.5 w-3.5 text-orange-600" />
+                  <span>Plein Écran</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="overflow-x-auto px-4 py-4">
-        <div ref={containerRef} className="min-w-[980px]" />
+        <div
+          ref={containerRef}
+          onClick={handleScoreClick}
+          className="min-w-[980px] cursor-pointer hover:opacity-[0.99] transition-opacity"
+          title="Cliquer pour démarrer la lecture depuis cette mesure"
+        />
       </div>
     </section>
   );

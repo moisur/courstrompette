@@ -1,16 +1,15 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Pause, Play, Search, Square } from 'lucide-react';
+import { ArrowLeft, Pause, Play, Search, SlidersHorizontal, Square } from 'lucide-react';
 import Vex from 'vexflow';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 
-import { IRealSong, parseIRealUrl, transposeMeasures } from './iRealParser';
+import { IRealSong, parseIRealUrl, transposeChord, transposeMeasures } from './iRealParser';
 import {
   buildChordBeatSegments,
   CHROMATIC_NOTES,
@@ -22,7 +21,7 @@ import {
   prettyQuality,
   ROMANCE_NOTES,
 } from './irealMusicUtils';
-import { loadParsedLeadSheet, ParsedLeadSheet, ParsedLeadSheetMeasure } from './musicXmlLeadSheet';
+import { loadParsedLeadSheet, transposeLeadSheet, ParsedLeadSheet, ParsedLeadSheetMeasure, ParsedMelodyEvent } from './musicXmlLeadSheet';
 import {
   buildIrealSongKey,
   DisplayMode,
@@ -35,11 +34,12 @@ import {
   StandaloneWikifoniaEntry,
 } from './irealWikifonia';
 import WikifoniaVexScore from './WikifoniaVexScore';
+import { getTop50Meta, isTop50Song } from './top50Songs';
 
 const VF = Vex.Flow;
 
 type WikifoniaMatchMap = Record<string, IrealWikifoniaMatch>;
-type SongMatchFilter = 'all' | 'with-sheet' | 'without-sheet' | 'standalone';
+type SongMatchFilter = 'top-50' | 'all' | 'with-sheet' | 'without-sheet' | 'standalone';
 
 type RenderedNoteMeta = {
   id: string;
@@ -114,6 +114,9 @@ class UnifiedBackingTrackEngine {
   private accompanimentEnabled = true;
   private melodyEnabled = false;
   private eventQueue: PlaybackPosition[] = [];
+  private loopEnabled = false;
+  private loopStartMeasure = 0;
+  private loopEndMeasure = 0;
 
   init() {
     if (!this.ctx) {
@@ -135,6 +138,9 @@ class UnifiedBackingTrackEngine {
     defaultBeatsPerMeasure: number;
     accompanimentEnabled: boolean;
     melodyEnabled: boolean;
+    loopEnabled?: boolean;
+    loopStartMeasure?: number;
+    loopEndMeasure?: number;
   }) {
     this.accompanimentMeasures = options.accompanimentMeasures;
     this.melodyMeasures = options.melodyMeasures ?? [];
@@ -143,6 +149,30 @@ class UnifiedBackingTrackEngine {
     this.accompanimentEnabled = options.accompanimentEnabled;
     this.melodyEnabled = options.melodyEnabled;
     this.totalMeasures = Math.max(this.accompanimentMeasures.length, this.melodyMeasures.length);
+    if (options.loopEnabled !== undefined) {
+      this.loopEnabled = options.loopEnabled;
+    }
+    if (options.loopStartMeasure !== undefined) {
+      this.loopStartMeasure = options.loopStartMeasure;
+    }
+    if (options.loopEndMeasure !== undefined) {
+      this.loopEndMeasure = options.loopEndMeasure;
+    }
+  }
+
+  setLoop(enabled: boolean, startMeasure: number, endMeasure: number) {
+    this.loopEnabled = enabled;
+    this.loopStartMeasure = Math.max(0, startMeasure);
+    this.loopEndMeasure = Math.max(startMeasure, endMeasure);
+  }
+
+  seekTo(measureIndex: number, beat = 0) {
+    this.currentMeasure = Math.max(0, Math.min(measureIndex, (this.totalMeasures || 1) - 1));
+    this.currentBeat = Math.max(0, Math.floor(beat));
+    this.eventQueue = [];
+    if (this.ctx) {
+      this.nextBeatTime = this.ctx.currentTime + 0.05;
+    }
   }
 
   setVolume(volume: number) {
@@ -151,7 +181,7 @@ class UnifiedBackingTrackEngine {
     }
   }
 
-  start() {
+  start(startFromCurrent = false) {
     if (this.totalMeasures === 0) {
       return;
     }
@@ -162,8 +192,13 @@ class UnifiedBackingTrackEngine {
     }
 
     this.isRunning = true;
-    this.currentBeat = 0;
-    this.currentMeasure = 0;
+    if (!startFromCurrent) {
+      if (this.loopEnabled && (this.currentMeasure < this.loopStartMeasure || this.currentMeasure > this.loopEndMeasure)) {
+        this.currentMeasure = this.loopStartMeasure;
+      } else if (this.currentMeasure >= this.totalMeasures) {
+        this.currentMeasure = 0;
+      }
+    }
     this.nextBeatTime = this.ctx.currentTime + 0.1;
     this.eventQueue = [];
     this.schedule();
@@ -175,8 +210,6 @@ class UnifiedBackingTrackEngine {
       clearTimeout(this.timerId);
       this.timerId = null;
     }
-    this.currentMeasure = 0;
-    this.currentBeat = 0;
     this.eventQueue = [];
   }
 
@@ -215,7 +248,14 @@ class UnifiedBackingTrackEngine {
     if (this.currentBeat >= this.getBeatsForMeasure(this.currentMeasure)) {
       this.currentBeat = 0;
       this.currentMeasure += 1;
-      if (this.currentMeasure >= this.totalMeasures) {
+
+      if (this.loopEnabled && this.loopEndMeasure >= this.loopStartMeasure) {
+        const maxMeasure = Math.min(this.loopEndMeasure, this.totalMeasures - 1);
+        const minMeasure = Math.min(this.loopStartMeasure, maxMeasure);
+        if (this.currentMeasure > maxMeasure || this.currentMeasure >= this.totalMeasures) {
+          this.currentMeasure = minMeasure;
+        }
+      } else if (this.currentMeasure >= this.totalMeasures) {
         this.currentMeasure = 0;
       }
     }
@@ -281,6 +321,43 @@ class UnifiedBackingTrackEngine {
     }
   }
 
+  private calculateTiedDurationBeats(measureIndex: number, event: ParsedMelodyEvent): number {
+    let totalBeats = event.durationBeats;
+    if (!event.tieStart) {
+      return totalBeats;
+    }
+
+    const targetKey = event.displayKey;
+    let currentMeasureIdx = measureIndex;
+    const currentEvents = this.melodyMeasures[currentMeasureIdx]?.melody ?? [];
+    let currentEventIdx = currentEvents.indexOf(event);
+
+    while (currentMeasureIdx < this.melodyMeasures.length) {
+      const events = this.melodyMeasures[currentMeasureIdx]?.melody ?? [];
+      currentEventIdx += 1;
+
+      if (currentEventIdx >= events.length) {
+        currentMeasureIdx += 1;
+        currentEventIdx = -1;
+        continue;
+      }
+
+      const nextEvent = events[currentEventIdx];
+      if (!nextEvent) continue;
+
+      if (nextEvent.kind === 'note' && nextEvent.tieStop && nextEvent.displayKey === targetKey) {
+        totalBeats += nextEvent.durationBeats;
+        if (!nextEvent.tieStart) {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+
+    return totalBeats;
+  }
+
   private playMelodyBeat(time: number) {
     const measure = this.melodyMeasures[this.currentMeasure];
     if (!measure) {
@@ -295,12 +372,17 @@ class UnifiedBackingTrackEngine {
       if (event.kind !== 'note' || !event.concertFrequency) {
         continue;
       }
+      if (event.tieStop) {
+        // Skip tied notes so they sustain without re-attacking
+        continue;
+      }
       if (event.beat < beatStart || event.beat >= beatEnd) {
         continue;
       }
 
       const startTime = time + (event.beat - beatStart) * beatDuration;
-      const noteDuration = Math.max(0.08, Math.min(event.durationBeats * beatDuration * 0.92, beatDuration * 4));
+      const combinedDurationBeats = this.calculateTiedDurationBeats(this.currentMeasure, event);
+      const noteDuration = Math.max(0.08, combinedDurationBeats * beatDuration * 0.96);
       this.playMelodyNote(startTime, event.concertFrequency, noteDuration);
     }
   }
@@ -315,13 +397,18 @@ class UnifiedBackingTrackEngine {
     oscillator.frequency.setValueAtTime(frequency, time);
 
     const gain = this.ctx.createGain();
+    const attack = 0.02;
+    const release = Math.min(0.12, duration * 0.12);
+    const sustainEnd = time + duration - release;
+
     gain.gain.setValueAtTime(0.001, time);
-    gain.gain.linearRampToValueAtTime(0.11, time + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+    gain.gain.linearRampToValueAtTime(0.13, time + attack);       // attack
+    gain.gain.setValueAtTime(0.13, Math.max(time + attack, sustainEnd)); // sustain
+    gain.gain.exponentialRampToValueAtTime(0.001, time + duration); // release
 
     oscillator.connect(gain).connect(this.masterGain);
     oscillator.start(time);
-    oscillator.stop(time + duration);
+    oscillator.stop(time + duration + 0.01);
   }
 
   private playDrums(time: number, beatsPerMeasure: number) {
@@ -410,279 +497,65 @@ class UnifiedBackingTrackEngine {
     oscillator.stop(time + beatDuration);
   }
 
-  private playComp(time: number, root: string, notes: string[], beats: number) {
+  private playComp(time: number, root: string, notes: string[], durationBeats: number) {
     if (!this.ctx || !this.masterGain) {
       return;
     }
 
-    const sustainDuration = Math.max((60 / this.bpm) * beats, 0.2);
-    const voicing = notes.length > 0 ? notes.slice(0, 4) : [root];
+    const beatDuration = 60 / this.bpm;
+    const duration = beatDuration * durationBeats * 0.8;
 
-    voicing.forEach((note, index) => {
-      const oscillator = this.ctx!.createOscillator();
-      oscillator.type = index === 0 ? 'sine' : 'triangle';
-      oscillator.frequency.value = noteFreq(note, 4);
+    notes.slice(0, 4).forEach((noteName) => {
+      const frequency = noteFreq(noteName, 3);
+      if (!this.ctx || !this.masterGain) {
+        return;
+      }
 
-      const gain = this.ctx!.createGain();
-      gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(index === 0 ? 0.045 : 0.03, time + 0.02);
-      gain.gain.setValueAtTime(index === 0 ? 0.045 : 0.03, time + sustainDuration * 0.88);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + sustainDuration);
+      const oscillator = this.ctx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
 
-      oscillator.connect(gain).connect(this.masterGain!);
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.05, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+      oscillator.connect(gain).connect(this.masterGain);
       oscillator.start(time);
-      oscillator.stop(time + sustainDuration);
+      oscillator.stop(time + duration);
     });
   }
 }
 
-const VexFlowFullScore: React.FC<{
-  measures: string[][];
-  beatsPerMeasure: number;
-  playbackState: PlaybackPosition | null;
-  isPlaying: boolean;
-}> = ({ measures, beatsPerMeasure, playbackState, isPlaying }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const previousHighlightIdsRef = useRef<string[]>([]);
-
-  useEffect(() => {
-    if (!containerRef.current || measures.length === 0) {
-      return;
-    }
-
-    const container = containerRef.current;
-    container.innerHTML = '';
-
-    const renderer = new VF.Renderer(container, VF.Renderer.Backends.SVG);
-    const width = Math.max(800, container.parentElement?.clientWidth ?? 800);
-    const measuresPerLine = 4;
-    const lineCount = Math.ceil(measures.length / measuresPerLine);
-    const staveHeight = 150;
-    const renderedNotes: RenderedNoteMeta[] = [];
-
-    renderer.resize(width, lineCount * staveHeight + 20);
-    const context = renderer.getContext();
-    context.setFont('Arial', 10, 400).setBackgroundFillStyle('#FFF');
-
-    const availableWidth = width - 20;
-    const measureWidth = availableWidth / measuresPerLine;
-
-    for (let line = 0; line < lineCount; line += 1) {
-      const startY = 20 + line * staveHeight;
-
-      for (let offset = 0; offset < measuresPerLine; offset += 1) {
-        const measureIndex = line * measuresPerLine + offset;
-        if (measureIndex >= measures.length) {
-          break;
-        }
-
-        const segments = buildChordBeatSegments(measures[measureIndex], beatsPerMeasure);
-        const startX = 10 + offset * measureWidth;
-        const stave = new VF.Stave(startX, startY, measureWidth);
-
-        if (offset === 0) {
-          stave.addClef('treble');
-        }
-        if (measureIndex === 0) {
-          stave.addTimeSignature(`${beatsPerMeasure}/4`);
-        }
-
-        stave.setContext(context).draw();
-
-        const tickables: Vex.Flow.StaveNote[] = [];
-
-        for (const segment of segments) {
-          const chordInfo = getChordInfo(segment.chord);
-          if (!chordInfo) {
-            continue;
-          }
-
-          for (let beatOffset = 0; beatOffset < segment.duration; beatOffset += 1) {
-            const noteIndex = beatOffset % chordInfo.trumpetNotes.length;
-            const trumpetNote = chordInfo.trumpetNotes[noteIndex];
-            const noteName = trumpetNote.replace(/[0-9]/g, '');
-            const octave = trumpetNote.match(/[0-9]/)?.[0] ?? '4';
-            const vexKey = `${noteName[0].toLowerCase()}${noteName.length > 1 ? noteName.slice(1) : ''}/${octave}`;
-            const note = new VF.StaveNote({
-              clef: 'treble',
-              keys: [vexKey],
-              duration: 'q',
-            });
-
-            const accidentalMatch = trumpetNote.match(/^[A-G]([b#])/i);
-            if (accidentalMatch) {
-              note.addModifier(new VF.Accidental(accidentalMatch[1]), 0);
-            }
-
-            const fingering = chordInfo.fingerings[noteIndex];
-            if (fingering) {
-              note.addModifier(
-                new VF.Annotation(getFingeringText(fingering))
-                  .setFont('Arial', 10, 'bold')
-                  .setVerticalJustification(VF.Annotation.VerticalJustify.BOTTOM),
-                0
-              );
-            }
-
-            if (beatOffset === 0) {
-              note.addModifier(
-                new VF.Annotation(chordInfo.chordStr)
-                  .setFont('Arial', 13, 'bold')
-                  .setVerticalJustification(VF.Annotation.VerticalJustify.TOP),
-                0
-              );
-            }
-
-            const noteId = `chord-score-note-${renderedNotes.length}`;
-            renderedNotes.push({
-              id: noteId,
-              measureIndex,
-              startBeat: segment.startBeat + beatOffset,
-              endBeat: segment.startBeat + beatOffset + 1,
-            });
-            tickables.push(note);
-          }
-        }
-
-        while (tickables.length < beatsPerMeasure) {
-          const rest = new VF.StaveNote({ clef: 'treble', keys: ['b/4'], duration: 'qr' });
-          const noteId = `chord-score-note-${renderedNotes.length}`;
-          renderedNotes.push({
-            id: noteId,
-            measureIndex,
-            startBeat: tickables.length,
-            endBeat: tickables.length + 1,
-          });
-          tickables.push(rest);
-        }
-
-        const voice = new VF.Voice({ num_beats: beatsPerMeasure, beat_value: 4 }).setStrict(false);
-        voice.addTickables(tickables);
-        new VF.Formatter().joinVoices([voice]).formatToStave([voice], stave);
-        voice.draw(context, stave);
-      }
-    }
-
-    const svg = container.querySelector('svg');
-    if (svg) {
-      svg.setAttribute('viewBox', `0 0 ${width} ${lineCount * staveHeight + 20}`);
-      svg.removeAttribute('width');
-      svg.removeAttribute('height');
-      svg.style.width = '100%';
-      svg.style.height = 'auto';
-      svg.style.maxWidth = '100%';
-      svg.style.display = 'block';
-      svg.style.backgroundColor = '#ffffff';
-    }
-
-    const domNotes = Array.from(container.querySelectorAll('.vf-stavenote'));
-    domNotes.forEach((node, index) => {
-      const meta = renderedNotes[index];
-      if (!meta) {
-        return;
-      }
-
-      node.setAttribute('id', meta.id);
-      node.setAttribute('data-measure-index', String(meta.measureIndex));
-      node.setAttribute('data-start-beat', String(meta.startBeat));
-      node.setAttribute('data-end-beat', String(meta.endBeat));
-      node.querySelectorAll('*').forEach((child) => {
-        child.setAttribute('style', 'transition: fill 0.12s ease-out, stroke 0.12s ease-out;');
-      });
-    });
-  }, [beatsPerMeasure, measures]);
-
-  useEffect(() => {
-    if (!containerRef.current) {
-      return;
-    }
-
-    previousHighlightIdsRef.current.forEach((noteId) => {
-      recolorRenderedNote(containerRef.current?.querySelector(`#${noteId}`) ?? null, '#000000');
-    });
-    previousHighlightIdsRef.current = [];
-
-    if (!isPlaying || !playbackState) {
-      return;
-    }
-
-    const activeNodes = Array.from(containerRef.current.querySelectorAll<HTMLElement>('.vf-stavenote')).filter((node) => {
-      const measureIndex = Number(node.dataset.measureIndex);
-      const startBeat = Number(node.dataset.startBeat);
-      const endBeat = Number(node.dataset.endBeat);
-      return measureIndex === playbackState.measure && playbackState.beat >= startBeat && playbackState.beat < endBeat;
-    });
-
-    activeNodes.forEach((node) => recolorRenderedNote(node, '#F97316'));
-    previousHighlightIdsRef.current = activeNodes.map((node) => node.id);
-
-    if (playbackState.beat < 0.2) {
-      activeNodes[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [isPlaying, playbackState]);
-
-  return (
-    <section className="w-full overflow-x-auto rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
-      <div className="mb-2 flex items-center justify-between px-4 pt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-        <span>Partition VexFlow</span>
-        <span>Accords transposes</span>
-      </div>
-      <div className="relative min-w-[800px]">
-        <div ref={containerRef} className="w-full" />
-      </div>
-    </section>
-  );
-};
-
 const ChordCell: React.FC<{ chord: string }> = ({ chord }) => {
-  const info = useMemo(() => getChordInfo(chord), [chord]);
+  const chordInfo = useMemo(() => getChordInfo(chord), [chord]);
 
-  if (!chord || chord === 'N.C.') {
-    return (
-      <span className="flex flex-1 items-center justify-center text-sm font-semibold italic text-slate-400">
-        N.C.
-      </span>
-    );
-  }
-
-  if (!info) {
-    return <span className="flex flex-1 items-center justify-center font-bold text-slate-500">{chord}</span>;
+  if (!chordInfo) {
+    return <span className="text-lg font-bold font-serif text-slate-700">{chord}</span>;
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-1.5 py-1">
-      <div className="flex items-baseline justify-center whitespace-nowrap font-bold leading-none">
-        <span className="text-lg tracking-tight text-slate-800">{prettyNote(info.root)}</span>
-        <span className="text-xs font-black tracking-tight text-orange-500">{prettyQuality(info.quality)}</span>
+    <div className="flex flex-col items-center justify-center p-1">
+      <div className="flex items-baseline font-serif">
+        <span className="text-2xl font-black text-slate-900">{chordInfo.root}</span>
+        {chordInfo.quality ? (
+          <span className="ml-0.5 text-sm font-bold text-slate-600">
+            {prettyQuality(chordInfo.quality)}
+          </span>
+        ) : null}
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-[3px]">
-        {info.trumpetNotes.map((note, index) => {
-          const fingering = info.fingerings[index];
-          const noteName = note.replace(/[0-9]/g, '');
+
+      <div className="mt-1 flex items-center gap-0.5">
+        {chordInfo.notes.map((note, index) => {
+          const fingering = getFingeringText(note);
 
           return (
-            <div key={`${note}-${index}`} className="flex flex-col items-center gap-[3px]">
-              <div className="flex min-w-[22px] flex-col items-center justify-center rounded bg-orange-50 px-1.5 py-1 shadow-sm">
-                <div className="text-[10px] font-black leading-none text-orange-600">{prettyNote(noteName)}</div>
-                <div className="relative z-10 mt-[2px] text-[6px] font-bold uppercase leading-none tracking-tighter text-orange-600/60">
-                  {ROMANCE_NOTES[noteName]}
-                </div>
-              </div>
-              <div className="flex gap-[1px]">
-                {fingering
-                  ? fingering.split('').map((piston, pistonIndex) => (
-                      <div
-                        key={`${note}-${index}-${pistonIndex}`}
-                        className={cn(
-                          'flex h-[11px] w-[11px] items-center justify-center rounded-full text-[6px] font-black leading-none',
-                          piston === '1' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-300'
-                        )}
-                      >
-                        {pistonIndex + 1}
-                      </div>
-                    ))
-                  : null}
-              </div>
+            <div
+              key={`${note}-${index}`}
+              className="flex flex-col items-center rounded bg-slate-100 px-1 py-0.5"
+              title={`Note ${prettyNote(note)}: Pistons ${fingering}`}
+            >
+              <span className="text-[9px] font-bold text-slate-600">{prettyNote(note)}</span>
+              <span className="text-[8px] font-black font-mono text-orange-600">{fingering}</span>
             </div>
           );
         })}
@@ -691,7 +564,14 @@ const ChordCell: React.FC<{ chord: string }> = ({ chord }) => {
   );
 };
 
-const ChordGrid: React.FC<{ measures: string[][]; activeMeasure: number }> = ({ measures, activeMeasure }) => {
+const ChordGrid: React.FC<{
+  measures: string[][];
+  activeMeasure: number;
+  onSelectMeasure?: (measureIndex: number) => void;
+  loopEnabled?: boolean;
+  loopStart?: number;
+  loopEnd?: number;
+}> = ({ measures, activeMeasure, onSelectMeasure, loopEnabled = false, loopStart = 0, loopEnd = 0 }) => {
   const measuresPerRow = typeof window !== 'undefined' && window.innerWidth < 640 ? 2 : 4;
   const rows: string[][][] = [];
 
@@ -700,7 +580,7 @@ const ChordGrid: React.FC<{ measures: string[][]; activeMeasure: number }> = ({ 
   }
 
   return (
-    <div className="relative space-y-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="relative space-y-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       {rows.map((row, rowIndex) => (
         <div
           key={`row-${rowIndex}`}
@@ -714,16 +594,27 @@ const ChordGrid: React.FC<{ measures: string[][]; activeMeasure: number }> = ({ 
             {row.map((measure, measureOffset) => {
               const globalIndex = rowIndex * measuresPerRow + measureOffset;
               const isActive = globalIndex === activeMeasure;
+              const isLooped = loopEnabled && globalIndex >= loopStart && globalIndex <= loopEnd;
 
               return (
                 <div
                   key={`measure-${globalIndex}`}
+                  onClick={() => onSelectMeasure?.(globalIndex)}
+                  title={`Mesure ${globalIndex + 1} (Cliquer pour demarrer ici)`}
                   className={cn(
-                    'relative flex min-h-[96px] flex-row items-center justify-around p-2 transition-colors duration-200 md:p-3',
-                    isActive ? 'bg-orange-50/50' : 'bg-white'
+                    'relative flex min-h-[96px] flex-row items-center justify-around p-2 transition-colors duration-200 md:p-3 cursor-pointer hover:bg-amber-50/60',
+                    isActive ? 'bg-orange-50/50' : isLooped ? 'bg-amber-50/30' : 'bg-white'
                   )}
                 >
                   {isActive ? <div className="pointer-events-none absolute inset-0 z-10 ring-2 ring-inset ring-orange-400" /> : null}
+                  {isLooped && !isActive ? <div className="pointer-events-none absolute inset-0 z-0 border border-amber-300/60 bg-amber-50/20" /> : null}
+
+                  {loopEnabled && globalIndex === loopStart ? (
+                    <span className="absolute left-1 top-1 z-20 rounded bg-amber-500 px-1 py-0.5 text-[8px] font-black text-white shadow-xs">A</span>
+                  ) : null}
+                  {loopEnabled && globalIndex === loopEnd ? (
+                    <span className="absolute right-1 top-1 z-20 rounded bg-amber-500 px-1 py-0.5 text-[8px] font-black text-white shadow-xs">B</span>
+                  ) : null}
 
                   {measure.length === 0 ? (
                     <span className="text-xl font-bold font-serif text-slate-300">%</span>
@@ -763,15 +654,20 @@ function TrackControls({
   onToggleFingerings: (trackId: string, value: boolean) => void;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Pistes</p>
-          <p className="mt-1 text-xs text-slate-500">Affichage, audio actif et pistons par piste.</p>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 mb-3">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="h-4 w-4 text-orange-500" />
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+            Affichage & Pistons
+          </p>
         </div>
+        <span className="rounded-full bg-orange-100 px-2.5 py-0.5 text-[9px] font-extrabold text-orange-700">
+          {tracks.filter((t) => t.visible).length} piste(s) active(s)
+        </span>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {tracks.map((track) => {
           const isMelody = track.kind === 'melody';
           const disabled = isMelody && !hasLeadSheet;
@@ -780,33 +676,25 @@ function TrackControls({
             <div
               key={track.id}
               className={cn(
-                'rounded-xl border p-3',
-                disabled ? 'border-slate-100 bg-slate-50' : 'border-slate-200 bg-slate-50/60'
+                'rounded-xl border p-3 space-y-2.5 transition-all',
+                disabled ? 'border-slate-100 bg-slate-50/50 opacity-60' : 'border-slate-200 bg-slate-50/70'
               )}
             >
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-800">{track.label}</h3>
-                  <p className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    {track.audioEnabled ? 'Audio actif' : 'Audio muet'}
-                  </p>
-                </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-slate-800">{track.label}</span>
                 <span
                   className={cn(
-                    'rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider',
+                    'rounded-full px-2 py-0.5 text-[9px] font-black uppercase',
                     track.audioEnabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'
                   )}
                 >
-                  {track.audioEnabled ? 'On' : 'Off'}
+                  {track.audioEnabled ? 'Audio' : 'Muet'}
                 </span>
               </div>
 
-              <div className="space-y-3">
-                <label className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-bold text-slate-700">Visible</div>
-                    <div className="text-[11px] text-slate-500">Affiche cette piste dans la partition VexFlow.</div>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                <label className="flex items-center justify-between gap-2 text-xs font-bold text-slate-700 cursor-pointer bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-xs hover:border-orange-200 transition-colors">
+                  <span>Afficher partition</span>
                   <Switch
                     checked={track.visible}
                     disabled={disabled}
@@ -814,11 +702,8 @@ function TrackControls({
                   />
                 </label>
 
-                <label className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-bold text-slate-700">Pistons</div>
-                    <div className="text-[11px] text-slate-500">Affiche les doigtes directement sous la piste.</div>
-                  </div>
+                <label className="flex items-center justify-between gap-2 text-xs font-bold text-slate-700 cursor-pointer bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-xs hover:border-orange-200 transition-colors">
+                  <span>Pistons / Doigtés</span>
                   <Switch
                     checked={track.fingeringEnabled}
                     disabled={disabled}
@@ -830,7 +715,7 @@ function TrackControls({
           );
         })}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -856,6 +741,10 @@ export function IrealChordViewerNext() {
   const [playbackBpm, setPlaybackBpm] = useState(120);
   const [volume, setVolume] = useState(0.4);
   const [hasManualTempoOverride, setHasManualTempoOverride] = useState(false);
+
+  const [loopEnabled, setLoopEnabled] = useState(false);
+  const [loopStart, setLoopStart] = useState(0);
+  const [loopEnd, setLoopEnd] = useState(0);
 
   const engineRef = useRef<UnifiedBackingTrackEngine | null>(null);
   const animationFrameRef = useRef<number | null>(null);
@@ -890,6 +779,7 @@ export function IrealChordViewerNext() {
 
     return [...irealSongs, ...standaloneSongs];
   }, [songs, standaloneSheets, wikifoniaMatches]);
+
   const selectedEntry = useMemo(
     () => librarySongs.find((entry) => entry.id === selectedEntryId) ?? null,
     [librarySongs, selectedEntryId]
@@ -955,10 +845,17 @@ export function IrealChordViewerNext() {
                 typeof item.irealTitle === 'string' &&
                 typeof item.irealComposer === 'string' &&
                 typeof item.wikifoniaPath === 'string' &&
-                typeof item.wikifoniaLabel === 'string' &&
-                item.matchType === 'exact-normalized-title'
+                typeof item.wikifoniaLabel === 'string'
               ) {
-                nextMatches[buildIrealSongKey(item.irealTitle, item.irealComposer)] = item as IrealWikifoniaMatch;
+                const key = buildIrealSongKey(item.irealTitle, item.irealComposer);
+                nextMatches[key] = {
+                  irealTitle: item.irealTitle,
+                  irealComposer: item.irealComposer,
+                  matchType: 'exact-normalized-title',
+                  wikifoniaPath: item.wikifoniaPath,
+                  wikifoniaLabel: item.wikifoniaLabel,
+                  hasChords: typeof item.hasChords === 'boolean' ? item.hasChords : undefined,
+                };
               }
             });
 
@@ -967,26 +864,11 @@ export function IrealChordViewerNext() {
         fetch('/api/wikifonia-standalone', { cache: 'no-store' })
           .then(async (response) => {
             if (!response.ok) {
-              throw new Error(`Failed to load standalone manifest (${response.status})`);
+              throw new Error(`Failed to load standalone sheets (${response.status})`);
             }
             return response.json();
           })
-          .then((payload) => {
-            if (!Array.isArray(payload)) {
-              return [] as StandaloneWikifoniaEntry[];
-            }
-
-            return payload.filter(
-              (item): item is StandaloneWikifoniaEntry =>
-                Boolean(item) &&
-                typeof item.id === 'string' &&
-                typeof item.title === 'string' &&
-                typeof item.composer === 'string' &&
-                typeof item.wikifoniaPath === 'string' &&
-                typeof item.wikifoniaLabel === 'string' &&
-                item.matchType === 'standalone-rendered-score'
-            );
-          }),
+          .then((payload) => (Array.isArray(payload) ? (payload as StandaloneWikifoniaEntry[]) : [])),
       ]);
 
       if (cancelled) {
@@ -995,26 +877,19 @@ export function IrealChordViewerNext() {
 
       if (songsResult.status === 'fulfilled') {
         setSongs(songsResult.value);
-      } else {
-        console.error('Failed to load iReal songs:', songsResult.reason);
       }
-
       if (matchesResult.status === 'fulfilled') {
         setWikifoniaMatches(matchesResult.value);
-      } else {
-        console.error('Failed to load Wikifonia matches:', matchesResult.reason);
       }
-
       if (standaloneResult.status === 'fulfilled') {
         setStandaloneSheets(standaloneResult.value);
-      } else {
-        console.error('Failed to load standalone Wikifonia scores:', standaloneResult.reason);
       }
 
       setIsLoading(false);
     }
 
     void loadData();
+
     return () => {
       cancelled = true;
     };
@@ -1034,77 +909,34 @@ export function IrealChordViewerNext() {
     setSheetError(null);
 
     loadParsedLeadSheet(selectedMatch.wikifoniaPath)
-      .then((sheet) => {
+      .then((parsed) => {
         if (cancelled) {
           return;
         }
-        setLeadSheet(sheet);
+        setLeadSheet(parsed);
+        if (!hasManualTempoOverride && parsed.sourceTempo) {
+          setPlaybackBpm(Math.round(parsed.sourceTempo));
+        }
         setIsSheetLoading(false);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         if (cancelled) {
           return;
         }
-        console.error('Failed to load Wikifonia lead sheet:', error);
+        console.error('Error loading Wikifonia lead sheet:', error);
         setLeadSheet(null);
-        setSheetError(error instanceof Error ? error.message : 'Impossible de parser cette partition.');
+        setSheetError(error instanceof Error ? error.message : 'Unknown error');
         setIsSheetLoading(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [selectedMatch]);
+  }, [hasManualTempoOverride, selectedMatch]);
 
-  const hasLeadSheet = Boolean(leadSheet && !sheetError);
-
-  useEffect(() => {
-    if (!selectedEntry || hasManualTempoOverride) {
-      return;
-    }
-    setPlaybackBpm(Math.round(leadSheet?.sourceTempo ?? selectedSong?.bpm ?? 120));
-  }, [hasManualTempoOverride, leadSheet?.sourceTempo, selectedEntry, selectedSong?.bpm]);
+  const hasLeadSheet = Boolean(leadSheet);
 
   useEffect(() => {
-    setTracks((previousTracks) => {
-      const flags = getPlaybackFlags(playbackMode, { hasLeadSheet, hasAccompaniment });
-      return previousTracks.map((track) => ({
-        ...track,
-        audioEnabled: track.kind === 'melody' ? flags.melodyEnabled : flags.accompanimentEnabled,
-      }));
-    });
-  }, [hasAccompaniment, hasLeadSheet, playbackMode]);
-
-  useEffect(() => {
-    if (!selectedEntry) {
-      return;
-    }
-
-    if (!hasAccompaniment && displayMode !== 'sheet') {
-      setDisplayMode('sheet');
-      return;
-    }
-
-    if (!selectedMatch && displayMode !== 'chords') {
-      setDisplayMode('chords');
-      return;
-    }
-
-    if (displayMode === 'split' && (!selectedMatch || !hasAccompaniment)) {
-      setDisplayMode(hasAccompaniment ? 'chords' : 'sheet');
-    }
-  }, [displayMode, hasAccompaniment, selectedEntry, selectedMatch]);
-
-  useEffect(() => {
-    if (!selectedEntry) {
-      return;
-    }
-
-    if (!hasAccompaniment && playbackMode !== 'melody') {
-      setPlaybackMode('melody');
-      return;
-    }
-
     if (!selectedMatch && playbackMode !== 'ireal') {
       setPlaybackMode('ireal');
     }
@@ -1117,12 +949,28 @@ export function IrealChordViewerNext() {
     return transposeMeasures(selectedSong.measures, transpose);
   }, [selectedSong, transpose]);
 
+  // Partition VexFlow transposée au même demi-ton que les accords iReal
+  const transposedLeadSheet = useMemo(() => {
+    if (!leadSheet) return null;
+    return transposeLeadSheet(leadSheet, transpose);
+  }, [leadSheet, transpose]);
+
   const defaultBeatsPerMeasure = useMemo(() => {
     if (leadSheet?.beatsPerMeasure) {
       return leadSheet.beatsPerMeasure;
     }
     return getBeatsFromTimeSignature(selectedSong?.timeSignature ?? '44', 4);
   }, [leadSheet?.beatsPerMeasure, selectedSong?.timeSignature]);
+
+  const totalMeasuresCount = useMemo(() => {
+    return Math.max(transposedMeasures.length, leadSheet?.measures.length ?? 0);
+  }, [transposedMeasures.length, leadSheet?.measures.length]);
+
+  useEffect(() => {
+    if (totalMeasuresCount > 0 && loopEnd >= totalMeasuresCount) {
+      setLoopEnd(Math.max(0, totalMeasuresCount - 1));
+    }
+  }, [totalMeasuresCount, loopEnd]);
 
   useEffect(() => {
     if (!engineRef.current) {
@@ -1132,17 +980,23 @@ export function IrealChordViewerNext() {
     const flags = getPlaybackFlags(playbackMode, { hasLeadSheet, hasAccompaniment });
     engineRef.current.configure({
       accompanimentMeasures: transposedMeasures,
-      melodyMeasures: leadSheet?.melodyTrack,
+      melodyMeasures: transposedLeadSheet?.melodyTrack,
       bpm: playbackBpm,
       defaultBeatsPerMeasure,
       accompanimentEnabled: flags.accompanimentEnabled,
       melodyEnabled: flags.melodyEnabled,
+      loopEnabled,
+      loopStartMeasure: loopStart,
+      loopEndMeasure: loopEnd,
     });
   }, [
     defaultBeatsPerMeasure,
     hasAccompaniment,
     hasLeadSheet,
-    leadSheet?.melodyTrack,
+    transposedLeadSheet?.melodyTrack,
+    loopEnabled,
+    loopStart,
+    loopEnd,
     playbackBpm,
     playbackMode,
     transposedMeasures,
@@ -1226,8 +1080,13 @@ export function IrealChordViewerNext() {
   const filterCounts = useMemo(() => {
     let withSheet = 0;
     let standalone = 0;
+    const top50Ranks = new Set<number>();
 
     baseFilteredEntries.forEach((entry) => {
+      const meta = getTop50Meta(entry);
+      if (meta) {
+        top50Ranks.add(meta.rank);
+      }
       if (entry.source === 'standalone') {
         standalone += 1;
         withSheet += 1;
@@ -1241,6 +1100,7 @@ export function IrealChordViewerNext() {
 
     return {
       all: baseFilteredEntries.length,
+      top50: top50Ranks.size,
       withSheet,
       withoutSheet: baseFilteredEntries.filter((entry) => entry.source === 'ireal' && !entry.sheet).length,
       standalone,
@@ -1250,7 +1110,25 @@ export function IrealChordViewerNext() {
   const filteredEntries = useMemo(() => {
     let list = baseFilteredEntries;
 
-    if (matchFilter === 'with-sheet') {
+    if (matchFilter === 'top-50') {
+      const top50List = list.filter((entry) => isTop50Song(entry));
+      // Dédoublonnage strict par rang #1..#50 pour garantir 50 morceaux uniques
+      const uniqueByRank = new Map<number, LibrarySong>();
+      for (const entry of top50List) {
+        const meta = getTop50Meta(entry);
+        if (meta && !uniqueByRank.has(meta.rank)) {
+          uniqueByRank.set(meta.rank, entry);
+        }
+      }
+
+      return Array.from(uniqueByRank.values()).sort((left, right) => {
+        const metaLeft = getTop50Meta(left);
+        const metaRight = getTop50Meta(right);
+        const rankLeft = metaLeft ? metaLeft.rank : 999;
+        const rankRight = metaRight ? metaRight.rank : 999;
+        return rankLeft - rankRight;
+      });
+    } else if (matchFilter === 'with-sheet') {
       list = list.filter((entry) => (entry.source === 'ireal' && Boolean(entry.sheet)) || entry.source === 'standalone');
     } else if (matchFilter === 'without-sheet') {
       list = list.filter((entry) => entry.source === 'ireal' && !entry.sheet);
@@ -1274,13 +1152,17 @@ export function IrealChordViewerNext() {
 
     setSelectedEntryId(entry.id);
     setTranspose(0);
-    setDisplayMode(hasEntryAccompaniment ? 'chords' : 'sheet');
+    // Si le morceau possède une partition (Wikifonia match ou standalone), afficher directement la partition VexFlow
+    setDisplayMode(songHasMatch || entry.source === 'standalone' ? 'sheet' : 'chords');
     setPlaybackMode(hasEntryAccompaniment ? (songHasMatch ? 'both' : 'ireal') : 'melody');
     setTracks(createDefaultTracks({ hasAccompaniment: hasEntryAccompaniment }));
     setPlaybackBpm(Math.round(entry.song?.bpm ?? 120));
     setHasManualTempoOverride(false);
     setIsPlaying(false);
     setPlaybackState(null);
+    setLoopEnabled(false);
+    setLoopStart(0);
+    setLoopEnd(0);
     engineRef.current?.stop();
   }, []);
 
@@ -1289,6 +1171,17 @@ export function IrealChordViewerNext() {
     setIsPlaying(false);
     setPlaybackState(null);
   }, []);
+
+  const handleSelectMeasure = useCallback(
+    (measureIndex: number, beat = 0) => {
+      setPlaybackState({ measure: measureIndex, beat, time: performance.now() });
+      engineRef.current?.seekTo(measureIndex, beat);
+      if (isPlaying && engineRef.current) {
+        engineRef.current.start(true);
+      }
+    },
+    [isPlaying]
+  );
 
   const togglePlayback = useCallback(() => {
     if (!selectedEntry || !engineRef.current || (!hasAccompaniment && !hasLeadSheet)) {
@@ -1302,9 +1195,9 @@ export function IrealChordViewerNext() {
       return;
     }
 
-    engineRef.current.start();
+    engineRef.current.start(Boolean(playbackState && playbackState.measure > 0));
     setIsPlaying(true);
-  }, [hasAccompaniment, hasLeadSheet, isPlaying, selectedEntry]);
+  }, [hasAccompaniment, hasLeadSheet, isPlaying, playbackState, selectedEntry]);
 
   const updateTrack = useCallback((trackId: string, patch: Partial<ScoreTrack>) => {
     setTracks((previousTracks) =>
@@ -1327,7 +1220,7 @@ export function IrealChordViewerNext() {
 
   if (selectedEntry) {
     return (
-      <div className="space-y-4 pb-52 md:pb-44">
+      <div className="space-y-4 pl-14 sm:pl-16 pr-1 sm:pr-2 w-full">
         <div className="flex w-full items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <Button
             variant="outline"
@@ -1368,168 +1261,73 @@ export function IrealChordViewerNext() {
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="flex flex-col items-end gap-1 text-right">
             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              {selectedSong ? 'Tonalite' : 'Source'}
+              Tonalité
             </div>
-            {selectedSong ? (
-              <select
-                value={transpose}
-                onChange={(event) => {
-                  setTranspose(Number(event.target.value));
-                  handleStop();
-                }}
-                className="mt-1 cursor-pointer rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-black text-slate-800 outline-none"
-              >
-                {Array.from({ length: 12 }, (_, index) => (
-                  <option key={`plus-${index}`} value={index}>
-                    {index === 0 ? selectedSong.key : `+${index} (${CHROMATIC_NOTES[index]})`}
-                  </option>
-                ))}
-                {Array.from({ length: 11 }, (_, index) => {
-                  const value = -index - 1;
-                  const note = CHROMATIC_NOTES[((value % 12) + 12) % 12];
-                  return (
-                    <option key={`minus-${index}`} value={value}>
-                      {`${value} (${note})`}
-                    </option>
-                  );
-                })}
-              </select>
+            {(selectedSong || canUseSheetModes) ? (
+              <div className="flex items-center gap-1.5">
+                {selectedSong ? (
+                  <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-black text-slate-800 shadow-sm">
+                    {transposeChord(selectedSong.key, transpose)}
+                  </span>
+                ) : (
+                  <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-bold text-slate-600 shadow-sm">
+                    Partition
+                  </span>
+                )}
+                {transpose !== 0 ? (
+                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-700">
+                    {transpose > 0 ? `+${transpose}` : transpose}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Sélecteur mode d'affichage */}
+        {(hasAccompaniment || canUseSheetModes) ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mode d'affichage</p>
+            {canUseSheetModes && !hasAccompaniment ? (
+              <p className="text-xs text-slate-500">
+                Cette entrée provient uniquement de Wikifonia, avec lecture et affichage en mode mélodie seule.
+              </p>
             ) : (
-              <div className="mt-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-black text-slate-800">
-                {selectedEntry.keyLabel}
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { value: 'chords' as DisplayMode, label: 'Accords', available: hasAccompaniment },
+                  { value: 'sheet' as DisplayMode, label: 'Partition VexFlow', available: canUseSheetModes },
+                  { value: 'split' as DisplayMode, label: 'Les deux', available: hasAccompaniment && canUseSheetModes },
+                ]
+                  .filter((opt) => opt.available)
+                  .map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setDisplayMode(opt.value)}
+                      className={cn(
+                        'rounded-lg px-3 py-1.5 text-[11px] font-black uppercase tracking-wider transition-colors',
+                        displayMode === opt.value
+                          ? 'bg-orange-500 text-white shadow-sm shadow-orange-200'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
               </div>
             )}
           </div>
-        </div>
-
-        <section className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mode d&apos;affichage</div>
-            <div className="flex flex-wrap gap-1">
-              {[
-                { value: 'chords' as DisplayMode, label: 'Accords', disabled: !hasAccompaniment },
-                { value: 'sheet' as DisplayMode, label: 'Partition VexFlow', disabled: !canUseSheetModes },
-                { value: 'split' as DisplayMode, label: 'Les deux', disabled: !canUseSheetModes || !hasAccompaniment },
-              ].map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  disabled={option.disabled}
-                  onClick={() => setDisplayMode(option.value)}
-                  className={cn(
-                    'rounded-xl px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-colors',
-                    displayMode === option.value
-                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                      : 'bg-slate-100 text-slate-500 hover:bg-slate-200',
-                    option.disabled && 'cursor-not-allowed bg-slate-100 text-slate-300 hover:bg-slate-100'
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {!canUseSheetModes ? (
-            <p className="mt-2 text-xs text-slate-500">
-              Aucune partition Wikifonia n&apos;est associee a ce morceau dans ce premier jet.
-            </p>
-          ) : !hasAccompaniment ? (
-            <p className="mt-2 text-xs text-slate-500">
-              Cette entree provient uniquement de Wikifonia, avec lecture et affichage en mode melodie seule.
-            </p>
-          ) : null}
-        </section>
-
-        <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[70] px-4">
-          <div className="pointer-events-auto mx-auto max-w-6xl overflow-x-auto pb-2">
-            <section className="min-w-[720px] w-full rounded-2xl border border-slate-700/70 bg-gradient-to-r from-slate-900 to-slate-800 p-4 shadow-2xl">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={togglePlayback}
-                className={cn(
-                  'h-12 w-12 rounded-xl border-none',
-                  isPlaying
-                    ? 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)] hover:bg-amber-600'
-                    : 'bg-orange-500 hover:bg-orange-600'
-                )}
-              >
-                {isPlaying ? <Pause className="fill-white" /> : <Play className="ml-1 fill-white" />}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleStop}
-                className="h-12 w-12 rounded-xl border-slate-600 bg-slate-800 text-slate-400 transition-colors hover:bg-slate-700 hover:text-red-400"
-              >
-                <Square className="h-4 w-4 fill-current" />
-              </Button>
-            </div>
-
-            <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(220px,260px)_1fr]">
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Tempo</span>
-                  <span className="font-mono text-sm font-bold text-orange-400">{playbackBpm} BPM</span>
-                </div>
-                <Slider
-                  value={[playbackBpm]}
-                  min={40}
-                  max={280}
-                  onValueChange={(values) => {
-                    setHasManualTempoOverride(true);
-                    setPlaybackBpm(values[0]);
-                  }}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Lecture</span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                    {playbackMode === 'ireal' ? 'iReal seul' : playbackMode === 'melody' ? 'Melodie seule' : 'Les deux'}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { value: 'ireal' as PlaybackMode, label: 'iReal seul', disabled: !hasAccompaniment },
-                    { value: 'melody' as PlaybackMode, label: 'Melodie seule', disabled: !melodyPlayable },
-                    { value: 'both' as PlaybackMode, label: 'Les deux', disabled: !melodyPlayable || !hasAccompaniment },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      disabled={option.disabled}
-                      onClick={() => setPlaybackMode(option.value)}
-                      className={cn(
-                        'rounded-xl px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-colors',
-                        playbackMode === option.value
-                          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
-                          : 'bg-slate-700 text-slate-200 hover:bg-slate-600',
-                        option.disabled && 'cursor-not-allowed bg-slate-800 text-slate-500 hover:bg-slate-800'
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-            </section>
-          </div>
-        </div>
-
-        {canUseSheetModes ? (
-          <TrackControls
-            tracks={hasAccompaniment ? tracks : tracks.filter((track) => track.kind === 'melody')}
-            hasLeadSheet={hasLeadSheet}
-            onToggleVisible={(trackId, visible) => updateTrack(trackId, { visible })}
-            onToggleFingerings={(trackId, fingeringEnabled) => updateTrack(trackId, { fingeringEnabled })}
-          />
         ) : null}
+
+        <TrackControls
+          tracks={tracks}
+          hasLeadSheet={hasLeadSheet}
+          onToggleVisible={(id, val) => updateTrack(id, { visible: val })}
+          onToggleFingerings={(id, val) => updateTrack(id, { fingeringEnabled: val })}
+        />
 
         {showChordViews ? (
           <>
@@ -1541,18 +1339,18 @@ export function IrealChordViewerNext() {
               <span className="flex items-center gap-1">
                 <span className="h-2.5 w-2.5 rounded-full bg-slate-800" />
                 <span className="h-2.5 w-2.5 rounded-full border-slate-300 bg-slate-200" />
-                Pistons
+                Pistons (Cliquer sur une mesure pour s'y rendre)
               </span>
             </div>
 
-            <VexFlowFullScore
+            <ChordGrid
               measures={transposedMeasures}
-              beatsPerMeasure={defaultBeatsPerMeasure}
-              playbackState={playbackState}
-              isPlaying={isPlaying}
+              activeMeasure={activeMeasure}
+              onSelectMeasure={handleSelectMeasure}
+              loopEnabled={loopEnabled}
+              loopStart={loopStart}
+              loopEnd={loopEnd}
             />
-
-            <ChordGrid measures={transposedMeasures} activeMeasure={activeMeasure} />
           </>
         ) : null}
 
@@ -1568,14 +1366,18 @@ export function IrealChordViewerNext() {
               <p className="mt-2 font-semibold">Impossible de charger cette partition.</p>
               <p className="mt-1 text-red-600">{sheetError}</p>
             </div>
-          ) : leadSheet ? (
+          ) : transposedLeadSheet ? (
             <WikifoniaVexScore
-              leadSheet={leadSheet}
+              leadSheet={transposedLeadSheet}
               accompanimentMeasures={transposedMeasures}
               defaultBeatsPerMeasure={defaultBeatsPerMeasure}
               tracks={tracks}
               playbackState={playbackState}
               isPlaying={isPlaying}
+              onSelectMeasure={handleSelectMeasure}
+              loopEnabled={loopEnabled}
+              loopStart={loopStart}
+              loopEnd={loopEnd}
             />
           ) : (
             <div className="rounded-2xl border border-slate-200 bg-white px-4 py-6 text-sm text-slate-500 shadow-sm">
@@ -1583,6 +1385,142 @@ export function IrealChordViewerNext() {
             </div>
           )
         ) : null}
+
+        {/* Barre de controle verticale fixee a gauche */}
+        <div className="fixed left-3 top-1/2 z-50 -translate-y-1/2 flex flex-col items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/95 px-2 py-3 shadow-2xl backdrop-blur-md">
+
+          {/* Play / Stop */}
+          <Button
+            size="icon"
+            onClick={togglePlayback}
+            className={cn(
+              'h-11 w-11 rounded-full shadow-md transition-transform active:scale-95',
+              isPlaying
+                ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200'
+                : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-200'
+            )}
+          >
+            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+          </Button>
+
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={handleStop}
+            className="h-8 w-8 rounded-full border-slate-200 bg-white hover:bg-slate-100"
+            title="Arreter / Reinitialiser"
+          >
+            <Square className="h-3.5 w-3.5 text-slate-700" />
+          </Button>
+
+          <div className="my-0.5 h-px w-full bg-slate-100" />
+
+          {/* Tempo */}
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">BPM</span>
+            <span className="text-sm font-black text-slate-800 tabular-nums">{playbackBpm}</span>
+            <input
+              type="range"
+              min={40}
+              max={240}
+              step={1}
+              value={playbackBpm}
+              onChange={(e) => {
+                setPlaybackBpm(Number(e.target.value));
+                setHasManualTempoOverride(true);
+              }}
+              className="h-20 w-2 cursor-pointer appearance-none rounded-full bg-slate-200 accent-orange-500"
+              style={{ writingMode: 'vertical-lr', direction: 'rtl' } as React.CSSProperties}
+              title={`Tempo: ${playbackBpm} BPM`}
+            />
+          </div>
+
+          <div className="my-0.5 h-px w-full bg-slate-100" />
+
+          {/* Transposition */}
+          {(selectedSong || canUseSheetModes) ? (
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Ton</span>
+              <button
+                type="button"
+                onClick={() => { setTranspose((p) => Math.min(5, p + 1)); handleStop(); }}
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-orange-100 hover:text-orange-700 text-xs font-black"
+                title="+1 demi-ton"
+              >
+                +
+              </button>
+              <span
+                className={cn(
+                  'rounded px-1 py-0.5 text-[10px] font-black tabular-nums',
+                  transpose !== 0 ? 'bg-amber-100 text-amber-700' : 'text-slate-500'
+                )}
+              >
+                {transpose > 0 ? `+${transpose}` : transpose}
+              </span>
+              <button
+                type="button"
+                onClick={() => { setTranspose((p) => Math.max(-5, p - 1)); handleStop(); }}
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-orange-100 hover:text-orange-700 text-xs font-black"
+                title="-1 demi-ton"
+              >
+                -
+              </button>
+            </div>
+          ) : null}
+
+          <div className="my-0.5 h-px w-full bg-slate-100" />
+
+          {/* Boucle A-B */}
+          <div className="flex flex-col items-center gap-1.5">
+            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400">Loop</span>
+            <Switch
+              id="loop-toggle-bar"
+              checked={loopEnabled}
+              onCheckedChange={(checked) => {
+                setLoopEnabled(checked);
+                if (checked && totalMeasuresCount > 0 && loopEnd === 0) {
+                  setLoopEnd(Math.max(0, totalMeasuresCount - 1));
+                }
+              }}
+            />
+            {loopEnabled ? (
+              <>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-[9px] font-black text-amber-600">A</span>
+                  <select
+                    value={loopStart}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setLoopStart(val);
+                      if (val > loopEnd) setLoopEnd(val);
+                    }}
+                    className="w-12 rounded border border-slate-200 bg-slate-50 px-1 py-0.5 text-[10px] font-bold text-slate-800 outline-none text-center"
+                  >
+                    {Array.from({ length: totalMeasuresCount || 1 }, (_, i) => (
+                      <option key={`ls-${i}`} value={i}>M{i + 1}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-[9px] font-black text-amber-600">B</span>
+                  <select
+                    value={loopEnd}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setLoopEnd(val);
+                      if (val < loopStart) setLoopStart(val);
+                    }}
+                    className="w-12 rounded border border-slate-200 bg-slate-50 px-1 py-0.5 text-[10px] font-bold text-slate-800 outline-none text-center"
+                  >
+                    {Array.from({ length: totalMeasuresCount || 1 }, (_, i) => (
+                      <option key={`le-${i}`} value={i}>M{i + 1}</option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
       </div>
     );
   }
@@ -1637,6 +1575,7 @@ export function IrealChordViewerNext() {
 
           <div className="flex flex-wrap gap-1">
             {[
+              { value: 'top-50' as SongMatchFilter, label: '⭐ Top 50 Incontournables', count: filterCounts.top50 },
               { value: 'all' as SongMatchFilter, label: 'Tous', count: filterCounts.all },
               { value: 'with-sheet' as SongMatchFilter, label: 'Avec partition', count: filterCounts.withSheet },
               { value: 'without-sheet' as SongMatchFilter, label: 'Sans partition', count: filterCounts.withoutSheet },
@@ -1649,18 +1588,22 @@ export function IrealChordViewerNext() {
                 className={cn(
                   'rounded-xl px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-colors',
                   matchFilter === option.value
-                    ? option.value === 'with-sheet'
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
-                      : option.value === 'without-sheet'
-                        ? 'bg-slate-700 text-white shadow-lg shadow-slate-200'
+                    ? option.value === 'top-50'
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200 ring-2 ring-amber-300'
+                      : option.value === 'with-sheet'
+                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
+                        : option.value === 'without-sheet'
+                          ? 'bg-slate-700 text-white shadow-lg shadow-slate-200'
+                          : option.value === 'standalone'
+                            ? 'bg-sky-500 text-white shadow-lg shadow-sky-200'
+                            : 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                    : option.value === 'top-50'
+                      ? 'border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 font-bold'
+                      : option.value === 'with-sheet'
+                        ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                         : option.value === 'standalone'
-                          ? 'bg-sky-500 text-white shadow-lg shadow-sky-200'
-                          : 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                    : option.value === 'with-sheet'
-                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                      : option.value === 'standalone'
-                        ? 'bg-sky-50 text-sky-700 hover:bg-sky-100'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                          ? 'bg-sky-50 text-sky-700 hover:bg-sky-100'
+                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                 )}
               >
                 {option.label} ({option.count})
@@ -1706,41 +1649,62 @@ export function IrealChordViewerNext() {
       ) : null}
 
       <div className="max-h-[60vh] space-y-1.5 overflow-y-auto pr-1">
-        {filteredEntries.slice(0, activeLetter ? undefined : 150).map((entry, index) => (
-          <div key={entry.id}>
-            <button
-              onClick={() => handleSelectEntry(entry)}
-              className="w-full rounded-xl border border-slate-100 bg-white px-4 py-3 text-left transition-all hover:border-slate-200 hover:bg-slate-50 hover:shadow-sm active:scale-[0.98]"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-sm font-bold text-slate-800">{entry.title}</div>
-                    {entry.source === 'standalone' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-sky-700">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
-                        Partition seule
-                      </span>
-                    ) : entry.sheet ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-700">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Partition
-                      </span>
+        {filteredEntries.slice(0, activeLetter || matchFilter === 'top-50' ? undefined : 150).map((entry) => {
+          const top50Meta = getTop50Meta(entry);
+          return (
+            <div key={entry.id}>
+              <button
+                onClick={() => handleSelectEntry(entry)}
+                className={cn(
+                  'w-full rounded-xl border px-4 py-3 text-left transition-all hover:shadow-sm active:scale-[0.98]',
+                  top50Meta && matchFilter === 'top-50'
+                    ? 'border-amber-200 bg-amber-50/20 hover:border-amber-300 hover:bg-amber-50/50'
+                    : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50'
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {top50Meta && matchFilter === 'top-50' ? (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500 font-black text-xs text-white shadow-xs">
+                        #{top50Meta.rank}
+                      </div>
                     ) : null}
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="text-sm font-bold text-slate-800 truncate">{entry.title}</div>
+                        {top50Meta ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-amber-800">
+                            ⭐ {top50Meta.category}
+                          </span>
+                        ) : null}
+                        {entry.source === 'standalone' ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-sky-700">
+                            <span className="h-1.5 w-1.5 rounded-full bg-sky-500" />
+                            Partition seule
+                          </span>
+                        ) : entry.sheet ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-700">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            Partition
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
+                        <span>{entry.composer}</span>
+                        <span>•</span>
+                        <span className="text-slate-500">{top50Meta ? top50Meta.desc : entry.style}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-0.5 flex flex-wrap gap-2 text-[10px] text-slate-400">
-                    <span>{entry.composer}</span>
-                    <span>{entry.style}</span>
-                  </div>
-                </div>
 
-                <div className="flex h-6 items-center rounded-md bg-slate-100 px-2 py-0.5 text-[9px] font-bold tracking-wider text-slate-500">
-                  {entry.keyLabel}
+                  <div className="flex h-6 shrink-0 items-center rounded-md bg-slate-100 px-2 py-0.5 text-[9px] font-bold tracking-wider text-slate-500">
+                    {entry.keyLabel}
+                  </div>
                 </div>
-              </div>
-            </button>
-          </div>
-        ))}
+              </button>
+            </div>
+          );
+        })}
 
         {filteredEntries.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
@@ -1753,5 +1717,3 @@ export function IrealChordViewerNext() {
 }
 
 export default IrealChordViewerNext;
-
-
