@@ -58,6 +58,7 @@ export function AddLessonDialog({
   const [paymentMode, setPaymentMode] = useState<PaymentMode>("paid");
   const [selectedPackId, setSelectedPackId] = useState("");
   const [comment, setComment] = useState("");
+  const [studentSearch, setStudentSearch] = useState("");
   const [lessonDate, setLessonDate] = useState(new Date().toISOString().split("T")[0]);
   const [dpResult, setDpResult] = useState<{ success: boolean; data?: UrssafDPResult; error?: string } | null>(null);
   const { toast } = useToast();
@@ -86,6 +87,17 @@ export function AddLessonDialog({
     }
   }, [fetchStudentPacks, selectedStudent]);
 
+  const allActiveStudents = useMemo(
+    () => (Array.isArray(students) ? students.filter((s) => !s.archived) : []),
+    [students],
+  );
+
+  const activeStudents = useMemo(() => {
+    if (!studentSearch.trim()) return allActiveStudents;
+    const query = studentSearch.toLowerCase().trim();
+    return allActiveStudents.filter((s) => s.name.toLowerCase().includes(query));
+  }, [allActiveStudents, studentSearch]);
+
   const selectedStudentData = useMemo(
     () => (Array.isArray(students) ? students.find((student) => student.id === selectedStudent) ?? null : null),
     [selectedStudent, students],
@@ -113,6 +125,7 @@ export function AddLessonDialog({
     }
 
     setSelectedStudent(preselectedStudentId ?? "");
+    setStudentSearch("");
     setLessonType("full");
     setPaymentMode(preselectedStudentId ? "paid" : "paid"); // will be overridden by hasUrssaf effect
     setSelectedPackId("");
@@ -211,7 +224,7 @@ export function AddLessonDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px] border-stone-200">
+      <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto border-stone-200">
         <DialogHeader className="border-b border-stone-100 pb-4">
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <span className="rounded-lg bg-amber-100 p-1.5 text-amber-700">
@@ -265,33 +278,46 @@ export function AddLessonDialog({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-5">
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase text-stone-500">Eleve</Label>
-            <Select
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold uppercase text-stone-500">
+                Élève (actifs uniquement)
+              </Label>
+              {allActiveStudents.length > 5 && (
+                <span className="text-[11px] font-medium text-stone-400">
+                  {activeStudents.length} élève{activeStudents.length > 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+
+            {allActiveStudents.length > 8 && (
+              <Input
+                type="text"
+                placeholder="🔍 Filtrer rapidement par nom ou prénom..."
+                value={studentSearch}
+                onChange={(event) => setStudentSearch(event.target.value)}
+                className="h-9 rounded-xl border-stone-200 bg-stone-50 text-xs placeholder:text-stone-400 focus:bg-white"
+              />
+            )}
+
+            <select
               value={selectedStudent}
-              onValueChange={(value) => {
-                setSelectedStudent(value);
+              onChange={(event) => {
+                setSelectedStudent(event.target.value);
                 setSelectedPackId("");
                 setDpResult(null);
               }}
+              required
+              className="h-11 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 text-sm font-semibold text-stone-900 outline-none transition hover:border-stone-300 focus:border-amber-500 focus:bg-white cursor-pointer"
             >
-              <SelectTrigger className="border-stone-200 bg-stone-50">
-                <SelectValue placeholder="Selectionner un eleve" />
-              </SelectTrigger>
-              <SelectContent>
-                {students
-                  .filter((student) => !student.archived)
-                  .map((student) => (
-                    <SelectItem key={student.id} value={student.id}>
-                      <span className="flex items-center gap-2">
-                        {student.name} - {Number(student.rate)} EUR
-                        {(student.hasUrssafClient || student.urssafClient) && (
-                          <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[9px] font-bold text-blue-700">URSSAF</span>
-                        )}
-                      </span>
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+              <option value="">-- Sélectionner un élève --</option>
+              {activeStudents.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.name} — {Number(student.rate)}€
+                  {student.hasUrssafClient || student.urssafClient ? " (URSSAF)" : ""}
+                  {student.courseDay ? ` • ${student.courseDay}` : ""}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">
