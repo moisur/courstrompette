@@ -84,10 +84,28 @@ export async function POST(req: Request) {
       // If URSSAF fails, we still keep the student but return the error
       // Note: We might want to revert the student creation if we wanted strict atomicity,
       // but keeping it allows the user to retry enrollment from the student's file.
+      const payload = urssafError.payload || urssafError.data;
+      const rawMessage = urssafError.message || "Erreur lors de l'inscription URSSAF";
+      const statusCode = urssafError.status;
+
+      // Normalize error into an array for the frontend
+      let errorPayload: any;
+      if (Array.isArray(payload)) {
+        errorPayload = payload;
+      } else if (payload && typeof payload === 'object') {
+        // Try to extract a code/message pair from the URSSAF response
+        const code = (payload as any).code || (payload as any).errorCode;
+        const message = (payload as any).message || (payload as any).error || rawMessage;
+        errorPayload = [{ code, message }];
+      } else {
+        errorPayload = rawMessage;
+      }
+
       return NextResponse.json({ 
         success: false, 
         studentId: student.id, 
-        error: urssafError.data || urssafError.message || "Erreur lors de l'inscription URSSAF"
+        error: errorPayload,
+        status: statusCode,
       }, { status: 400 });
     }
 

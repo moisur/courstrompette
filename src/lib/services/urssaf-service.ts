@@ -273,10 +273,38 @@ export class UrssafService {
   }
 
   static async registerClientRequest(data: UrssafClientData) {
-    return this.request<{ idClient: string }>("/particulier", {
-      method: "POST",
-      body: JSON.stringify(data),
+    logUrssafTrace({
+      method: "M010",
+      phase: "REQUEST",
+      label: "INSCRIPTION PARTICULIER",
+      payload: data,
     });
+
+    try {
+      const result = await this.request<{ idClient: string }>("/particulier", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
+      logUrssafTrace({
+        method: "M010",
+        phase: "RESPONSE",
+        label: "INSCRIPTION PARTICULIER",
+        payload: result.data,
+        status: result.status,
+      });
+
+      return result;
+    } catch (error: any) {
+      logUrssafTrace({
+        method: "M010",
+        phase: "RESPONSE",
+        label: "INSCRIPTION PARTICULIER - ERROR",
+        payload: error.payload || { message: error.message },
+        status: error.status,
+      });
+      throw error;
+    }
   }
 
   static async registerClient(data: UrssafClientData): Promise<{ idClient: string }> {

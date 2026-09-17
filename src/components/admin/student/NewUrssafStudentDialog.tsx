@@ -137,10 +137,13 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
           // URSSAF validation errors
           setServerErrors(result.error.map((e: any) => ({
             message: getFriendlyErrorMessage(e.code, e.message),
-            detail: e.description
+            detail: e.description || (e.code ? `Code API: ${e.code}` : undefined)
           })));
         } else {
-          setServerErrors([{ message: result.error || "Une erreur est survenue" }]);
+          setServerErrors([{
+            message: typeof result.error === 'string' ? result.error : "Une erreur est survenue",
+            detail: result.status ? `HTTP ${result.status}` : undefined
+          }]);
         }
         return;
       }
