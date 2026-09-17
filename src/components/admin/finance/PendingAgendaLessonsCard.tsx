@@ -314,7 +314,11 @@ export function PendingAgendaLessonsCard({
               return (
                 <div
                   key={course.eventUid + (course.recurrenceId || "")}
-                  className="flex flex-col gap-4 rounded-2xl border border-stone-200 bg-stone-50/60 p-4 transition-all hover:bg-white md:flex-row md:items-center md:justify-between"
+                  className={`flex flex-col gap-4 rounded-2xl border p-4 transition-all hover:bg-white md:flex-row md:items-center md:justify-between ${
+                    !currentStudentId
+                      ? "border-amber-300 bg-amber-50/40 shadow-sm ring-1 ring-amber-200/50"
+                      : "border-stone-200 bg-stone-50/60"
+                  }`}
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <div className="flex flex-wrap items-center gap-2">
@@ -324,6 +328,11 @@ export function PendingAgendaLessonsCard({
                       <span className="text-xs text-stone-400">
                         Agenda : <strong className="text-stone-700 font-semibold">« {course.title} »</strong>
                       </span>
+                      {course.matchConfidence === "AGENDA_NAME" && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                          ✓ Relié auto
+                        </span>
+                      )}
                       {isUrssaf && (
                         <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-black uppercase text-sky-700">
                           <Zap className="h-3 w-3" />
@@ -331,6 +340,15 @@ export function PendingAgendaLessonsCard({
                         </span>
                       )}
                     </div>
+
+                    {!currentStudentId && (
+                      <div className="flex items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-100/70 px-2.5 py-1 text-xs font-bold text-amber-900">
+                        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 animate-pulse" />
+                        <span>
+                          Élève non reconnu : choisissez l&apos;élève dans la liste ci-dessous pour le relier.
+                        </span>
+                      </div>
+                    )}
 
                     {course.isHomonymWarning && (
                       <div className="flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50/80 px-2.5 py-1 text-xs text-amber-800">
@@ -348,7 +366,11 @@ export function PendingAgendaLessonsCard({
                         onChange={(e) =>
                           handleStudentSelect(course.eventUid, e.target.value)
                         }
-                        className="h-8 rounded-xl border border-stone-300 bg-white px-3 text-xs font-bold text-stone-900 outline-none transition focus:border-amber-500"
+                        className={`h-8 rounded-xl border px-3 text-xs font-bold outline-none transition ${
+                          !currentStudentId
+                            ? "border-amber-400 bg-white font-black text-amber-950 ring-2 ring-amber-300"
+                            : "border-stone-300 bg-white text-stone-900 focus:border-amber-500"
+                        }`}
                       >
                         <option value="">-- Choisir un élève --</option>
                         {students
@@ -377,14 +399,22 @@ export function PendingAgendaLessonsCard({
                       size="sm"
                       onClick={() => void handleValidateCourse(course)}
                       disabled={!currentStudentId || isValidatingThis}
-                      className="rounded-xl bg-emerald-600 font-bold text-white hover:bg-emerald-700 shadow-sm"
+                      className={`rounded-xl font-bold text-white shadow-sm transition ${
+                        !currentStudentId
+                          ? "bg-stone-300 cursor-not-allowed text-stone-500"
+                          : "bg-emerald-600 hover:bg-emerald-700"
+                      }`}
                     >
                       {isValidatingThis ? (
                         <RotateCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
                       ) : (
                         <UserCheck className="mr-1.5 h-3.5 w-3.5" />
                       )}
-                      {isUrssaf ? "Valider & Déclarer URSSAF" : "Valider le cours"}
+                      {!currentStudentId
+                        ? "Choisir un élève d'abord"
+                        : isUrssaf
+                        ? "Valider & Déclarer URSSAF"
+                        : "Valider le cours"}
                     </Button>
 
                     <Button
