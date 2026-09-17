@@ -62,3 +62,10 @@ next-env.d.ts
 # persistent admin signature
 /public/signature-sap.png
 
+# large audio files
+/public/audio/
+/public/backing track/
+*.wav
+
+# scrape research files
+.agent/scrape_*.txt
