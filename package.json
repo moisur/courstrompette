@@ -48,7 +48,7 @@
     "next": "15.1.12",
     "nodemailer": "^8.0.3",
     "opensheetmusicdisplay": "^1.8.9",
-    "pdfjs-dist": "^3.4.120",
+    "pdfjs-dist": "4.8.69",
     "pg": "^8.20.0",
     "pitchy": "^4.1.0",
     "react": "^19.0.0",

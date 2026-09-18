@@ -20,11 +20,10 @@ import {
   Minimize2
 } from "lucide-react";
 
-// Set up pdfjs worker locally via same-origin Next.js webpack bundling to comply with CSP policies
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+// Serve the pdfjs worker from /public so it stays same-origin and CSP-compliant.
+// react-pdf 9 uses pdfjs-dist 4.x which ships .mjs workers only.
+// The file was copied to public/ via: cp node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 export interface SignEaseToolProps {
   initialPdfFile?: File | null;
