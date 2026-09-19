@@ -135,6 +135,20 @@ export function StudentDetailsDialog({
     rate: "",
     notes: "",
   });
+  const [caldavTitles, setCaldavTitles] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      fetch("/api/admin/caldav/titles")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.titles && Array.isArray(data.titles)) {
+            setCaldavTitles(data.titles);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!student) {
@@ -612,8 +626,14 @@ export function StudentDetailsDialog({
                           value={profileForm.agendaName}
                           onChange={(event) => updateProfileField("agendaName", event.target.value)}
                           placeholder="Ex: Nicolas trompette ou Guillaume"
+                          list="caldav-titles-list"
                           className="h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/40 px-4 text-sm font-medium text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
                         />
+                        <datalist id="caldav-titles-list">
+                          {caldavTitles.map((title) => (
+                            <option key={title} value={title} />
+                          ))}
+                        </datalist>
                       </label>
                     </div>
 

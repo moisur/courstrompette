@@ -256,12 +256,13 @@ export function matchStudentForEvent(
  * @param fromDate Date to start scanning from (default: 2026-09-18T00:00:00.000Z)
  */
 export async function getPendingPastAgendaCourses(
-  fromDate: Date = new Date("2026-09-18T00:00:00.000Z"),
+  fromDate: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   toDate: Date = new Date(),
 ): Promise<ReconciledAgendaCourse[]> {
   const now = new Date();
-  // We only show events that are finished (endDate <= now)
-  const maxScanDate = toDate > now ? now : toDate;
+  // Add a 30 min buffer so events that ended very recently are still captured
+  const nowWithBuffer = new Date(now.getTime() + 30 * 60 * 1000);
+  const maxScanDate = toDate > nowWithBuffer ? nowWithBuffer : toDate;
 
   // 1. Fetch raw calendar events
   const rawEvents = await fetchCalendarEvents(fromDate, maxScanDate);
@@ -327,8 +328,8 @@ export async function getPendingPastAgendaCourses(
   const results: ReconciledAgendaCourse[] = [];
 
   for (const event of rawEvents) {
-    // Only past events (ended before now)
-    if (event.endDate.getTime() > now.getTime()) {
+    // Only past events (ended before now + 30min buffer)
+    if (event.endDate.getTime() > nowWithBuffer.getTime()) {
       continue;
     }
 

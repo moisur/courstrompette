@@ -32,8 +32,9 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const fromDateParam = searchParams.get("fromDate");
-    // Default start date: tomorrow (2026-09-18T00:00:00.000Z)
-    const fromDate = fromDateParam ? new Date(fromDateParam) : new Date("2026-09-18T00:00:00.000Z");
+    // Default start date: beginning of current month
+    const defaultFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const fromDate = fromDateParam ? new Date(fromDateParam) : defaultFromDate;
 
     const pendingCourses = await getPendingPastAgendaCourses(fromDate);
 

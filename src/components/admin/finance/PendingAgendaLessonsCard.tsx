@@ -62,7 +62,11 @@ export function PendingAgendaLessonsCard({
   const [isLoading, setIsLoading] = useState(false);
   const [validatingUid, setValidatingUid] = useState<string | null>(null);
   const [selectedStudentOverrides, setSelectedStudentOverrides] = useState<Record<string, string>>({});
-  const [startDate, setStartDate] = useState("2026-09-18");
+  const [startDate, setStartDate] = useState(() => {
+    const now = new Date();
+    // Default: beginning of current month so all lessons this month show up
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+  });
 
   const loadPendingCourses = async () => {
     setIsLoading(true);

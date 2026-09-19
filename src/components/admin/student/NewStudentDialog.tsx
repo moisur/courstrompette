@@ -45,10 +45,19 @@ export function NewStudentDialog({ open, onOpenChange, onCreated }: NewStudentDi
   const { toast } = useToast();
   const [form, setForm] = useState(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [caldavTitles, setCaldavTitles] = useState<string[]>([]);
 
   useEffect(() => {
     if (open) {
       setForm(INITIAL_FORM);
+      fetch("/api/admin/caldav/titles")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.titles && Array.isArray(data.titles)) {
+            setCaldavTitles(data.titles);
+          }
+        })
+        .catch(() => {});
     }
   }, [open]);
 
@@ -207,8 +216,14 @@ export function NewStudentDialog({ open, onOpenChange, onCreated }: NewStudentDi
                 value={form.agendaName}
                 onChange={(event) => updateField("agendaName", event.target.value)}
                 placeholder="Ex: Nicolas trompette ou Guillaume (nom exact tel qu'écrit dans votre calendrier)"
+                list="new-student-caldav-titles"
                 className="rounded-2xl border-amber-200 bg-amber-50/40 focus:border-amber-500"
               />
+              <datalist id="new-student-caldav-titles">
+                {caldavTitles.map((title) => (
+                  <option key={title} value={title} />
+                ))}
+              </datalist>
             </label>
           </div>
 

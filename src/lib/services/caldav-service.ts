@@ -208,15 +208,42 @@ export function parseIcalData(
   return events;
 }
 
+export interface CaldavDiagnostic {
+  hasUser: boolean;
+  user: string;
+  hasPassword: boolean;
+  hasIcsUrl: boolean;
+  testedUrls: Array<{
+    url: string;
+    method: string;
+    status: number;
+    statusText: string;
+    eventsFound: number;
+    errorSnippet?: string;
+  }>;
+  activeUrl: string | null;
+  totalEvents: number;
+}
+
 /**
- * Fetches calendar events from Stalwart CalDAV server or private .ics feed.
+ * Fetches calendar events along with full connection diagnostics.
  */
-export async function fetchCalendarEvents(
+export async function fetchCalendarEventsWithDiagnostic(
   rangeStart: Date,
   rangeEnd: Date,
   customConfig?: CaldavConfig,
-): Promise<CalendarEventItem[]> {
+): Promise<{ events: CalendarEventItem[]; diagnostic: CaldavDiagnostic }> {
   const config = { ...getCaldavConfig(), ...customConfig };
+
+  const diagnostic: CaldavDiagnostic = {
+    hasUser: Boolean(config.user),
+    user: config.user || "",
+    hasPassword: Boolean(config.password),
+    hasIcsUrl: Boolean(config.icsUrl),
+    testedUrls: [],
+    activeUrl: null,
+    totalEvents: 0,
+  };
 
   // Format range for CalDAV XML query: YYYYMMDDTHHMMSSZ
   const formatUtc = (d: Date) =>
@@ -229,31 +256,62 @@ export async function fetchCalendarEvents(
         headers: { Accept: "text/calendar" },
         next: { revalidate: 60 },
       });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ICS feed: HTTP ${response.status}`);
+      diagnostic.testedUrls.push({
+        url: config.icsUrl,
+        method: "GET",
+        status: response.status,
+        statusText: response.statusText,
+        eventsFound: 0,
+      });
+
+      if (response.ok) {
+        const icsText = await response.text();
+        const events = parseIcalData(icsText, rangeStart, rangeEnd);
+        diagnostic.testedUrls[diagnostic.testedUrls.length - 1].eventsFound = events.length;
+        diagnostic.activeUrl = config.icsUrl;
+        diagnostic.totalEvents = events.length;
+        return { events, diagnostic };
       }
-      const icsText = await response.text();
-      return parseIcalData(icsText, rangeStart, rangeEnd);
-    } catch (error) {
+    } catch (error: any) {
       console.error("[CaldavService] Error fetching ICS feed:", error);
-      return [];
+      diagnostic.testedUrls.push({
+        url: config.icsUrl,
+        method: "GET",
+        status: 0,
+        statusText: "Network Error",
+        eventsFound: 0,
+        errorSnippet: error?.message,
+      });
+      return { events: [], diagnostic };
     }
   }
 
   // CalDAV endpoint
-  if (!config.url || !config.password) {
+  if (!config.password) {
     console.warn(
       "[CaldavService] CalDAV credentials missing (CALDAV_PASSWORD or SMTP_PASS). Using empty calendar feed.",
     );
-    return [];
+    return { events: [], diagnostic };
   }
 
-  try {
-    const authHeader = `Basic ${Buffer.from(`${config.user}:${config.password}`).toString("base64")}`;
-    const startStr = formatUtc(rangeStart);
-    const endStr = formatUtc(rangeEnd);
+  const user = config.user || "jc@courstrompette.fr";
+  const candidateUrls: string[] = [];
+  if (config.url) candidateUrls.push(config.url);
+  const stalwartFallbacks = [
+    `https://mail.courstrompette.fr/dav/calendars/user/${user}/3ac135f9-b0a3-4b26-a976-8446748c09d4`,
+    `https://mail.courstrompette.fr/dav/calendars/user/${user}/default`,
+    `https://mail.courstrompette.fr/dav/calendars/${user}`,
+    `https://mail.courstrompette.fr/dav/cal`,
+  ];
+  for (const u of stalwartFallbacks) {
+    if (!candidateUrls.includes(u)) candidateUrls.push(u);
+  }
 
-    const queryXml = `<?xml version="1.0" encoding="utf-8" ?>
+  const authHeader = `Basic ${Buffer.from(`${user}:${config.password}`).toString("base64")}`;
+  const startStr = formatUtc(rangeStart);
+  const endStr = formatUtc(rangeEnd);
+
+  const queryXml = `<?xml version="1.0" encoding="utf-8" ?>
 <c:calendar-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
   <d:prop>
     <d:getetag />
@@ -268,56 +326,113 @@ export async function fetchCalendarEvents(
   </c:filter>
 </c:calendar-query>`;
 
-    const response = await fetch(config.url, {
-      method: "REPORT",
-      headers: {
-        Authorization: authHeader,
-        Depth: "1",
-        "Content-Type": "application/xml; charset=utf-8",
-        Prefer: "return-minimal",
-      },
-      body: queryXml,
-    });
-
-    if (!response.ok) {
-      // Fallback: try GET in case the URL points directly to an .ics resource
-      const getResponse = await fetch(config.url, {
-        method: "GET",
+  for (const targetUrl of candidateUrls) {
+    try {
+      const response = await fetch(targetUrl, {
+        method: "REPORT",
         headers: {
           Authorization: authHeader,
-          Accept: "text/calendar",
+          Depth: "1",
+          "Content-Type": "application/xml; charset=utf-8",
+          Prefer: "return-minimal",
         },
+        body: queryXml,
       });
 
-      if (getResponse.ok) {
-        const icsText = await getResponse.text();
-        return parseIcalData(icsText, rangeStart, rangeEnd);
+      if (response.ok) {
+        const xmlResponse = await response.text();
+        const calendarDataRegex = /<[^:]*:?calendar-data[^>]*>([\s\S]*?)<\/[^:]*:?calendar-data>/gi;
+        const extractedEvents: CalendarEventItem[] = [];
+
+        let match: RegExpExecArray | null;
+        while ((match = calendarDataRegex.exec(xmlResponse)) !== null) {
+          let icsChunk = match[1]
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&amp;/g, "&");
+          const parsed = parseIcalData(icsChunk, rangeStart, rangeEnd);
+          extractedEvents.push(...parsed);
+        }
+
+        diagnostic.testedUrls.push({
+          url: targetUrl,
+          method: "REPORT",
+          status: response.status,
+          statusText: response.statusText,
+          eventsFound: extractedEvents.length,
+        });
+
+        if (extractedEvents.length > 0 || response.status === 207) {
+          diagnostic.activeUrl = targetUrl;
+          diagnostic.totalEvents = extractedEvents.length;
+          return { events: extractedEvents, diagnostic };
+        }
+      } else {
+        // Fallback: try GET in case the URL responds with standard ics
+        const getResponse = await fetch(targetUrl, {
+          method: "GET",
+          headers: {
+            Authorization: authHeader,
+            Accept: "text/calendar",
+          },
+        });
+
+        if (getResponse.ok) {
+          const icsText = await getResponse.text();
+          const parsed = parseIcalData(icsText, rangeStart, rangeEnd);
+          diagnostic.testedUrls.push({
+            url: targetUrl,
+            method: "GET",
+            status: getResponse.status,
+            statusText: getResponse.statusText,
+            eventsFound: parsed.length,
+          });
+
+          if (parsed.length > 0) {
+            diagnostic.activeUrl = targetUrl;
+            diagnostic.totalEvents = parsed.length;
+            return { events: parsed, diagnostic };
+          }
+        } else {
+          const errText = await response.text().catch(() => "");
+          diagnostic.testedUrls.push({
+            url: targetUrl,
+            method: "REPORT",
+            status: response.status,
+            statusText: response.statusText,
+            eventsFound: 0,
+            errorSnippet: errText.slice(0, 150),
+          });
+        }
       }
-
-      console.error(
-        `[CaldavService] CalDAV REPORT returned ${response.status}: ${await response.text()}`,
-      );
-      return [];
+    } catch (error: any) {
+      console.error(`[CaldavService] Error querying ${targetUrl}:`, error);
+      diagnostic.testedUrls.push({
+        url: targetUrl,
+        method: "REPORT",
+        status: 0,
+        statusText: "Connection Error",
+        eventsFound: 0,
+        errorSnippet: error?.message,
+      });
     }
-
-    const xmlResponse = await response.text();
-    // Extract calendar-data nodes from multi-status response
-    const calendarDataRegex = /<[^:]*:?calendar-data[^>]*>([\s\S]*?)<\/[^:]*:?calendar-data>/gi;
-    const extractedEvents: CalendarEventItem[] = [];
-
-    let match: RegExpExecArray | null;
-    while ((match = calendarDataRegex.exec(xmlResponse)) !== null) {
-      let icsChunk = match[1]
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&");
-      const parsed = parseIcalData(icsChunk, rangeStart, rangeEnd);
-      extractedEvents.push(...parsed);
-    }
-
-    return extractedEvents;
-  } catch (error) {
-    console.error("[CaldavService] CalDAV connection error:", error);
-    return [];
   }
+
+  return { events: [], diagnostic };
+}
+
+/**
+ * Fetches calendar events from Stalwart CalDAV server or private .ics feed.
+ */
+export async function fetchCalendarEvents(
+  rangeStart: Date,
+  rangeEnd: Date,
+  customConfig?: CaldavConfig,
+): Promise<CalendarEventItem[]> {
+  const { events } = await fetchCalendarEventsWithDiagnostic(
+    rangeStart,
+    rangeEnd,
+    customConfig,
+  );
+  return events;
 }
