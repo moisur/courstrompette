@@ -523,8 +523,9 @@ export function SignEaseTool({ initialPdfFile = null }: SignEaseToolProps) {
                 style={{ minHeight: "350px", width: "500px" }}
               >
                 <Document 
-                  file={pdfUrl} 
+                  file={pdfFile || pdfUrl} 
                   onLoadSuccess={handleDocumentLoadSuccess}
+                  onLoadError={(err) => console.error("Document onLoadError:", err)}
                   loading={
                     <div className="absolute inset-0 flex items-center justify-center bg-white/80">
                       <Loader2 className="h-8 w-8 animate-spin text-stone-400" />
