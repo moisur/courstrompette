@@ -22,15 +22,35 @@ export interface CaldavConfig {
   icsUrl?: string;
 }
 
+const CALDAV_ORIGIN = "https://mail.courstrompette.fr";
+
 function getCaldavConfig(): CaldavConfig {
-  const url = process.env.CALDAV_URL?.trim() || "https://mail.courstrompette.fr/dav/cal";
-  // Default user is jc@courstrompette.fr or SMTP_USER
+  const url = process.env.CALDAV_URL?.trim();
   const user = process.env.CALDAV_USER?.trim() || process.env.SMTP_USER?.trim() || "jc@courstrompette.fr";
-  // Stalwart shares the same credentials between SMTP/IMAP and CalDAV
   const password = process.env.CALDAV_PASSWORD?.trim() || process.env.SMTP_PASS?.trim();
   const icsUrl = process.env.CALDAV_ICS_URL?.trim();
 
   return { url, user, password, icsUrl };
+}
+
+function resolveDavHref(origin: string, href: string) {
+  const rawHref = href.trim();
+  if (rawHref.startsWith("http")) return rawHref;
+  return `${origin}${rawHref.startsWith("/") ? "" : "/"}${rawHref}`;
+}
+
+function accountPathVariants(user: string) {
+  const userNoDomain = user.split("@")[0];
+  return Array.from(new Set([user, encodeURIComponent(user), userNoDomain]));
+}
+
+function isCalDavRootUrl(url: string) {
+  try {
+    const pathname = new URL(url).pathname.replace(/\/+$/, "");
+    return pathname === "/dav/cal" || pathname === "/dav";
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -213,6 +233,7 @@ export interface CaldavDiagnostic {
   user: string;
   hasPassword: boolean;
   hasIcsUrl: boolean;
+  discoveredUrls?: string[];
   testedUrls: Array<{
     url: string;
     method: string;
@@ -223,6 +244,121 @@ export interface CaldavDiagnostic {
   }>;
   activeUrl: string | null;
   totalEvents: number;
+}
+
+/**
+ * Discovers CalDAV calendar collection URLs using RFC 4791 / RFC 5397 standards.
+ */
+async function discoverCalDavCalendarUrls(
+  origin: string,
+  authHeader: string,
+  user: string,
+): Promise<string[]> {
+  const discovered: string[] = [];
+  const accounts = accountPathVariants(user);
+
+  const principalProbes = [
+    `${origin}/.well-known/caldav`,
+    `${origin}/dav/cal`,
+    `${origin}/dav/`,
+    ...accounts.flatMap((account) => [
+      `${origin}/dav/pal/${account}`,
+      `${origin}/dav/principals/${account}`,
+      `${origin}/dav/principals/users/${account}`,
+    ]),
+  ];
+
+  let principalUrl: string | null = null;
+  for (const probe of principalProbes) {
+    try {
+      const res = await fetch(probe, {
+        method: "PROPFIND",
+        headers: {
+          Authorization: authHeader,
+          Depth: "0",
+          "Content-Type": "application/xml; charset=utf-8",
+        },
+        body: `<?xml version="1.0" encoding="utf-8" ?><d:propfind xmlns:d="DAV:"><d:prop><d:current-user-principal /></d:prop></d:propfind>`,
+        redirect: "follow",
+      });
+      if (res.ok) {
+        const xml = await res.text();
+        const m = xml.match(/<[^:]*:?current-user-principal[^>]*>[\s\S]*?<[^:]*:?href[^>]*>([\s\S]*?)<\/[^:]*:?href>/i);
+        if (m && m[1]) {
+          principalUrl = resolveDavHref(origin, m[1]);
+          break;
+        }
+      }
+    } catch {}
+  }
+
+  const homeProbes = [
+    principalUrl,
+    ...accounts.map((account) => `${origin}/dav/cal/${account}`),
+    ...accounts.map((account) => `${origin}/dav/pal/${account}`),
+    ...accounts.map((account) => `${origin}/dav/principals/${account}`),
+  ].filter(Boolean) as string[];
+
+  let calendarHomeUrl: string | null = null;
+  for (const pUrl of homeProbes) {
+    try {
+      const res = await fetch(pUrl, {
+        method: "PROPFIND",
+        headers: {
+          Authorization: authHeader,
+          Depth: "0",
+          "Content-Type": "application/xml; charset=utf-8",
+        },
+        body: `<?xml version="1.0" encoding="utf-8" ?><d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav"><d:prop><c:calendar-home-set /></d:prop></d:propfind>`,
+        redirect: "follow",
+      });
+      if (res.ok) {
+        const xml = await res.text();
+        const m = xml.match(/<[^:]*:?calendar-home-set[^>]*>[\s\S]*?<[^:]*:?href[^>]*>([\s\S]*?)<\/[^:]*:?href>/i);
+        if (m && m[1]) {
+          calendarHomeUrl = resolveDavHref(origin, m[1]);
+          break;
+        }
+      }
+    } catch {}
+  }
+
+  const homeTargets = [
+    calendarHomeUrl,
+    ...accounts.map((account) => `${origin}/dav/cal/${account}`),
+  ].filter(Boolean) as string[];
+
+  for (const hTarget of homeTargets) {
+    try {
+      const res = await fetch(hTarget, {
+        method: "PROPFIND",
+        headers: {
+          Authorization: authHeader,
+          Depth: "1",
+          "Content-Type": "application/xml; charset=utf-8",
+        },
+        body: `<?xml version="1.0" encoding="utf-8" ?><d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav"><d:prop><d:resourcetype /><d:displayname /></d:prop></d:propfind>`,
+        redirect: "follow",
+      });
+      if (res.ok) {
+        const xml = await res.text();
+        const responseBlocks = xml.split(/<\/[^:]*:?response>/gi);
+        for (const block of responseBlocks) {
+          if (/calendar/i.test(block)) {
+            const hrefMatch = block.match(/<[^:]*:?href[^>]*>([\s\S]*?)<\/[^:]*:?href>/i);
+            if (hrefMatch && hrefMatch[1]) {
+              const fullUrl = resolveDavHref(origin, hrefMatch[1]);
+              if (!discovered.includes(fullUrl) && fullUrl !== hTarget && !isCalDavRootUrl(fullUrl)) {
+                discovered.push(fullUrl);
+              }
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  return discovered;
 }
 
 /**
@@ -240,6 +376,7 @@ export async function fetchCalendarEventsWithDiagnostic(
     user: config.user || "",
     hasPassword: Boolean(config.password),
     hasIcsUrl: Boolean(config.icsUrl),
+    discoveredUrls: [],
     testedUrls: [],
     activeUrl: null,
     totalEvents: 0,
@@ -295,21 +432,34 @@ export async function fetchCalendarEventsWithDiagnostic(
   }
 
   const user = config.user || "jc@courstrompette.fr";
-  const candidateUrls: string[] = [];
-  if (config.url) candidateUrls.push(config.url);
-  const stalwartFallbacks = [
-    `https://mail.courstrompette.fr/dav/calendars/user/${user}/3ac135f9-b0a3-4b26-a976-8446748c09d4`,
-    `https://mail.courstrompette.fr/dav/calendars/user/${user}/default`,
-    `https://mail.courstrompette.fr/dav/calendars/${user}`,
-    `https://mail.courstrompette.fr/dav/cal`,
-  ];
-  for (const u of stalwartFallbacks) {
-    if (!candidateUrls.includes(u)) candidateUrls.push(u);
-  }
+  const origin = CALDAV_ORIGIN;
+  const calId = "3ac135f9-b0a3-4b26-a976-8446748c09d4";
+  const accounts = accountPathVariants(user);
 
   const authHeader = `Basic ${Buffer.from(`${user}:${config.password}`).toString("base64")}`;
   const startStr = formatUtc(rangeStart);
   const endStr = formatUtc(rangeEnd);
+
+  const discovered = await discoverCalDavCalendarUrls(origin, authHeader, user);
+  diagnostic.discoveredUrls = discovered;
+
+  const candidateUrls: string[] = [];
+  if (config.url && !isCalDavRootUrl(config.url)) candidateUrls.push(config.url);
+
+  for (const d of discovered) {
+    if (!candidateUrls.includes(d)) candidateUrls.push(d);
+  }
+
+  // Stalwart: /dav/cal/<account>/default  (not /dav/calendars/...)
+  const stalwartFallbacks = [
+    ...accounts.map((account) => `${origin}/dav/cal/${account}/default`),
+    ...accounts.map((account) => `${origin}/dav/cal/${account}/${calId}`),
+    ...accounts.map((account) => `${origin}/dav/cal/${account}`),
+  ];
+
+  for (const u of stalwartFallbacks) {
+    if (!candidateUrls.includes(u)) candidateUrls.push(u);
+  }
 
   const queryXml = `<?xml version="1.0" encoding="utf-8" ?>
 <c:calendar-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
@@ -327,6 +477,8 @@ export async function fetchCalendarEventsWithDiagnostic(
 </c:calendar-query>`;
 
   for (const targetUrl of candidateUrls) {
+    if (isCalDavRootUrl(targetUrl)) continue;
+
     try {
       const response = await fetch(targetUrl, {
         method: "REPORT",
@@ -362,7 +514,7 @@ export async function fetchCalendarEventsWithDiagnostic(
           eventsFound: extractedEvents.length,
         });
 
-        if (extractedEvents.length > 0 || response.status === 207) {
+        if (extractedEvents.length > 0) {
           diagnostic.activeUrl = targetUrl;
           diagnostic.totalEvents = extractedEvents.length;
           return { events: extractedEvents, diagnostic };
