@@ -394,7 +394,7 @@ export function NewUrssafStudentDialog({ open, onOpenChange, onCreated }: NewUrs
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-[10px] font-black uppercase text-stone-400">Code Comm. INSEE</FormLabel>
-                            <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={5} placeholder="69101" {...field} /></FormControl>
+                            <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={5} placeholder="101 ou 69101" {...field} /></FormControl>
                           </FormItem>
                         )}
                       />

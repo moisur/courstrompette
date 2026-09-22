@@ -543,7 +543,7 @@ export function UrssafEnrollmentForm({ studentId, initialData, onSuccess }: Urss
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[10px] font-black uppercase text-stone-400">Code Commune</FormLabel>
-                        <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={5} placeholder="75115" {...field} /></FormControl>
+                        <FormControl><Input className="rounded-xl border-stone-200 font-mono" maxLength={5} placeholder="261 ou 37261" {...field} /></FormControl>
                         <FormMessage className="text-[10px]" />
                       </FormItem>
                     )}
