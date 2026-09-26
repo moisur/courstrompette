@@ -364,34 +364,39 @@ export function SignEaseTool({ initialPdfFile = null }: SignEaseToolProps) {
     try {
       // 1. Fetch signature image binary
       const sigRes = await fetch(defaultSigUrl);
+      if (!sigRes.ok) {
+        throw new Error(`Impossible de charger l'image de signature (HTTP ${sigRes.status})`);
+      }
       const sigBlob = await sigRes.blob();
       const sigArrayBuffer = await sigBlob.arrayBuffer();
 
-      // 2. Fetch paraphe binary if distinct
-      let parapheArrayBuffer = sigArrayBuffer;
-      if (savedParapheUrl && savedParapheUrl !== defaultSigUrl) {
-        try {
-          const parRes = await fetch(savedParapheUrl);
-          const parBlob = await parRes.blob();
-          parapheArrayBuffer = await parBlob.arrayBuffer();
-        } catch {
-          parapheArrayBuffer = sigArrayBuffer;
-        }
-      }
-      
-      // 3. Load PDF file binary
+      // 2. Load PDF file binary
       const pdfArrayBuffer = await pdfFile.arrayBuffer();
       
-      // 4. Parse Document with pdf-lib
+      // 3. Parse Document with pdf-lib
       const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
       const pages = pdfDoc.getPages();
       
-      // 5. Embed images into PDF
+      // 4. Embed main signature image into PDF
       const embeddedSig = await pdfDoc.embedPng(sigArrayBuffer);
-      const embeddedParaphe =
-        parapheArrayBuffer === sigArrayBuffer
-          ? embeddedSig
-          : await pdfDoc.embedPng(parapheArrayBuffer);
+
+      // 5. Only fetch and embed paraphe if there are actually paraphes placed on the document
+      const hasParapheStamps = placedStamps.some((s) => s.type === "paraphe");
+      let embeddedParaphe = embeddedSig;
+
+      if (hasParapheStamps && savedParapheUrl && savedParapheUrl !== defaultSigUrl) {
+        try {
+          const parRes = await fetch(savedParapheUrl);
+          if (parRes.ok) {
+            const parBlob = await parRes.blob();
+            const parArrayBuffer = await parBlob.arrayBuffer();
+            embeddedParaphe = await pdfDoc.embedPng(parArrayBuffer);
+          }
+        } catch (parErr) {
+          console.warn("Could not embed custom paraphe, fallback to signature:", parErr);
+          embeddedParaphe = embeddedSig;
+        }
+      }
       
       // 6. Draw each placed stamp on its corresponding page
       for (const stamp of placedStamps) {
@@ -499,6 +504,7 @@ export function SignEaseTool({ initialPdfFile = null }: SignEaseToolProps) {
                       width={180}
                       height={90}
                       unoptimized
+                      onError={() => setSavedSignatureExists(false)}
                       className="max-h-20 object-contain max-w-full mix-blend-multiply filter contrast-125"
                     />
                   </div>
@@ -571,6 +577,7 @@ export function SignEaseTool({ initialPdfFile = null }: SignEaseToolProps) {
                       width={120}
                       height={60}
                       unoptimized
+                      onError={() => setSavedParapheExists(false)}
                       className="max-h-16 object-contain max-w-full mix-blend-multiply filter contrast-125"
                     />
                   </div>

@@ -623,45 +623,21 @@ export function StudentDetailsDialog({
                         />
                       </label>
 
-                      <div className="space-y-2">
-                        <label className="space-y-1 block">
-                          <span className="text-[11px] font-black uppercase tracking-widest text-amber-700">Titre dans mon agenda</span>
-                          <input
-                            value={profileForm.agendaName}
-                            onChange={(event) => updateProfileField("agendaName", event.target.value)}
-                            placeholder="Ex: Nicolas trompette ou Guillaume"
-                            list="caldav-titles-list"
-                            className="h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/40 px-4 text-sm font-medium text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
-                          />
-                          <datalist id="caldav-titles-list">
-                            {caldavTitles.map((title) => (
-                              <option key={title} value={title} />
-                            ))}
-                          </datalist>
-                        </label>
-
-                        {/* Visual suggestion badges from CalDAV */}
-                        {isLoadingCaldavTitles ? (
-                          <p className="text-[10px] text-amber-600 animate-pulse">Recherche des titres dans votre agenda...</p>
-                        ) : caldavTitles.length > 0 ? (
-                          <div className="space-y-1 pt-1">
-                            <span className="text-[10px] text-amber-800 font-bold block">💡 Titres détectés dans votre agenda :</span>
-                            <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
-                              {caldavTitles.map((title) => (
-                                <button
-                                  key={title}
-                                  type="button"
-                                  onClick={() => updateProfileField("agendaName", title)}
-                                  className="px-2 py-0.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-medium transition cursor-pointer border border-amber-300 shadow-xs"
-                                  title="Cliquer pour insérer ce titre"
-                                >
-                                  + {title}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ) : null}
-                      </div>
+                      <label className="space-y-2">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-amber-700">Titre dans mon agenda</span>
+                        <input
+                          value={profileForm.agendaName}
+                          onChange={(event) => updateProfileField("agendaName", event.target.value)}
+                          placeholder="Ex: Nicolas trompette ou Guillaume"
+                          list="caldav-titles-list"
+                          className="h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/40 px-4 text-sm font-medium text-stone-900 outline-none transition focus:border-amber-500 focus:bg-white"
+                        />
+                        <datalist id="caldav-titles-list">
+                          {caldavTitles.map((title) => (
+                            <option key={title} value={title} />
+                          ))}
+                        </datalist>
+                      </label>
                     </div>
 
                     <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">

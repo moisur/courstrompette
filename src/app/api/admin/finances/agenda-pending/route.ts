@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const fromDateParam = searchParams.get("fromDate");
-    // Default start date: beginning of current month
-    const defaultFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    // Default start date: 2026-09-19 as explicitly requested by user
+    const defaultFromDate = new Date("2026-09-19T00:00:00.000Z");
     const fromDate = fromDateParam ? new Date(fromDateParam) : defaultFromDate;
 
     const pendingCourses = await getPendingPastAgendaCourses(fromDate);
@@ -97,17 +97,36 @@ export async function POST(request: NextRequest) {
     const isUrssafCandidate = student.declared && Boolean(student.urssafClient);
     const paymentMethod = isUrssafCandidate ? "URSSAF" : "DIRECT";
 
-    // 2. Create the Lesson
+    // 2. Create the Lesson (statut payé = true, note = "Cours de musique à domicile")
     const newLesson = await prisma.lesson.create({
       data: {
         studentId: student.id,
         date: lessonDate,
         amount,
-        comment: `Cours de trompette (${title || student.name})`,
+        comment: "Cours de musique à domicile",
         paymentMethod: paymentMethod as any,
-        isPaid: false,
+        isPaid: true,
       },
     });
+
+    // 2b. Permanently mark event UID as validated so it can never be presented as pending again
+    if (eventUid) {
+      const validatedKey = recurrenceId ? `${eventUid}_${recurrenceId}` : eventUid;
+      await prisma.agendaIgnoredEvent
+        .upsert({
+          where: { eventUid: validatedKey },
+          create: {
+            eventUid: validatedKey,
+            title: title || student.name,
+            date: lessonDate,
+            reason: "VALIDATED",
+          },
+          update: {
+            reason: "VALIDATED",
+          },
+        })
+        .catch((e) => console.error("[AgendaPending] Error marking event validated:", e));
+    }
 
     // 3. Update student agenda aliases, UIDs & agendaName for future auto-linking
     const updates: { agendaUids?: string[]; agendaAliases?: string[]; agendaName?: string } = {};

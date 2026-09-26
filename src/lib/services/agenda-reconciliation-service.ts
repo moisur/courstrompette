@@ -256,7 +256,7 @@ export function matchStudentForEvent(
  * @param fromDate Date to start scanning from (default: 2026-09-18T00:00:00.000Z)
  */
 export async function getPendingPastAgendaCourses(
-  fromDate: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  fromDate: Date = new Date("2026-09-19T00:00:00.000Z"),
   toDate: Date = new Date(),
 ): Promise<ReconciledAgendaCourse[]> {
   const now = new Date();
@@ -348,13 +348,13 @@ export async function getPendingPastAgendaCourses(
 
     // Check if already recorded as a lesson in database for this student on this day
     let isAlreadyRecorded = false;
-    if (match.matchedStudent) {
-      const studentId = match.matchedStudent.id;
+    const targetStudents = match.matchedStudent ? [match.matchedStudent] : match.candidateStudents;
+    if (targetStudents.length > 0) {
       const eventTime = event.startDate.getTime();
       isAlreadyRecorded = existingLessons.some((l) => {
-        if (l.studentId !== studentId) return false;
+        if (!targetStudents.some((s) => s.id === l.studentId)) return false;
         const diffHours = Math.abs(l.date.getTime() - eventTime) / (1000 * 60 * 60);
-        return diffHours < 6; // same day / near slot
+        return diffHours < 12; // same day / near slot
       });
     }
 

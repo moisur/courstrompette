@@ -10,10 +10,29 @@ const PUBLIC_DIR = path.join(process.cwd(), "public");
 const SIGNATURE_PATH = path.join(PUBLIC_DIR, SIGNATURE_FILENAME);
 const PARAPHE_PATH = path.join(PUBLIC_DIR, PARAPHE_FILENAME);
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await getAdminSession();
   if (!session) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const rawType = searchParams.get("raw");
+
+  // Serve raw image directly from disk to bypass Next.js static asset caching issues
+  if (rawType === "signature" || rawType === "paraphe") {
+    const targetPath = rawType === "paraphe" ? PARAPHE_PATH : SIGNATURE_PATH;
+    try {
+      const buffer = await fs.readFile(targetPath);
+      return new Response(buffer, {
+        headers: {
+          "Content-Type": "image/png",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      });
+    } catch {
+      return new Response("Not found", { status: 404 });
+    }
   }
 
   let sigExists = false;
@@ -33,15 +52,15 @@ export async function GET() {
   return NextResponse.json({
     signature: {
       exists: sigExists,
-      url: sigExists ? `/${SIGNATURE_FILENAME}?t=${now}` : null,
+      url: sigExists ? `/api/admin/signature?raw=signature&t=${now}` : null,
     },
     paraphe: {
       exists: parExists,
-      url: parExists ? `/${PARAPHE_FILENAME}?t=${now}` : null,
+      url: parExists ? `/api/admin/signature?raw=paraphe&t=${now}` : null,
     },
     // Backward compatibility
     exists: sigExists,
-    url: sigExists ? `/${SIGNATURE_FILENAME}?t=${now}` : null,
+    url: sigExists ? `/api/admin/signature?raw=signature&t=${now}` : null,
   });
 }
 
@@ -63,7 +82,6 @@ export async function POST(request: Request) {
   }
 
   const isParaphe = body.type === "paraphe";
-  const targetFilename = isParaphe ? PARAPHE_FILENAME : SIGNATURE_FILENAME;
   const targetPath = isParaphe ? PARAPHE_PATH : SIGNATURE_PATH;
 
   try {
@@ -78,9 +96,10 @@ export async function POST(request: Request) {
     await fs.writeFile(targetPath, new Uint8Array(buffer));
 
     const now = Date.now();
+    const rawParam = isParaphe ? "paraphe" : "signature";
     return NextResponse.json({
       success: true,
-      url: `/${targetFilename}?t=${now}`,
+      url: `/api/admin/signature?raw=${rawParam}&t=${now}`,
       type: isParaphe ? "paraphe" : "signature",
       message: `${isParaphe ? "Paraphe" : "Signature"} enregistré(e) avec succès !`,
     });
